@@ -2,15 +2,7 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { Div100vhContainer, Icon, MobileDrawer } from '@deriv/components';
-import {
-    useAccountTransferVisible,
-    useAuthorize,
-    useIsP2PEnabled,
-    useOauth2,
-    useOnrampVisible,
-    useP2PSettings,
-    usePaymentAgentTransferVisible,
-} from '@deriv/hooks';
+import { useOauth2 } from '@deriv/hooks';
 import { getOSNameWithUAParser, routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { localize } from '@deriv/translations';
@@ -21,7 +13,7 @@ import getRoutesConfig from 'App/Constants/routes-config';
 import MenuLink from './menu-link';
 
 const ToggleMenuDrawerAccountsOS = observer(() => {
-    const { ui, client, modules } = useStore();
+    const { ui, client } = useStore();
     const {
         disableApp,
         enableApp,
@@ -33,7 +25,6 @@ const ToggleMenuDrawerAccountsOS = observer(() => {
     const {
         account_status,
         has_wallet,
-        is_authorize,
         is_logged_in,
         is_virtual,
         logout: logoutClient,
@@ -43,19 +34,10 @@ const ToggleMenuDrawerAccountsOS = observer(() => {
         is_proof_of_ownership_enabled,
         is_passkey_supported,
     } = client;
-    const { cashier } = modules;
-    const { payment_agent } = cashier;
-    const { is_payment_agent_visible } = payment_agent;
-    const is_account_transfer_visible = useAccountTransferVisible();
-    const { isSuccess } = useAuthorize();
-    const is_onramp_visible = useOnrampVisible();
-    const { data: is_payment_agent_transfer_visible } = usePaymentAgentTransferVisible();
-    const { is_p2p_enabled } = useIsP2PEnabled();
 
     const { pathname: route } = useLocation();
 
-    const is_trading_hub_category =
-        route === routes.traders_hub || route.startsWith(routes.cashier) || route.startsWith(routes.account);
+    const is_trading_hub_category = route === routes.traders_hub || route.startsWith(routes.account);
 
     const [is_open, setIsOpen] = React.useState(false);
     const [transitionExit, setTransitionExit] = React.useState(false);
@@ -63,17 +45,6 @@ const ToggleMenuDrawerAccountsOS = observer(() => {
 
     const timeout = React.useRef();
     const history = useHistory();
-    const {
-        subscribe,
-        rest: { isSubscribed },
-        p2p_settings,
-    } = useP2PSettings();
-
-    React.useEffect(() => {
-        if (isSuccess && !isSubscribed && is_authorize) {
-            subscribe();
-        }
-    }, [isSuccess, p2p_settings, subscribe, isSubscribed, is_authorize]);
 
     // Cleanup timeout on unmount or route change
     React.useEffect(() => {
@@ -104,7 +75,6 @@ const ToggleMenuDrawerAccountsOS = observer(() => {
         is_trading_hub_category,
         is_mobile,
         is_passkey_supported,
-        is_p2p_enabled,
     ]);
 
     const toggleDrawer = React.useCallback(() => {
@@ -194,29 +164,6 @@ const ToggleMenuDrawerAccountsOS = observer(() => {
 
         return (
             <React.Fragment key={idx}>
-                {!has_subroutes &&
-                    route_config.routes.map((route, index) => {
-                        if (
-                            !route.is_invisible &&
-                            (route.path !== routes.cashier_pa || is_payment_agent_visible) &&
-                            (route.path !== routes.cashier_pa_transfer || is_payment_agent_transfer_visible) &&
-                            (route.path !== routes.cashier_p2p || is_p2p_enabled) &&
-                            (route.path !== routes.cashier_onramp || is_onramp_visible) &&
-                            (route.path !== routes.cashier_acc_transfer || is_account_transfer_visible)
-                        ) {
-                            return (
-                                <MobileDrawer.Item key={index}>
-                                    <MenuLink
-                                        link_to={route.path}
-                                        icon={route.icon_component}
-                                        text={route.getTitle()}
-                                        onClickLink={toggleDrawer}
-                                    />
-                                </MobileDrawer.Item>
-                            );
-                        }
-                        return undefined;
-                    })}
                 {has_subroutes &&
                     route_config.routes.map((route, index) => {
                         return route.subroutes ? (

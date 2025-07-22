@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
 
 import { useIsHubRedirectionEnabled, useTMB } from '@deriv/hooks';
-import { getDomainName, loginUrl, platforms, redirectToLogin, routes, SessionStore } from '@deriv/shared';
+import { getDomainName, platforms, redirectToLogin, routes, SessionStore } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { getLanguage } from '@deriv/translations';
 import { Chat } from '@deriv/utils';
@@ -89,7 +89,7 @@ const Redirect = observer(() => {
     const ext_platform_url = url_params.get('ext_platform_url');
 
     const redirectToExternalPlatform = url => {
-        history.push(`${routes.traders_hub}?ext_platform_url=${url}`);
+        history.push(`${routes.trade}?ext_platform_url=${url}`);
         redirected_to_route = true;
     };
     setVerificationCode(code_param, action_param);
@@ -172,20 +172,20 @@ const Redirect = observer(() => {
                 switch (redirect_to) {
                     case '1':
                     case '2':
-                        pathname = routes.traders_hub;
+                        pathname = routes.trade;
                         break;
                     case '10':
                     case '20':
-                        pathname = routes.traders_hub;
+                        pathname = routes.trade;
                         hash = 'real';
                         break;
                     case '11':
                     case '21':
-                        pathname = routes.traders_hub;
+                        pathname = routes.trade;
                         hash = 'demo';
                         break;
                     case '3':
-                        pathname = routes.traders_hub;
+                        pathname = routes.trade;
                         break;
                     default:
                         break;
@@ -215,63 +215,40 @@ const Redirect = observer(() => {
             break;
         }
         case 'payment_deposit': {
-            if (has_wallet) {
-                history.push(routes.wallets_deposit);
-            } else {
-                history.push(routes.cashier_deposit);
-            }
+            history.push(routes.wallets_deposit);
             redirected_to_route = true;
             break;
         }
         case 'payment_withdraw': {
-            if (has_wallet) {
-                if (verification_code?.payment_withdraw) {
-                    /*
-                  1. pass verification_code through query param as we do not want to use localstorage/session storage
-                     though can't use "verification_code" as name param
-                     as there is general logic within client-store
-                     which removes anything which resembles code=XYZ
-                  2. pass loginid as a query param so that the withdrawal component knows what account is being withdrawn from
-                */
-                    history.push(
-                        `${routes.wallets_withdrawal}?verification=${verification_code.payment_withdraw}${
-                            client.loginid ? `&loginid=${client.loginid}` : ''
-                        }`
-                    );
-                } else {
-                    history.push(routes.wallets_withdrawal);
-                }
+            if (verification_code?.payment_withdraw) {
+                history.push(
+                    `${routes.wallets_withdrawal}?verification=${verification_code.payment_withdraw}${
+                        client.loginid ? `&loginid=${client.loginid}` : ''
+                    }`
+                );
             } else {
-                history.push(routes.cashier_withdrawal);
+                history.push(routes.wallets_withdrawal);
             }
             redirected_to_route = true;
             break;
         }
         case 'payment_transfer': {
-            if (has_wallet) {
-                history.push(routes.wallets_transfer);
-            } else {
-                history.push(routes.cashier_acc_transfer);
-            }
+            history.push(routes.wallets_transfer);
             redirected_to_route = true;
             break;
         }
         case 'crypto_transactions_withdraw': {
-            history.push(`${routes.cashier_withdrawal}?action=${action_param}`);
+            history.push(`${routes.wallets_withdrawal}?action=${action_param}`);
             redirected_to_route = true;
             break;
         }
         case 'payment_transactions': {
-            if (has_wallet) {
-                history.push(routes.wallets_transactions);
-            } else {
-                history.push(routes.statement);
-            }
+            history.push(routes.wallets_transactions);
             redirected_to_route = true;
             break;
         }
         case 'payment_agent_withdraw': {
-            history.push(routes.cashier_pa);
+            history.push(routes.wallets_withdrawal);
             redirected_to_route = true;
             break;
         }
@@ -299,12 +276,8 @@ const Redirect = observer(() => {
             break;
         }
         case 'verification': {
-            // Removing this will break mobile DP2P app. Do not remove.
-            sessionStorage.setItem('redirect_url', routes.p2p_verification);
-            const new_href = loginUrl({
-                language: getLanguage(),
-            });
-            window.location.href = new_href;
+            history.push(routes.trade);
+            redirected_to_route = true;
             break;
         }
         case 'trading_platform_investor_password_reset': {
@@ -312,30 +285,21 @@ const Redirect = observer(() => {
             const is_demo = localStorage.getItem('cfd_reset_password_intent')?.includes('demo');
             if (has_wallet) {
                 history.push({
-                    pathname: routes.traders_hub,
+                    pathname: routes.trade,
                     search: url_query_string,
                 });
             } else {
-                history.push(`${routes.traders_hub}#${is_demo ? 'demo' : 'real'}#reset-password`);
+                history.push(`${routes.trade}#${is_demo ? 'demo' : 'real'}#reset-password`);
             }
             redirected_to_route = true;
             break;
         }
-        case 'p2p_order_confirm': {
-            history.push({
-                pathname: routes.cashier_p2p,
-                search: url_query_string,
-            });
-            redirected_to_route = true;
-            break;
-        }
+        // P2P functionality has been removed
         case 'ctrader_account_transfer': {
             if (isHubRedirectionEnabled && (has_wallet || hasVRWorCRW)) {
                 window.location.assign(`${platforms.tradershub_os.url}/wallets/transfer`);
-            } else if (has_wallet) {
-                history.push(routes.wallets_transfer);
             } else {
-                history.push(routes.cashier_acc_transfer);
+                history.push(routes.wallets_transfer);
             }
             redirected_to_route = true;
             break;
@@ -357,11 +321,7 @@ const Redirect = observer(() => {
         const checkTmbAndRedirect = async () => {
             const is_tmb_enabled = await isTmbEnabled();
             const account_currency = queryCurrency;
-            if (
-                !redirected_to_route &&
-                history.location.pathname !== routes.traders_hub &&
-                is_client_store_initialized
-            ) {
+            if (!redirected_to_route && history.location.pathname !== routes.trade && is_client_store_initialized) {
                 const client_account_lists = JSON.parse(localStorage.getItem('client.accounts') || '{}');
 
                 const length_of_authorize_accounts_list = authorize_accounts_list.length;
@@ -378,7 +338,7 @@ const Redirect = observer(() => {
                     { pattern: /dbot/i, route: routes.bot },
                 ];
 
-                const default_route = routes.traders_hub;
+                const default_route = routes.trade;
 
                 const matched_route = route_mappings.find(({ pattern }) =>
                     pattern.test(url_query_string || history.location.search)

@@ -19,7 +19,6 @@ import { observer, useStore } from '@deriv/stores';
 import { routes, formatMoney, ContentFlag } from '@deriv/shared';
 import { localize, Localize } from '@deriv/translations';
 import { useHasSetCurrency } from '@deriv/hooks';
-import { getAccountTitle } from 'App/Containers/RealAccountSignup/helpers/constants';
 import { BinaryLink } from 'App/Components/Routes';
 import AccountList from './account-switcher-account-list.jsx';
 import AccountWrapper from './account-switcher-account-wrapper.jsx';
@@ -276,9 +275,6 @@ const AccountSwitcher = observer(({ history, is_mobile, is_visible }) => {
                                 .map((account, index) => (
                                     <div key={index} className='acc-switcher__new-account'>
                                         <Icon icon='IcDeriv' size={24} />
-                                        <Text size='xs' color='general' className='acc-switcher__new-account-text'>
-                                            {getAccountTitle(account)}
-                                        </Text>
                                         <Button
                                             id='dt_core_account-switcher_add-new-account'
                                             onClick={() => {
@@ -345,9 +341,6 @@ const AccountSwitcher = observer(({ history, is_mobile, is_visible }) => {
                                 return (
                                     <div key={index} className='acc-switcher__new-account'>
                                         <Icon icon='IcDeriv' size={24} />
-                                        <Text size='xs' color='general' className='acc-switcher__new-account-text'>
-                                            {getAccountTitle(account)}
-                                        </Text>
                                         <Button
                                             id='dt_core_account-switcher_add-new-account'
                                             onClick={() => {

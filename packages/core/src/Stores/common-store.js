@@ -13,7 +13,6 @@ import {
     routes,
     toMoment,
     isNavigationFromTradersHubOS,
-    isNavigationFromP2PV2,
 } from '@deriv/shared';
 import BaseStore from './base-store';
 import BinarySocket from '_common/base/socket_base';
@@ -41,7 +40,6 @@ export default class CommonStore extends BaseStore {
             has_error: observable,
             init: action.bound,
             is_from_derivgo: computed,
-            is_from_derivp2p: computed,
             is_from_tradershub_os: computed,
             is_language_changing: observable,
             is_network_online: observable,
@@ -175,20 +173,11 @@ export default class CommonStore extends BaseStore {
         return platforms[this.platform]?.platform_name === platforms.derivgo.platform_name;
     }
 
-    // eslint-disable-next-line class-methods-use-this
-    get is_from_outside_cashier() {
-        return !window.location.pathname.startsWith(routes.cashier);
-    }
-
     get is_from_tradershub_os() {
         return (
             platforms[this.platform]?.platform_name === platforms.tradershub_os.platform_name ||
             isNavigationFromTradersHubOS()
         );
-    }
-
-    get is_from_derivp2p() {
-        return isNavigationFromP2PV2();
     }
 
     setInitialRouteHistoryItem(location) {
@@ -201,8 +190,6 @@ export default class CommonStore extends BaseStore {
             });
             if (ext_url?.indexOf(getUrlSmartTrader()) === 0) {
                 this.addRouteHistoryItem({ pathname: ext_url, action: 'PUSH', is_external: true });
-            } else if (ext_url?.indexOf(routes.cashier_p2p) === 0) {
-                this.addRouteHistoryItem({ pathname: ext_url, action: 'PUSH' });
             } else {
                 this.addRouteHistoryItem({ ...location, action: 'PUSH' });
             }
@@ -366,11 +353,7 @@ export default class CommonStore extends BaseStore {
                 return;
             } else if (route_to_item_idx > -1) {
                 this.app_routing_history.splice(0, route_to_item_idx + 1);
-                // remove once p2p is ready
-                const ui_store = this.root_store.ui;
-                if (route_to_item.pathname === routes.cashier_p2p && ui_store.is_mobile)
-                    history.push(`${route_to_item.pathname}/verification`);
-                else history.push(route_to_item.pathname);
+                history.push(route_to_item.pathname);
                 return;
             }
         }

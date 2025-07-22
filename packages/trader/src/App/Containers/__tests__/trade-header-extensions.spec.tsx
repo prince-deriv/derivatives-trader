@@ -28,14 +28,6 @@ describe('<TradeHeaderExtensions />', () => {
                 ui: {
                     populateHeaderExtensions: jest.fn(item => item),
                 },
-                modules: {
-                    cashier: {
-                        general_store: {
-                            onMountCommon: jest.fn(),
-                            setAccountSwitchListener: jest.fn(),
-                        },
-                    },
-                },
             }),
         };
     });

@@ -33,7 +33,7 @@ export const getLoginHistoryFormattedData = (login_history: LoginHistory) => {
         const environment = login_history[i].environment;
         const environment_split = environment.split(' ');
         const mobile_app_UA = environment.match(
-            /(?<date>[0-9a-zA-Z-]+\s[0-9:]+GMT)[\s](IP=)(?<ip>[\w:.]+)\sIP_COUNTRY=(?<country>([a-zA-Z]{2}))\s(User_AGENT=)(\w.*)(?<name>iPhone|Android)([\W\w]+)\s(?<app>Deriv P2P|Deriv GO)(?<version>[\w\W]+)\s(LANG=)([\w]{2})/
+            /(?<date>[0-9a-zA-Z-]+\s[0-9:]+GMT)[\s](IP=)(?<ip>[\w:.]+)\sIP_COUNTRY=(?<country>([a-zA-Z]{2}))\s(User_AGENT=)(\w.*)(?<name>iPhone|Android)([\W\w]+)\s(?<app>Deriv GO)(?<version>[\w\W]+)\s(LANG=)([\w]{2})/
         );
         const date = environment_split[0];
         const time = environment_split[1].replace('GMT', ' GMT');

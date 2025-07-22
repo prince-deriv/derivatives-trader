@@ -1,16 +1,10 @@
 labelPRBasedOnFilePath:
   Account:
     - packages/account/**/*
-  AppStore:
-    - packages/appstore/**/*
-  Bot:
-    - packages/bot-*/**/*
   Components:
     - packages/components/**/*
   Core:
     - packages/core/**/*
-  P2P:
-    - packages/p2p/**/*
   Shared:
     - packages/shared/**/*
   Trader:

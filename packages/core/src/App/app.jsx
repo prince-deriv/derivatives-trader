@@ -4,8 +4,6 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import { APIProvider } from '@deriv/api';
-import { CashierStore } from '@deriv/cashier';
-import { CFDStore } from '@deriv/cfd';
 import { Loading } from '@deriv/components';
 import {
     initFormErrorMessages,
@@ -15,7 +13,7 @@ import {
     setWebsocket,
     useOnLoadTranslation,
 } from '@deriv/shared';
-import { P2PSettingsProvider, StoreProvider } from '@deriv/stores';
+import { StoreProvider } from '@deriv/stores';
 import { getLanguage, initializeTranslations } from '@deriv/translations';
 import { Analytics } from '@deriv-com/analytics';
 import { BreakpointProvider } from '@deriv-com/quill-ui';
@@ -38,14 +36,7 @@ const AppWithoutTranslation = ({ root_store }) => {
     const base = l.pathname.split('/')[1];
     const has_base = /^\/(br_)/.test(l.pathname);
     const [is_translation_loaded] = useOnLoadTranslation();
-    const initCashierStore = () => {
-        root_store.modules.attachModule('cashier', new CashierStore(root_store, WS));
-        root_store.modules.cashier.general_store.init();
-    };
     const { i18n } = useTranslation();
-    const initCFDStore = () => {
-        root_store.modules.attachModule('cfd', new CFDStore({ root_store, WS }));
-    };
     const { preferred_language } = root_store.client;
     const { is_dark_mode_on } = root_store.ui;
     const is_dark_mode = is_dark_mode_on || JSON.parse(localStorage.getItem('ui_store'))?.is_dark_mode_on;
@@ -95,8 +86,6 @@ const AppWithoutTranslation = ({ root_store }) => {
 
     React.useEffect(() => {
         sessionStorage.removeItem('redirect_url');
-        initCashierStore();
-        initCFDStore();
         const loadSmartchartsStyles = () => {
             import('@deriv/deriv-charts/dist/smartcharts.css');
         };
@@ -150,14 +139,12 @@ const AppWithoutTranslation = ({ root_store }) => {
                         <BreakpointProvider>
                             <APIProvider>
                                 <POIProvider>
-                                    <P2PSettingsProvider>
-                                        <TranslationProvider defaultLang={language} i18nInstance={i18nInstance}>
-                                            {/* This is required as translation provider uses suspense to reload language */}
-                                            <React.Suspense fallback={<Loading />}>
-                                                <AppContent passthrough={platform_passthrough} />
-                                            </React.Suspense>
-                                        </TranslationProvider>
-                                    </P2PSettingsProvider>
+                                    <TranslationProvider defaultLang={language} i18nInstance={i18nInstance}>
+                                        {/* This is required as translation provider uses suspense to reload language */}
+                                        <React.Suspense fallback={<Loading />}>
+                                            <AppContent passthrough={platform_passthrough} />
+                                        </React.Suspense>
+                                    </TranslationProvider>
                                 </POIProvider>
                             </APIProvider>
                         </BreakpointProvider>

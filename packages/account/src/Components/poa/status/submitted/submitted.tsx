@@ -1,14 +1,14 @@
 import React from 'react';
 import { Icon, Text } from '@deriv/components';
 import { localize } from '@deriv/translations';
-import { isNavigationFromP2P, isNavigationFromDerivGO, routes } from '@deriv/shared';
+import { isNavigationFromDerivGO, routes } from '@deriv/shared';
 import IconMessageContent from '../../../icon-message-content';
 import RouteButton from '../../../route-button';
 import { TPoaStatusProps } from '../../../../Types';
 
 export const Submitted = ({ needs_poi, redirect_button }: TPoaStatusProps) => {
     const message = localize('Review in progress');
-    const is_redirected_from_platform = isNavigationFromP2P() || isNavigationFromDerivGO();
+    const is_redirected_from_platform = isNavigationFromDerivGO();
     if (needs_poi) {
         return (
             <div className='account-management__container'>

@@ -6,15 +6,10 @@ import { makeLazyLoader, moduleLoader, routes } from '@deriv/shared';
 import { localize } from '@deriv/translations';
 
 import Redirect from 'App/Containers/Redirect';
-import RootComponent from 'App/Containers/RootComponent';
 import Endpoint from 'Modules/Endpoint';
 
 import OSRedirect from '../Containers/OSRedirect';
 import CallbackPage from '../../Modules/Callback/CallbackPage.tsx';
-
-const CFDCompareAccounts = React.lazy(
-    () => import(/* webpackChunkName: "cfd-compare-accounts" */ '@deriv/cfd/src/Containers/cfd-compare-accounts')
-);
 
 // Error Routes
 const Page404 = React.lazy(() => import(/* webpackChunkName: "404" */ 'Modules/Page404'));
@@ -26,13 +21,6 @@ const Reports = React.lazy(() => {
     return import(/* webpackChunkName: "reports" */ '@deriv/reports');
 });
 
-const CFD = React.lazy(() =>
-    moduleLoader(() => {
-        // eslint-disable-next-line import/no-unresolved
-        return import(/* webpackChunkName: "cfd" */ '@deriv/cfd');
-    })
-);
-
 const Account = React.lazy(() =>
     moduleLoader(() => {
         // eslint-disable-next-line import/no-unresolved
@@ -40,39 +28,8 @@ const Account = React.lazy(() =>
     })
 );
 
-const Cashier = React.lazy(() =>
-    moduleLoader(() => {
-        // eslint-disable-next-line import/no-unresolved
-        return import(/* webpackChunkName: "cashier" */ '@deriv/cashier');
-    })
-);
-
-const Bot = React.lazy(() =>
-    moduleLoader(() => {
-        // eslint-disable-next-line import/no-unresolved
-        return import(/* webpackChunkName: "bot-web-ui-app" */ '@deriv/bot-web-ui');
-    })
-);
-
-const P2P = React.lazy(() =>
-    moduleLoader(() => {
-        // eslint-disable-next-line import/no-unresolved
-        return import(/* webpackChunkName: "p2p" */ '@deriv/p2p');
-    })
-);
-
-const RedirectToNewTradersHub = () => {
-    return <Redirect to={routes.traders_hub} />;
-};
-
 const getModules = () => {
     const modules = [
-        {
-            path: routes.bot,
-            component: Bot,
-            // Don't use `Localize` component since native html tag like `option` cannot render them
-            getTitle: () => localize('Bot'),
-        },
         {
             path: routes.reports,
             component: Reports,
@@ -100,21 +57,6 @@ const getModules = () => {
                     icon_component: 'IcStatement',
                 },
             ],
-        },
-        {
-            path: routes.dxtrade,
-            component: props => <CFD {...props} platform='dxtrade' />,
-            getTitle: () => localize('Deriv X'),
-        },
-        {
-            path: routes.compare_cfds,
-            component: CFDCompareAccounts,
-            getTitle: () => localize('Compare CFD accounts'),
-        },
-        {
-            path: routes.mt5,
-            component: props => <CFD {...props} platform='mt5' />,
-            getTitle: () => localize('MT5'),
         },
         {
             path: routes.account_closed,
@@ -247,98 +189,6 @@ const getModules = () => {
             ],
         },
         {
-            path: routes.cashier,
-            component: Cashier,
-            is_modal: true,
-            is_authenticated: true,
-            getTitle: () => localize('Cashier'),
-            icon_component: 'IcCashier',
-            routes: [
-                {
-                    path: routes.cashier_deposit,
-                    component: Cashier,
-                    getTitle: () => localize('Deposit'),
-                    icon_component: 'IcCashierAdd',
-                    default: true,
-                },
-                {
-                    path: routes.cashier_withdrawal,
-                    component: Cashier,
-                    getTitle: () => localize('Withdrawal'),
-                    icon_component: 'IcCashierMinus',
-                },
-                {
-                    path: routes.cashier_pa,
-                    component: Cashier,
-                    getTitle: () => localize('Payment agents'),
-                    icon_component: 'IcPaymentAgent',
-                },
-                {
-                    path: routes.cashier_acc_transfer,
-                    component: Cashier,
-                    getTitle: () => localize('Transfer'),
-                    icon_component: 'IcAccountTransfer',
-                },
-                {
-                    path: routes.cashier_pa_transfer,
-                    component: Cashier,
-                    getTitle: () => localize('Transfer to client'),
-                    icon_component: 'IcAccountTransfer',
-                },
-                {
-                    path: routes.cashier_p2p,
-                    component: Cashier,
-                    getTitle: () => localize('Deriv P2P'),
-                    icon_component: 'IcDp2p',
-                    routes: [
-                        {
-                            path: routes.p2p_buy_sell,
-                            component: P2P,
-                            getTitle: () => localize('Buy / Sell'),
-                            default: true,
-                        },
-                        {
-                            path: routes.p2p_advertiser_page,
-                            component: P2P,
-                            getTitle: () => localize("Advertiser's page"),
-                        },
-                        {
-                            path: routes.p2p_orders,
-                            component: P2P,
-                            getTitle: () => localize('Orders'),
-                        },
-                        {
-                            path: routes.p2p_my_ads,
-                            component: P2P,
-                            getTitle: () => localize('My ads'),
-                        },
-                        {
-                            path: routes.p2p_my_profile,
-                            component: P2P,
-                            getTitle: () => localize('My profile'),
-                        },
-                        {
-                            path: routes.p2p_verification,
-                            component: P2P,
-                            getTitle: () => localize('P2P verification'),
-                        },
-                    ],
-                },
-                {
-                    id: 'gtm-onramp-tab',
-                    path: routes.cashier_onramp,
-                    component: Cashier,
-                    getTitle: () => localize('Fiat onramp'),
-                    icon_component: 'IcCashierOnRamp',
-                },
-                {
-                    path: routes.cashier_transactions_crypto,
-                    component: Cashier,
-                    is_invisible: true,
-                },
-            ],
-        },
-        {
             path: routes.trade,
             component: Trader,
             getTitle: () => localize('Trader'),
@@ -349,18 +199,13 @@ const getModules = () => {
             getTitle: () => localize('Contract Details'),
             is_authenticated: true,
         },
-        {
-            path: routes.old_traders_hub,
-            component: RedirectToNewTradersHub,
-            is_authenticated: false,
-            getTitle: () => localize("Trader's Hub"),
-        },
-        {
-            path: routes.traders_hub,
-            component: RootComponent,
-            is_authenticated: false,
-            getTitle: () => localize("Trader's Hub"),
-        },
+        // Trader's Hub no longer exists, trade is now the root path
+        // {
+        //     path: routes.traders_hub,
+        //     component: Trader,
+        //     is_authenticated: false,
+        //     getTitle: () => localize("Trader's Hub"),
+        // },
         {
             path: routes.callback_page,
             component: CallbackPage,
@@ -380,7 +225,7 @@ const lazyLoadComplaintsPolicy = makeLazyLoader(
 // Order matters
 // TODO: search tag: test-route-parent-info -> Enable test for getting route parent info when there are nested routes
 const initRoutesConfig = () => [
-    { path: routes.index, component: RouterRedirect, getTitle: () => '', to: routes.traders_hub },
+    { path: routes.index, component: RouterRedirect, getTitle: () => '', to: routes.trade },
     { path: routes.endpoint, component: Endpoint, getTitle: () => 'Endpoint' }, // doesn't need localization as it's for internal use
     { path: routes.os_redirect, component: OSRedirect, getTitle: () => localize('Redirect') },
     { path: routes.redirect, component: Redirect, getTitle: () => localize('Redirect') },

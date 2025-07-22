@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { useIsHubRedirectionEnabled } from '@deriv/hooks';
@@ -14,7 +14,6 @@ import ToggleMenuDrawerAccountsOS from 'App/Components/Layout/Header/toggle-menu
 import platform_config from 'App/Constants/platform-config';
 import CurrencySelectionModal from 'App/Containers/CurrencySelectionModal';
 import NewVersionNotification from 'App/Containers/new-version-notification.jsx';
-import RealAccountSignup from 'App/Containers/RealAccountSignup';
 import SetAccountCurrencyModal from 'App/Containers/SetAccountCurrencyModal';
 
 import DerivShortLogo from './deriv-short-logo';
@@ -46,7 +45,6 @@ const HeaderLegacy = observer(() => {
 
     const { isDesktop } = useDevice();
 
-    const history = useHistory();
     const { pathname } = useLocation();
 
     const traders_hub_routes =
@@ -69,8 +67,6 @@ const HeaderLegacy = observer(() => {
     const handleClickCashier = () => {
         if (!has_any_real_account && is_virtual) {
             toggleReadyToDepositModal();
-        } else {
-            history.push(routes.cashier_deposit);
         }
     };
 
@@ -146,7 +142,7 @@ const HeaderLegacy = observer(() => {
                         </React.Fragment>
                     )}
                     <MenuLinks is_traders_hub_routes={traders_hub_routes} />
-                    {isDesktop && !traders_hub_routes && !location.pathname.includes(routes.cashier) && (
+                    {isDesktop && !traders_hub_routes && (
                         <PlatformSwitcher
                             app_routing_history={app_routing_history}
                             platform_config={filterPlatformsForClients(platform_config)}
@@ -185,7 +181,6 @@ const HeaderLegacy = observer(() => {
                     )}
                 </div>
             </div>
-            {is_real_acc_signup_on && <RealAccountSignup />}
             <SetAccountCurrencyModal />
             <CurrencySelectionModal is_visible={modal_data.active_modal === 'currency_selection'} />
             <NewVersionNotification onUpdate={addUpdateNotification} />

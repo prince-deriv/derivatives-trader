@@ -13,14 +13,6 @@ const rootStore = mockStore({
         is_landing_company_loaded: true,
         is_logged_in: false,
     },
-    modules: {
-        cashier: {
-            general_store: {
-                onMountCommon: jest.fn(),
-                setAccountSwitchListener: jest.fn(),
-            },
-        },
-    },
 });
 
 const mockWs = {

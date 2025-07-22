@@ -8,18 +8,6 @@ const gitRevisionPlugin = new GitRevisionPlugin();
 const copyConfig = base => {
     const patterns = [
         {
-            from: path.resolve(__dirname, '../../../node_modules/@deriv/bot-web-ui/dist/bot/css/'),
-            to: 'bot/css/',
-        },
-        {
-            from: path.resolve(__dirname, '../../../node_modules/@deriv/bot-web-ui/dist/bot/media/'),
-            to: 'media',
-        },
-        {
-            from: path.resolve(__dirname, '../../../node_modules/@deriv/bot-web-ui/dist/bot/js/'),
-            to: 'bot/js/',
-        },
-        {
             from: path.resolve(__dirname, '../../../node_modules/@deriv/deriv-charts/dist'),
             to: 'js/smartcharts/',
         },
@@ -44,27 +32,6 @@ const copyConfig = base => {
             to: 'account/css',
         },
         {
-            from: path.resolve(__dirname, '../../../node_modules/@deriv/cashier/dist/cashier/js/'),
-            to: 'cashier/js',
-        },
-        {
-            from: path.resolve(__dirname, '../../../node_modules/@deriv/cashier/dist/cashier/css/'),
-            to: 'cashier/css',
-        },
-        {
-            from: path.resolve(__dirname, '../../../node_modules/@deriv/p2p/dist/p2p/js/'),
-            to: 'p2p/js',
-        },
-        {
-            from: path.resolve(__dirname, '../../../node_modules/@deriv/p2p/dist/p2p/css/'),
-            to: 'p2p/css',
-            noErrorOnMissing: true,
-        },
-        {
-            from: path.resolve(__dirname, '../../../node_modules/@deriv/cashier/dist/cashier/public'),
-            to: 'cashier/public',
-        },
-        {
             from: path.resolve(__dirname, '../../../node_modules/@deriv/trader/dist/trader'),
             to: 'trader',
         },
@@ -75,18 +42,6 @@ const copyConfig = base => {
         {
             from: path.resolve(__dirname, '../../../node_modules/@deriv/reports/dist/reports/css/'),
             to: 'reports/css',
-        },
-        {
-            from: path.resolve(__dirname, '../../../node_modules/@deriv/cfd/dist/cfd'),
-            to: 'cfd',
-        },
-        {
-            from: path.resolve(__dirname, '../../../node_modules/@deriv/appstore/dist/appstore'),
-            to: 'appstore',
-        },
-        {
-            from: path.resolve(__dirname, '../../../node_modules/@deriv/wallets/dist/wallets'),
-            to: 'wallets',
         },
         { from: path.resolve(__dirname, '../scripts/CNAME'), to: 'CNAME', toType: 'file', noErrorOnMissing: true },
         {
@@ -220,7 +175,7 @@ const generateSWConfig = () => ({
             },
         },
         {
-            urlPattern: /(account|appstore|bot|cashier|cfd|trader|reports)\//,
+            urlPattern: /(account|trader|reports)\//,
             handler: 'CacheFirst',
             options: {
                 cacheName: 'packages-files',

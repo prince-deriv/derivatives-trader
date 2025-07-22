@@ -14,11 +14,6 @@ const HeaderLegacy = makeLazyLoader(
     () => <HeaderFallback />
 )();
 
-const HeaderWallets = makeLazyLoader(
-    () => moduleLoader(() => import(/* webpackChunkName: "dtrader-header-wallets" */ './header-wallets')),
-    () => <HeaderFallback />
-)();
-
 const Header = observer(() => {
     const { client } = useStore();
     const { accounts, has_wallet, is_logged_in, setAccounts, loginid, switchAccount } = client;
@@ -38,7 +33,7 @@ const Header = observer(() => {
     }, [accounts, client_accounts, has_wallet, is_logged_in, loginid, setAccounts, switchAccount]);
 
     if (pathname === routes.onboarding) return null;
-    return has_wallet ? <HeaderWallets /> : <HeaderLegacy />;
+    return <HeaderLegacy />;
 });
 
 export default Header;

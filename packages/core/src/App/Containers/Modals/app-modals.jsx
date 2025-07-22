@@ -13,20 +13,21 @@ import RedirectNoticeModal from 'App/Components/Elements/Modals/RedirectNotice';
 import CompletedAssessmentModal from './completed-assessment-modal.jsx';
 import ReadyToVerifyModal from './ready-to-verify-modal';
 import CooldownWarningModal from './cooldown-warning-modal.jsx';
-import NeedRealAccountForCashierModal from './need-real-account-for-cashier-modal';
 import ReadyToDepositModal from './ready-to-deposit-modal';
 import RiskAcceptTestWarningModal from './risk-accept-test-warning-modal';
 import WalletsUpgradeLogoutModal from './wallets-upgrade-logout-modal';
 import WalletsUpgradeCompletedModal from './wallets-upgrade-completed-modal';
-import CryptoTransactionProcessingModal from './crypto-transaction-processing-modal';
 
 const SameDOBPhoneModal = React.lazy(() =>
     moduleLoader(() => import(/* webpackChunkName: "same-dob-phone-modal" */ './same-dob-phone-modal'))
 );
 
 const TradingAssessmentExistingUser = React.lazy(() =>
-    moduleLoader(() =>
-        import(/* webpackChunkName: "trading-assessment-existing-user-modal" */ './trading-assessment-existing-user')
+    moduleLoader(
+        () =>
+            import(
+                /* webpackChunkName: "trading-assessment-existing-user-modal" */ './trading-assessment-existing-user'
+            )
     )
 );
 
@@ -45,8 +46,8 @@ const ResetOrUnlinkPasswordModal = React.lazy(() =>
     moduleLoader(() => import(/* webpackChunkName: "reset-or-unlink-password-modal" */ '../ResetOrUnlinkPasswordModal'))
 );
 
-const UnlinkPasswordModal = React.lazy(() =>
-    import(/* webpackChunkName: "reset-or-unlink-password-modal" */ '../UnlinkPasswordModal')
+const UnlinkPasswordModal = React.lazy(
+    () => import(/* webpackChunkName: "reset-or-unlink-password-modal" */ '../UnlinkPasswordModal')
 );
 
 const RedirectToLoginModal = React.lazy(() =>
@@ -59,20 +60,16 @@ const ResetEmailModal = React.lazy(() => import(/* webpackChunkName: "reset-emai
 
 const UpdateEmailModal = React.lazy(() => import(/* webpackChunkName: "update-email-modal"  */ '../UpdateEmailModal'));
 
-const WarningCloseCreateRealAccountModal = React.lazy(() =>
-    import(/* webpackChunkName: "warning-close-create-real-account" */ '../WarningCloseCreateRealAccountModal')
+const WarningCloseCreateRealAccountModal = React.lazy(
+    () => import(/* webpackChunkName: "warning-close-create-real-account" */ '../WarningCloseCreateRealAccountModal')
 );
 
-const VerificationDocumentSubmitted = React.lazy(() =>
-    import(/* webpackChunkName: "verification-document-submitted-modal" */ './VerificationDocumentSubmitted')
+const VerificationDocumentSubmitted = React.lazy(
+    () => import(/* webpackChunkName: "verification-document-submitted-modal" */ './VerificationDocumentSubmitted')
 );
 
-const OneTimeDepositModal = React.lazy(() =>
-    import(/* webpackChunkName: "one-time-deposit-modal" */ '../OneTimeDepositModal')
-);
-
-const TncStatusUpdateModal = React.lazy(() =>
-    import(/* webpackChunkName: "tnc-status-update-modal" */ './tnc-status-update-modal')
+const TncStatusUpdateModal = React.lazy(
+    () => import(/* webpackChunkName: "tnc-status-update-modal" */ './tnc-status-update-modal')
 );
 
 const AppModals = observer(() => {
@@ -97,14 +94,11 @@ const AppModals = observer(() => {
         is_trading_assessment_for_new_user_enabled,
         is_deriv_account_needed_modal_visible,
         is_ready_to_deposit_modal_visible,
-        is_need_real_account_for_cashier_modal_visible,
         should_show_risk_accept_modal,
         is_verification_modal_visible,
         is_verification_submitted,
         isUrlUnavailableModalVisible,
-        should_show_one_time_deposit_modal,
         should_show_account_success_modal,
-        should_show_crypto_transaction_processing_modal,
         should_show_same_dob_phone_modal,
         is_tnc_update_modal_open,
         toggleTncUpdateModal,
@@ -209,24 +203,12 @@ const AppModals = observer(() => {
             ComponentToLoad = <ReadyToDepositModal />;
         }
 
-        if (is_need_real_account_for_cashier_modal_visible) {
-            ComponentToLoad = <NeedRealAccountForCashierModal />;
-        }
-
         if (is_verification_modal_visible) {
             ComponentToLoad = <VerificationModal />;
         }
 
         if (is_verification_submitted) {
             ComponentToLoad = <VerificationDocumentSubmitted />;
-        }
-
-        if (should_show_one_time_deposit_modal) {
-            ComponentToLoad = <OneTimeDepositModal />;
-        }
-
-        if (should_show_crypto_transaction_processing_modal) {
-            ComponentToLoad = <CryptoTransactionProcessingModal />;
         }
 
         if (should_show_account_success_modal) {

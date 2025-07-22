@@ -6,8 +6,6 @@ const IS_RELEASE =
 
 const js_loaders = [
     '@deriv/shared/src/loaders/deriv-account-loader.js',
-    '@deriv/shared/src/loaders/deriv-cashier-loader.js',
-    '@deriv/shared/src/loaders/deriv-cfd-loader.js',
     {
         loader: 'babel-loader',
         options: {

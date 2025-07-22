@@ -161,8 +161,8 @@ const ProofOfAddressContainer = observer(({ onSubmit }: TProofOfAddressContainer
             ['expired', 'rejected', 'suspected'].includes(document_status)) ||
         poa_address_mismatch ||
         poa_expiring_soon ||
-        ((poa_authenticated_with_idv || poa_authenticated_with_idv_photo) &&
-            from_platform?.route === routes.cashier_p2p);
+        poa_authenticated_with_idv ||
+        poa_authenticated_with_idv_photo;
 
     const redirect_button = should_show_redirect_btn && (
         <Button

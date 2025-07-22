@@ -37,11 +37,7 @@ const NotificationsDialog = observer(() => {
     };
 
     const clearNotifications = () => {
-        const p2p_settings = LocalStore.getObject('p2p_settings');
-        if (loginid && p2p_settings[loginid]) {
-            p2p_settings[loginid].is_notifications_visible = false;
-        }
-        LocalStore.setObject('p2p_settings', p2p_settings);
+        // P2P functionality has been removed
 
         Analytics.trackEvent('ce_notification_form', {
             action: 'clear_all',

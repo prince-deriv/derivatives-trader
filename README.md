@@ -85,22 +85,21 @@ Before running or contribute to this project, you need to have the setup of the 
 
 ## Packages
 
-| Package name   | Docs                                                                                                                | Version                                                                                                                      |
-| :------------- | :------------------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------- |
-| `Account`      | -                                                                                                                   | -                                                                                                                            |
-| `Appstore`     | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/appstore/README.md)     | -                                                                                                                            |
-| `Bot-skeleton` | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/bot-skeleton/README.md) | -                                                                                                                            |
-| `Bot-web-ui`   | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/bot-web-ui/README.md)   | -                                                                                                                            |
-| `Cashier`      | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/cashier/README.md)      | -                                                                                                                            |
-| `Cfd`          | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/cfd/README.md)          | -                                                                                                                            |
-| `Components`   | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/components/README.md)   | -                                                                                                                            |
-| `Core`         | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/core/README.md)         | -                                                                                                                            |
-| `Indicators`   | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/indicators/README.md)   | -                                                                                                                            |
-| `P2P`          | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/p2p/README.md)          | [![npm](https://img.shields.io/npm/v/@deriv/p2p.svg?style=flat-square&color=blue)](https://www.npmjs.com/package/@deriv/p2p) |
-| `Publisher`    | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/publisher/README.md)    | -                                                                                                                            |
-| `Shared`       | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/shared/README.md)       | -                                                                                                                            |
-| `Trader`       | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/trader/README.md)       | -                                                                                                                            |
-| `Translations` | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/translations/README.md) | -                                                                                                                            |
+| Package name   | Docs                                                                                                                | Version |
+| :------------- | :------------------------------------------------------------------------------------------------------------------ | :------ |
+| `Account`      | -                                                                                                                   | -       |
+| `Appstore`     | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/appstore/README.md)     | -       |
+| `Bot-skeleton` | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/bot-skeleton/README.md) | -       |
+| `Bot-web-ui`   | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/bot-web-ui/README.md)   | -       |
+| `Cashier`      | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/cashier/README.md)      | -       |
+| `Cfd`          | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/cfd/README.md)          | -       |
+| `Components`   | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/components/README.md)   | -       |
+| `Core`         | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/core/README.md)         | -       |
+| `Indicators`   | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/indicators/README.md)   | -       |
+| `Publisher`    | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/publisher/README.md)    | -       |
+| `Shared`       | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/shared/README.md)       | -       |
+| `Trader`       | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/trader/README.md)       | -       |
+| `Translations` | [![](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/translations/README.md) | -       |
 
 <br />
 
@@ -140,7 +139,7 @@ You can find the names of packages by first navigating to the `packages` folder.
 
 If you wish to work on Core, simply run `npm run serve core`.
 
-But for working on any of the other packages (such as Trader, Bot, P2P), perform the following:
+But for working on any of the other packages (such as Trader, Bot), perform the following:
 
 1. Open 2 terminals.
 2. Run `npm run serve {package name}` in the first one. e.g.: `npm run serve translations`, `npm run serve bot`, etc.
@@ -172,7 +171,6 @@ You can read more on the various lerna commands (and the [`clean` command](https
 - cfd
 - components
 - core
-- p2p
 - trader
 
 <br />
@@ -213,12 +211,6 @@ There are 2 types of release:
 2. Release to production:
     1. `git tag production_v20191205 -m 'release production'`
     2. `git push origin production_v20191205`
-
-There is a 4th type of release: releasing npm registry packages (currently `@deriv/p2p`). This a WIP, but the current method is:
-
-1. Acquire membership to `@deriv` npm organization namespace.
-2. Ensure you have a new (bumped) version of publishable packages (currently `@deriv/p2p`).
-3. Run `npm run publish:p2p`. The command publishes all bumped packages. However, right now the name includes the word `p2p` to signal the WIP status and that P2P is the only published package under this repo.
 
 <br />
 

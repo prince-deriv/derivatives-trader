@@ -75,28 +75,20 @@ describe('<InsufficientBalanceModal />', () => {
         expect(screen.getByText(/insufficient balance/i)).toBeInTheDocument();
         expect(screen.getByText(/test/i)).toBeInTheDocument();
     });
-    it('button text should be OK if is_virtual is true and toggleModal should be called if user clicks on the button', () => {
+    it('button text should be OK if is_virtual is true and toggleModal should be called if user clicks on the button', async () => {
         render(<InsufficientBalanceModal {...mocked_props} />, { wrapper });
         const button = screen.getByText(/ok/i);
         expect(button).toBeInTheDocument();
-        userEvent.click(button);
+        await userEvent.click(button);
         expect(mocked_props.toggleModal).toHaveBeenCalled();
     });
-    it('button text should be "Deposit now" if is_virtual is false and should navigate to cashier deposit page if client has CR account and click on the button', () => {
-        mocked_props.is_virtual = false;
-        render(<InsufficientBalanceModal {...mocked_props} />, { wrapper });
-        const button = screen.getByText(/deposit now/i);
-        expect(button).toBeInTheDocument();
-        userEvent.click(button);
-        expect(history.location.pathname).toBe(routes.cashier_deposit);
-    });
-    it('button text should be "Deposit now" if is_virtual is false and should navigate to wallets overlay deposit tab if client has CRW account and click on the button', () => {
+    it('button text should be "Deposit now" if is_virtual is false and should navigate to wallets overlay deposit tab if client has CRW account and click on the button', async () => {
         mocked_props.is_virtual = false;
         mock_store.client.has_wallet = true;
         render(<InsufficientBalanceModal {...mocked_props} />, { wrapper });
         const button = screen.getByText(/deposit now/i);
         expect(button).toBeInTheDocument();
-        userEvent.click(button);
+        await userEvent.click(button);
         expect(history.location.pathname).toBe(routes.wallets_deposit);
     });
     it('should return null when is_visible is false', () => {

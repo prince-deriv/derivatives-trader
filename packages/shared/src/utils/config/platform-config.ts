@@ -13,7 +13,7 @@ type TPlatform = {
     url?: string;
 };
 
-type TPlatforms = Record<'p2p' | 'p2p_v2' | 'derivgo' | 'tradershub_os', TPlatform>;
+type TPlatforms = Record<'derivgo' | 'tradershub_os', TPlatform>;
 export const tradershub_os_url =
     process.env.NODE_ENV === 'production'
         ? `https://hub.${getDomainUrl()}/tradershub`
@@ -21,26 +21,12 @@ export const tradershub_os_url =
 
 // TODO: This should be moved to PlatformContext
 export const platforms: TPlatforms = {
-    p2p: {
-        icon_text: undefined,
-        is_hard_redirect: true,
-        platform_name: 'Deriv P2P',
-        route_to_path: routes.cashier_p2p,
-        url: 'https://app.deriv.com/cashier/p2p',
-    },
     derivgo: {
         icon_text: undefined,
         is_hard_redirect: true,
         platform_name: 'Deriv GO',
         route_to_path: '',
         url: 'https://app.deriv.com/redirect/derivgo',
-    },
-    p2p_v2: {
-        icon_text: undefined,
-        is_hard_redirect: true,
-        platform_name: 'Deriv P2P',
-        route_to_path: '',
-        url: process.env.NODE_ENV === 'production' ? 'https://p2p.deriv.com' : 'https://staging-p2p.deriv.com',
     },
     tradershub_os: {
         icon_text: undefined,

@@ -128,10 +128,8 @@ const AccountActionsComponent = ({
     toggleNotifications,
 }: TAccountActionsProps) => {
     const { isDesktop } = useDevice();
-    const location = useLocation();
 
-    const isDepositButtonVisible =
-        isDesktop && !is_traders_hub_routes && currency && !location.pathname.includes(routes.cashier);
+    const isDepositButtonVisible = isDesktop && !is_traders_hub_routes && currency;
     const isCurrencyButtonVisible = isDesktop && !is_traders_hub_routes && !is_virtual && !currency;
 
     const formattedBalance = balance != null ? formatMoney(currency, balance, true) : undefined;

@@ -1,6 +1,6 @@
 import { action, autorun, computed, makeObservable, observable } from 'mobx';
 
-import { isMobile, isTouchDevice, routes } from '@deriv/shared';
+import { isMobile, isTouchDevice } from '@deriv/shared';
 
 import { MAX_MOBILE_WIDTH, MAX_TABLET_WIDTH } from 'Constants/ui';
 
@@ -15,7 +15,6 @@ export default class UIStore extends BaseStore {
     is_positions_drawer_on = false;
     is_reports_visible = false;
     reports_route_tab_index = 0;
-    is_cashier_visible = false;
     is_history_tab_active = false;
     // TODO: [cleanup ui-store]
     // Take profit, Stop loss & Deal cancellation checkbox
@@ -182,7 +181,6 @@ export default class UIStore extends BaseStore {
     is_redirected_from_email = false;
     is_wallet_modal_visible = false;
     is_ready_to_deposit_modal_visible = false;
-    is_need_real_account_for_cashier_modal_visible = false;
     is_switch_to_deriv_account_modal_visible = false;
     is_cfd_reset_password_modal_enabled = false;
     is_mt5_migration_modal_enabled = false;
@@ -225,7 +223,6 @@ export default class UIStore extends BaseStore {
             account_switcher_disabled_message: observable,
             has_only_forward_starting_contracts: observable,
             is_ready_to_deposit_modal_visible: observable,
-            is_need_real_account_for_cashier_modal_visible: observable,
             is_services_error_visible: observable,
             is_account_signup_modal_visible: observable,
             is_link_expired_modal_visible: observable,
@@ -265,7 +262,6 @@ export default class UIStore extends BaseStore {
             is_accounts_switcher_on: observable,
 
             is_app_disabled: observable,
-            is_cashier_visible: observable,
             is_cfd_page: observable,
 
             is_closing_create_real_account_modal: observable,
@@ -386,7 +382,6 @@ export default class UIStore extends BaseStore {
             setIsVerificationSubmitted: action.bound,
             setReportsTabIndex: action.bound,
             toggleReadyToDepositModal: action.bound,
-            toggleNeedRealAccountForCashierModal: action.bound,
             toggleShouldShowRealAccountsList: action.bound,
             shouldNavigateAfterChooseCrypto: action.bound,
             setShouldShowRiskWarningModal: action.bound,
@@ -425,7 +420,6 @@ export default class UIStore extends BaseStore {
             toggleAccountSettings: action.bound,
             toggleAccountSignupModal: action.bound,
             toggleCancellationWarning: action.bound,
-            toggleCashier: action.bound,
             toggleHistoryTab: action.bound,
             toggleLinkExpiredModal: action.bound,
             toggleOnScreenKeyboard: action.bound,
@@ -647,10 +641,6 @@ export default class UIStore extends BaseStore {
 
     toggleSetCurrencyModal() {
         this.is_set_currency_modal_visible = !this.is_set_currency_modal_visible;
-    }
-
-    toggleCashier() {
-        this.is_cashier_visible = !this.is_cashier_visible;
     }
 
     setModalIndex(index = 0) {
@@ -907,10 +897,6 @@ export default class UIStore extends BaseStore {
 
     continueRouteAfterChooseCrypto() {
         this.root_store.common.routeTo(this.choose_crypto_currency_target);
-
-        if (this.choose_crypto_currency_target === routes.cashier_deposit) {
-            this.root_store.modules.cashier.general_store.setIsDeposit(true);
-        }
     }
 
     openDerivRealAccountNeededModal() {
@@ -967,10 +953,6 @@ export default class UIStore extends BaseStore {
 
     toggleReadyToDepositModal() {
         this.is_ready_to_deposit_modal_visible = !this.is_ready_to_deposit_modal_visible;
-    }
-
-    toggleNeedRealAccountForCashierModal() {
-        this.is_need_real_account_for_cashier_modal_visible = !this.is_need_real_account_for_cashier_modal_visible;
     }
 
     setCFDPasswordResetModal(val) {

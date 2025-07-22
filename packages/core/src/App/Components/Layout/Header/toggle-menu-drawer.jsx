@@ -4,16 +4,7 @@ import classNames from 'classnames';
 
 import { useRemoteConfig } from '@deriv/api';
 import { Div100vhContainer, Icon, MobileDrawer, ToggleSwitch } from '@deriv/components';
-import {
-    useAccountSettingsRedirect,
-    useAccountTransferVisible,
-    useAuthorize,
-    useIsHubRedirectionEnabled,
-    useOauth2,
-    useOnrampVisible,
-    useP2PSettings,
-    usePaymentAgentTransferVisible,
-} from '@deriv/hooks';
+import { useAccountSettingsRedirect, useIsHubRedirectionEnabled, useOauth2 } from '@deriv/hooks';
 import { getDomainUrl, getOSNameWithUAParser, getStaticUrl, routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { localize } from '@deriv/translations';
@@ -30,7 +21,7 @@ import MenuLink from './menu-link';
 import PlatformSwitcher from './platform-switcher';
 
 const ToggleMenuDrawer = observer(({ platform_config }) => {
-    const { common, ui, client, traders_hub, modules } = useStore();
+    const { common, ui, client, traders_hub } = useStore();
     const { app_routing_history, current_language } = common;
     const {
         disableApp,
@@ -45,7 +36,6 @@ const ToggleMenuDrawer = observer(({ platform_config }) => {
     const {
         account_status,
         has_wallet,
-        is_authorize,
         is_logged_in,
         is_logging_in,
         is_virtual,
@@ -58,23 +48,13 @@ const ToggleMenuDrawer = observer(({ platform_config }) => {
         is_proof_of_ownership_enabled,
         is_eu,
         is_passkey_supported,
-        // We should use this computed property instead of the hook, to prevent the hook's data from becoming stale after a WebSocket reconnection during the first login.
-        is_p2p_available,
     } = client;
-    const { cashier } = modules;
-    const { payment_agent } = cashier;
-    const { is_payment_agent_visible } = payment_agent;
     const { show_eu_related_content, setTogglePlatformType } = traders_hub;
-    const is_account_transfer_visible = useAccountTransferVisible();
     const { mobile_redirect_url } = useAccountSettingsRedirect();
-    const { isSuccess } = useAuthorize();
-    const is_onramp_visible = useOnrampVisible();
-    const { data: is_payment_agent_transfer_visible } = usePaymentAgentTransferVisible();
 
     const { pathname: route } = useLocation();
 
-    const is_trading_hub_category =
-        route === routes.traders_hub || route.startsWith(routes.cashier) || route.startsWith(routes.account);
+    const is_trading_hub_category = route === routes.traders_hub || route.startsWith(routes.account);
 
     const should_show_regulatory_information = is_eu && show_eu_related_content && !is_virtual;
     const is_traders_hub_route = route === routes.traders_hub;
@@ -91,19 +71,7 @@ const ToggleMenuDrawer = observer(({ platform_config }) => {
 
     const timeout = React.useRef();
     const history = useHistory();
-    const {
-        subscribe,
-        rest: { isSubscribed },
-        p2p_settings,
-    } = useP2PSettings();
-
     const { isHubRedirectionEnabled } = useIsHubRedirectionEnabled();
-
-    React.useEffect(() => {
-        if (isSuccess && !isSubscribed && is_authorize) {
-            subscribe();
-        }
-    }, [isSuccess, p2p_settings, subscribe, isSubscribed, is_authorize]);
 
     // Cleanup timeout on unmount or route change
     React.useEffect(() => {
@@ -122,11 +90,7 @@ const ToggleMenuDrawer = observer(({ platform_config }) => {
             let primary_routes = [];
 
             if (is_trading_hub_category) {
-                primary_routes = has_wallet ? [routes.reports, routes.account] : [routes.account, routes.cashier];
-            } else {
-                primary_routes = has_wallet
-                    ? [routes.reports, routes.account]
-                    : [routes.reports, routes.account, routes.cashier];
+                primary_routes = has_wallet ? [routes.reports, routes.account] : [routes.account];
             }
             setPrimaryRoutesConfig(getFilteredRoutesConfig(routes_config, primary_routes));
         };
@@ -143,7 +107,6 @@ const ToggleMenuDrawer = observer(({ platform_config }) => {
         is_trading_hub_category,
         is_mobile,
         is_passkey_supported,
-        is_p2p_available,
     ]);
 
     const toggleDrawer = React.useCallback(() => {
@@ -256,29 +219,6 @@ const ToggleMenuDrawer = observer(({ platform_config }) => {
                 onToggle={expandSubMenu}
                 route_config_path={route_config.path}
             >
-                {!has_subroutes &&
-                    route_config.routes.map((route, index) => {
-                        if (
-                            !route.is_invisible &&
-                            (route.path !== routes.cashier_pa || is_payment_agent_visible) &&
-                            (route.path !== routes.cashier_pa_transfer || is_payment_agent_transfer_visible) &&
-                            (route.path !== routes.cashier_p2p || is_p2p_available) &&
-                            (route.path !== routes.cashier_onramp || is_onramp_visible) &&
-                            (route.path !== routes.cashier_acc_transfer || is_account_transfer_visible)
-                        ) {
-                            return (
-                                <MobileDrawer.Item key={index}>
-                                    <MenuLink
-                                        link_to={route.path}
-                                        icon={route.icon_component}
-                                        text={route.getTitle()}
-                                        onClickLink={toggleDrawer}
-                                    />
-                                </MobileDrawer.Item>
-                            );
-                        }
-                        return undefined;
-                    })}
                 {has_subroutes &&
                     route_config.routes.map((route, index) => {
                         return route.subroutes ? (

@@ -56,17 +56,6 @@ export const getUrlBot = () => {
     return url;
 };
 
-export const getUrlP2P = (is_language_required = true) => {
-    const { is_staging_deriv_app } = getPlatformFromUrl();
-
-    const localize_language = LocalStorageUtils.getValue<string>('i18n_language');
-    const url_lang = URLUtils.getQueryParameter('lang');
-    const i18n_language = localize_language || url_lang || 'en';
-    const base_link = is_staging_deriv_app ? deriv_urls.P2P_STAGING : deriv_urls.P2P_PRODUCTION;
-
-    return is_language_required ? `${base_link}/?l=${i18n_language.toLowerCase()}` : base_link;
-};
-
 export const getPlatformFromUrl = (domain = window.location.hostname) => {
     const resolutions = {
         is_staging_deriv_app: /^staging-app\.deriv\.(com|me|be)$/i.test(domain),

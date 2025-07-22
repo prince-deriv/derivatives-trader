@@ -200,10 +200,7 @@ const BinarySocketBase = (() => {
 
     const sell = (contract_id, bid_price) => deriv_api.send({ sell: contract_id, price: bid_price });
 
-    const cashier = (action, parameters = {}) => deriv_api.send({ cashier: action, ...parameters });
-
-    const cancelCryptoTransaction = transaction_id =>
-        deriv_api.send({ cashier_withdrawal_cancel: 1, id: transaction_id });
+    // Cashier functionality has been removed
 
     const newAccountVirtual = (verification_code, client_password, residence, device_data) =>
         deriv_api.send({
@@ -297,17 +294,7 @@ const BinarySocketBase = (() => {
             verification_code,
         });
 
-    const cryptoWithdraw = ({ address, amount, verification_code, estimated_fee_unique_id, dry_run = 0 }) =>
-        deriv_api.send({
-            cashier: 'withdraw',
-            provider: 'crypto',
-            type: 'api',
-            address,
-            amount,
-            verification_code,
-            estimated_fee_unique_id,
-            dry_run,
-        });
+    // Crypto withdraw functionality has been removed
 
     const cryptoConfig = () =>
         deriv_api.send({
@@ -369,9 +356,7 @@ const BinarySocketBase = (() => {
             limit,
         });
 
-    // subscribe method export for P2P use only
-    // so that subscribe remains private
-    const p2pSubscribe = (request, cb) => subscribe(request, cb);
+    // P2P functionality has been removed
     const accountStatistics = () => deriv_api.send({ account_statistics: 1 });
 
     const tradingServers = platform => deriv_api.send({ platform, trading_servers: 1 });
@@ -465,11 +450,8 @@ const BinarySocketBase = (() => {
         buy,
         buyAndSubscribe,
         sell,
-        cashier,
-        cancelCryptoTransaction,
         cancelContract,
         close,
-        cryptoWithdraw,
         cryptoConfig,
         contractUpdate,
         contractUpdateHistory,
@@ -480,7 +462,6 @@ const BinarySocketBase = (() => {
         newAccountReal,
         newAccountRealMaltaInvest,
         getPhoneSettings,
-        p2pSubscribe,
         profitTable,
         statement,
         verifyEmail,

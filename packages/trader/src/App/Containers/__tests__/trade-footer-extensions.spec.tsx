@@ -63,7 +63,7 @@ describe('<TradeFooterExtensions>', () => {
     it('should call populateFooterExtensions with empty array when pathname is not trader', () => {
         router_prop = {
             location: {
-                pathname: routes.cashier,
+                pathname: routes.trade,
             },
         };
         renderTraderFooterExtensions(router_prop);

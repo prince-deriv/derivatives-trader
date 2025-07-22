@@ -4,14 +4,8 @@ import { BrowserHistory, createBrowserHistory } from 'history';
 import { Router } from 'react-router';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { routes } from '@deriv/shared';
 import DefaultMobileLinks from '../default-mobile-links';
-import { useIsRealAccountNeededForCashier } from '@deriv/hooks';
 
-jest.mock('@deriv/hooks', () => ({
-    ...jest.requireActual('@deriv/hooks'),
-    useIsRealAccountNeededForCashier: jest.fn(() => false),
-}));
 jest.mock('App/Components/Routes', () => ({
     BinaryLink: jest.fn(() => <div data-testid='dt_binary_link'>MockedBinaryLink to Account Settings</div>),
 }));
@@ -69,20 +63,5 @@ describe('DefaultMobileLinks', () => {
         const cashierButton = screen.getByRole('button', { name: 'Cashier' });
         await userEvent.click(cashierButton);
         expect(mock_store.ui.toggleReadyToDepositModal).toHaveBeenCalledTimes(1);
-    });
-
-    it('should trigger `toggleNeedRealAccountForCashierModal` if user does not have any real regulated account', async () => {
-        (useIsRealAccountNeededForCashier as jest.Mock).mockReturnValueOnce(true);
-        render(<DefaultMobileLinks />, { wrapper });
-        const cashierButton = screen.getByRole('button', { name: 'Cashier' });
-        await userEvent.click(cashierButton);
-        expect(mock_store.ui.toggleNeedRealAccountForCashierModal).toHaveBeenCalledTimes(1);
-    });
-
-    it('should navigate to `/cashier/deposit` if user has real account', async () => {
-        render(<DefaultMobileLinks />, { wrapper });
-        const cashierButton = screen.getByRole('button', { name: 'Cashier' });
-        await userEvent.click(cashierButton);
-        expect(history.location.pathname).toBe(routes.cashier_deposit);
     });
 });

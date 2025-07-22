@@ -20,9 +20,8 @@ const NotificationsList = observer(() => {
         const { type } = item;
         if (['contract_sold', 'info', 'news', 'promotions'].includes(type)) {
             return 'IcAlertInfo';
-        } else if (type === 'p2p_completed_order') {
-            return 'IcAlertAnnounce';
         }
+        // P2P functionality has been removed
         return `IcAlert${toTitleCase(type)}`;
     };
 
@@ -104,7 +103,11 @@ const NotificationsList = observer(() => {
                                                 getButtonSettings(item)?.onClick();
                                                 onActionTrackEvent(item.key);
                                                 if (getButtonSettings(item)?.route) {
-                                                    history.push(getButtonSettings(item)?.route as string);
+                                                    history.push(
+                                                        getButtonSettings(item)?.route as unknown as Parameters<
+                                                            typeof history.push
+                                                        >[0]
+                                                    );
                                                 }
                                             }}
                                         >

@@ -9,7 +9,6 @@ import {
     filterUrlQuery,
     getAppId,
     getPropertyValue,
-    getUrlP2P,
     getUrlSmartTrader,
     isCryptocurrency,
     isDesktopOs,
@@ -164,7 +163,6 @@ export default class ClientStore extends BaseStore {
     prev_account_type = 'demo';
     external_url_params = {};
     is_already_attempted = false;
-    is_p2p_enabled = false;
     real_account_signup_form_data = [];
     real_account_signup_form_step = 0;
     wallet_migration_state;
@@ -254,7 +252,6 @@ export default class ClientStore extends BaseStore {
             prevent_single_login: observable,
             phone_settings: observable,
             is_already_attempted: observable,
-            is_p2p_enabled: observable,
             real_account_signup_form_data: observable,
             real_account_signup_form_step: observable,
             wallet_migration_state: observable,
@@ -312,7 +309,6 @@ export default class ClientStore extends BaseStore {
             is_from_restricted_country: computed,
             is_fully_authenticated: computed,
             is_financial_account: computed,
-            is_p2p_available: computed,
             landing_company_shortcode: computed,
             landing_company: computed,
             is_logged_in: computed,
@@ -347,6 +343,7 @@ export default class ClientStore extends BaseStore {
             setCookieAccount: action.bound,
             setCFDScore: action.bound,
             setPreventRedirectToHub: action.bound,
+            setPreventSingleLogin: action.bound,
             updateSelfExclusion: action.bound,
             responsePayoutCurrencies: action.bound,
             responseAuthorize: action.bound,
@@ -435,7 +432,6 @@ export default class ClientStore extends BaseStore {
             setPrevRealAccountLoginid: action.bound,
             setPrevAccountType: action.bound,
             setIsAlreadyAttempted: action.bound,
-            setIsP2PEnabled: action.bound,
             setRealAccountSignupFormData: action.bound,
             setRealAccountSignupFormStep: action.bound,
             getWalletMigrationState: action.bound,
@@ -712,19 +708,6 @@ export default class ClientStore extends BaseStore {
 
     get account_title() {
         return getAccountTitle(this.loginid);
-    }
-
-    get is_p2p_available() {
-        const localstorage_p2p_settings = JSON.parse(localStorage.getItem('p2p_settings'));
-
-        const p2p_supported_currencies =
-            localstorage_p2p_settings?.supported_currencies || this.website_status?.p2p_config?.supported_currencies;
-
-        return (
-            p2p_supported_currencies?.includes(this.currency.toLocaleLowerCase()) &&
-            !this.is_virtual &&
-            !this.root_store.traders_hub.is_low_risk_cr_eu_real
-        );
     }
 
     get currency() {
@@ -1209,7 +1192,7 @@ export default class ClientStore extends BaseStore {
 
             this.has_cookie_account = true;
         } else {
-            removeCookies('region', 'client_information', 'is_p2p_disabled');
+            removeCookies('region', 'client_information');
             this.has_cookie_account = false;
         }
     }
@@ -1664,16 +1647,7 @@ export default class ClientStore extends BaseStore {
 
                 if (has_action) {
                     const query_string = filterUrlQuery(search, ['platform', 'code', 'action', 'loginid']);
-                    if (
-                        [routes.cashier_withdrawal, routes.cashier_pa, routes.cashier_transactions_crypto].includes(
-                            redirect_route
-                        )
-                    ) {
-                        // Set redirect path for cashier withdrawal and payment agent withdrawal (after getting PTA redirect_url)
-                        window.location.replace(`/redirect?${query_string}`);
-                    } else {
-                        window.location.replace(`${redirect_route}/redirect?${query_string}`);
-                    }
+                    window.location.replace(`${redirect_route}/redirect?${query_string}`);
                 } else {
                     window.location.replace(`${redirect_route}/?${filterUrlQuery(search, ['platform', 'lang'])}`);
                 }
@@ -2789,14 +2763,10 @@ export default class ClientStore extends BaseStore {
 
     syncWithLegacyPlatforms(active_loginid, client_accounts) {
         const smartTrader = {};
-        const p2p = {};
-
         smartTrader.iframe = document.getElementById('localstorage-sync');
-        p2p.iframe = document.getElementById('localstorage-sync__p2p');
         smartTrader.origin = getUrlSmartTrader();
-        p2p.origin = getUrlP2P(false);
 
-        [smartTrader, p2p].forEach(platform => {
+        [smartTrader].forEach(platform => {
             if (platform.iframe) {
                 // Keep client.accounts in sync (in case user wasn't logged in).
                 platform.iframe.contentWindow.postMessage(
@@ -2813,17 +2783,6 @@ export default class ClientStore extends BaseStore {
                     },
                     platform.origin
                 );
-
-                if (platform === p2p) {
-                    const currentLang = LocalStore.get(LANGUAGE_KEY);
-                    platform.iframe.contentWindow.postMessage(
-                        {
-                            key: LANGUAGE_KEY,
-                            value: currentLang,
-                        },
-                        platform.origin
-                    );
-                }
             }
         });
     }
@@ -2919,10 +2878,6 @@ export default class ClientStore extends BaseStore {
 
     setIsAlreadyAttempted(status) {
         this.is_already_attempted = status;
-    }
-
-    setIsP2PEnabled(is_p2p_enabled) {
-        this.is_p2p_enabled = is_p2p_enabled;
     }
 
     setRealAccountSignupFormData(data) {

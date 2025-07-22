@@ -3,9 +3,8 @@ import Cookies from 'js-cookie';
 
 import { Dialog, Icon, Text } from '@deriv/components';
 import { useOauth2, useTMB } from '@deriv/hooks';
-import { redirectToLogin } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
-import { getLanguage, Localize, localize } from '@deriv/translations';
+import { Localize, localize } from '@deriv/translations';
 import { Analytics, TEvents } from '@deriv-com/analytics';
 import { requestOidcAuthentication } from '@deriv-com/auth-client';
 

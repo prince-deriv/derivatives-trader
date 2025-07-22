@@ -35,11 +35,7 @@ const InsufficientBalanceModal = observer(
                         has_effect
                         text={is_virtual ? localize('OK') : localize('Deposit now')}
                         onClick={() => {
-                            if (!is_virtual) {
-                                history?.push?.(has_wallet ? routes.wallets_deposit : routes.cashier_deposit);
-                            } else {
-                                toggleModal();
-                            }
+                            toggleModal();
                         }}
                         primary
                     />

@@ -63,8 +63,6 @@ const ServiceErrorSheet = observer(() => {
                                     window.sessionStorage.getItem('account') || url_params.get('account');
 
                                 window.location.href = `${redirectUrl}/redirect?action=redirect_to&redirect_to=wallet${account_currency ? `&account=${account_currency}` : ''}`;
-                            } else {
-                                history?.push?.(has_wallet ? routes.wallets_deposit : routes.cashier_deposit);
                             }
                         } else {
                             onClose();

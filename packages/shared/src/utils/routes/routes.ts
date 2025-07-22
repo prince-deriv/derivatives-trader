@@ -27,8 +27,8 @@ export const routes = {
     mt5: '/mt5',
     dxtrade: '/derivx',
     bot: '/bot',
-    trade: '/dtrader',
-    trader_positions: '/dtrader/positions',
+    trade: '/',
+    trader_positions: '/positions',
     smarttrader: getUrlSmartTrader(),
 
     // account
@@ -72,41 +72,22 @@ export const routes = {
     profit: '/reports/profit',
     statement: '/reports/statement',
 
-    // cashier
-    cashier: '/cashier',
-    cashier_deposit: '/cashier/deposit',
-    cashier_withdrawal: '/cashier/withdrawal',
-    cashier_pa: '/cashier/payment-agent',
-    cashier_acc_transfer: '/cashier/account-transfer',
-    cashier_transactions_crypto: '/cashier/crypto-transactions',
-    // cashier_offramp: '/cashier/off-ramp',
-    cashier_onramp: '/cashier/on-ramp',
-    cashier_p2p: '/cashier/p2p',
-    cashier_pa_transfer: '/cashier/payment-agent-transfer',
-
-    // P2P
-    p2p_verification: '/cashier/p2p/verification',
-    p2p_buy_sell: '/cashier/p2p/buy-sell',
-    p2p_orders: '/cashier/p2p/orders',
-    p2p_my_ads: '/cashier/p2p/my-ads',
-    p2p_my_profile: '/cashier/p2p/my-profile',
-    p2p_advertiser_page: '/cashier/p2p/advertiser',
-
+    // Commented out as these features no longer exist
     // Appstore
-    old_traders_hub: '/appstore/traders-hub',
-    traders_hub: '/',
+    // traders_hub: '/',
     onboarding: '/onboarding',
     compare_cfds: '/cfd-compare-accounts',
 
+    // Commented out as these features no longer exist
     // Wallets
-    wallets: '/wallet',
-    wallets_deposit: '/wallet/deposit',
-    wallets_withdrawal: '/wallet/withdrawal',
-    wallets_transfer: '/wallet/account-transfer',
-    wallets_transactions: '/wallet/transactions',
-    wallets_compare_accounts: '/compare-accounts',
-    wallets_on_ramp: '/wallet/on-ramp',
-    wallets_reset_balance: '/wallet/reset-balance',
+    // wallets: '/wallet',
+    // wallets_deposit: '/wallet/deposit',
+    // wallets_withdrawal: '/wallet/withdrawal',
+    // wallets_transfer: '/wallet/account-transfer',
+    // wallets_transactions: '/wallet/transactions',
+    // wallets_compare_accounts: '/compare-accounts',
+    // wallets_on_ramp: '/wallet/on-ramp',
+    // wallets_reset_balance: '/wallet/reset-balance',
 
     // Outsystems
     os_redirect: '/os-redirect',
@@ -120,16 +101,15 @@ export const DISABLE_LANDSCAPE_BLOCKER_ROUTES = [
     routes.bot,
     routes.account,
     routes.endpoint,
-    routes.wallets,
-    routes.wallets_compare_accounts,
-    routes.cashier,
+    // routes.wallets, // Commented out as wallets no longer exists
+    // routes.wallets_compare_accounts, // Commented out as wallets no longer exists
     /** because contract route has dynamic id */
     '/contract',
 ];
 
 export const isDisabledLandscapeBlockerRoute = (path: string) => {
-    // can't use routes.traders_hub for the next check because all routes starts with '/'
-    if (path === routes.traders_hub) return true;
+    // Root path is now the trade page
+    if (path === '/') return true;
     return DISABLE_LANDSCAPE_BLOCKER_ROUTES.some(route => path.startsWith(route));
 };
 
