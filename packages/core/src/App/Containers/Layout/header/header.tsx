@@ -1,7 +1,6 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 import { useReadLocalStorage } from 'usehooks-ts';
-import { makeLazyLoader, moduleLoader, routes } from '@deriv/shared';
+import { makeLazyLoader, moduleLoader } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import classNames from 'classnames';
 
@@ -17,7 +16,6 @@ const HeaderLegacy = makeLazyLoader(
 const Header = observer(() => {
     const { client } = useStore();
     const { accounts, has_wallet, is_logged_in, setAccounts, loginid, switchAccount } = client;
-    const { pathname } = useLocation();
 
     const client_accounts = useReadLocalStorage('client.accounts');
     React.useEffect(() => {
@@ -32,7 +30,6 @@ const Header = observer(() => {
         }
     }, [accounts, client_accounts, has_wallet, is_logged_in, loginid, setAccounts, switchAccount]);
 
-    if (pathname === routes.onboarding) return null;
     return <HeaderLegacy />;
 });
 

@@ -1,108 +1,30 @@
-import { getUrlSmartTrader } from '../url/helpers';
-
-// Local function to get domain to avoid circular dependency
-const getDomainUrl = () => {
-    const hostname = window.location.hostname;
-
-    if (hostname.includes('.deriv.be')) {
-        return 'deriv.be';
-    }
-    if (hostname.includes('.deriv.me')) {
-        return 'deriv.me';
-    }
-    return 'deriv.com';
-};
-
 export const routes = {
+    // Essential routes
     callback_page: '/callback',
-    reset_password: '/',
     error404: '/404',
     index: '/index',
     redirect: '/redirect',
     endpoint: '/endpoint',
-    complaints_policy: '/complaints-policy',
-    contract: '/contract/:contract_id',
 
-    // platforms
-    mt5: '/mt5',
-    dxtrade: '/derivx',
-    bot: '/bot',
+    // Trading routes
     trade: '/',
     trader_positions: '/positions',
-    smarttrader: getUrlSmartTrader(),
+    contract: '/contract/:contract_id',
 
-    // account
-    account: '/account',
-    trading_assessment: '/account/trading-assessment',
-    languages: '/account/languages',
-    financial_assessment: '/account/financial-assessment',
-    personal_details: '/account/personal-details',
-    proof_of_identity: '/account/proof-of-identity',
-    proof_of_address: '/account/proof-of-address',
-    proof_of_ownership: '/account/proof-of-ownership',
-    proof_of_income: '/account/proof-of-income',
-    passwords: '/account/passwords',
-    passkeys: '/account/passkeys',
-    phone_verification: '/account/personal-details/phone-verification',
-    closing_account: '/account/closing-account',
-    deactivate_account: '/account/deactivate-account', // TODO: Remove once mobile team has changed this link
-    account_closed: '/account-closed',
-    account_limits: '/account/account-limits',
-    connected_apps: '/account/connected-apps',
-    api_token: '/account/api-token',
-    login_history: '/account/login-history',
-    two_factor_authentication: '/account/two-factor-authentication',
-    self_exclusion: '/account/self-exclusion',
-
-    // settings
-    settings: '/settings',
-    account_password: '/settings/account_password',
-    apps: '/settings/apps',
-    cashier_password: '/settings/cashier_password',
-    exclusion: '/settings/exclusion',
-    financial: '/settings/financial',
-    history: '/settings/history',
-    limits: '/settings/limits',
-    token: '/settings/token',
-    personal: '/settings/personal',
-
-    // reports
+    // Reports routes
     reports: '/reports',
     positions: '/reports/positions',
     profit: '/reports/profit',
     statement: '/reports/statement',
 
-    // Commented out as these features no longer exist
-    // Appstore
-    // traders_hub: '/',
-    onboarding: '/onboarding',
-    compare_cfds: '/cfd-compare-accounts',
-
-    // Commented out as these features no longer exist
-    // Wallets
-    // wallets: '/wallet',
-    // wallets_deposit: '/wallet/deposit',
-    // wallets_withdrawal: '/wallet/withdrawal',
-    // wallets_transfer: '/wallet/account-transfer',
-    // wallets_transactions: '/wallet/transactions',
-    // wallets_compare_accounts: '/compare-accounts',
-    // wallets_on_ramp: '/wallet/on-ramp',
-    // wallets_reset_balance: '/wallet/reset-balance',
-
-    // Outsystems
+    // Utility routes
     os_redirect: '/os-redirect',
 };
 
 export const DISABLE_LANDSCAPE_BLOCKER_ROUTES = [
     routes.trade,
-    routes.onboarding,
-    routes.compare_cfds,
     routes.reports,
-    routes.bot,
-    routes.account,
     routes.endpoint,
-    // routes.wallets, // Commented out as wallets no longer exists
-    // routes.wallets_compare_accounts, // Commented out as wallets no longer exists
     /** because contract route has dynamic id */
     '/contract',
 ];
@@ -112,22 +34,3 @@ export const isDisabledLandscapeBlockerRoute = (path: string) => {
     if (path === '/') return true;
     return DISABLE_LANDSCAPE_BLOCKER_ROUTES.some(route => path.startsWith(route));
 };
-
-export const ACCOUNTS_OS_POI_URL =
-    process.env.NODE_ENV === 'production'
-        ? `https://hub.${getDomainUrl()}/Accounts/ProofOfIdentity`
-        : `https://staging-hub.${getDomainUrl()}/Accounts/ProofOfIdentity`;
-export const ACCOUNTS_OS_POI_STATUS_URL =
-    process.env.NODE_ENV === 'production'
-        ? `https://hub.${getDomainUrl()}/Accounts/ProofOfIdentityStatus`
-        : `https://staging-hub.${getDomainUrl()}/Accounts/ProofOfIdentityStatus`;
-
-export const ACCOUNTS_OS_POA_URL =
-    process.env.NODE_ENV === 'production'
-        ? `https://hub.${getDomainUrl()}/Accounts/ProofOfAddress`
-        : `https://staging-hub.${getDomainUrl()}/Accounts/ProofOfAddress`;
-
-export const ACCOUNTS_OS_DFA_URL =
-    process.env.NODE_ENV === 'production'
-        ? `https://hub.${getDomainUrl()}/Accounts/Financial-Assessment`
-        : `https://staging-hub.${getDomainUrl()}/Accounts/Financial-Assessment`;

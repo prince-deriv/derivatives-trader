@@ -38,7 +38,6 @@ const Redirect = observer(() => {
         openRealAccountSignup,
         setResetTradingPasswordModalOpen,
         setRedirectFromEmail,
-        toggleAccountSignupModal,
         toggleResetPasswordModal,
         toggleResetEmailModal,
         toggleUpdateEmailModal,
@@ -112,7 +111,6 @@ const Redirect = observer(() => {
             });
             SessionStore.remove('redirect_url');
             redirected_to_route = true;
-            toggleAccountSignupModal(true);
             break;
         }
         case 'reset_password': {
@@ -214,44 +212,44 @@ const Redirect = observer(() => {
             redirected_to_route = true;
             break;
         }
-        case 'payment_deposit': {
-            history.push(routes.wallets_deposit);
-            redirected_to_route = true;
-            break;
-        }
-        case 'payment_withdraw': {
-            if (verification_code?.payment_withdraw) {
-                history.push(
-                    `${routes.wallets_withdrawal}?verification=${verification_code.payment_withdraw}${
-                        client.loginid ? `&loginid=${client.loginid}` : ''
-                    }`
-                );
-            } else {
-                history.push(routes.wallets_withdrawal);
-            }
-            redirected_to_route = true;
-            break;
-        }
-        case 'payment_transfer': {
-            history.push(routes.wallets_transfer);
-            redirected_to_route = true;
-            break;
-        }
-        case 'crypto_transactions_withdraw': {
-            history.push(`${routes.wallets_withdrawal}?action=${action_param}`);
-            redirected_to_route = true;
-            break;
-        }
-        case 'payment_transactions': {
-            history.push(routes.wallets_transactions);
-            redirected_to_route = true;
-            break;
-        }
-        case 'payment_agent_withdraw': {
-            history.push(routes.wallets_withdrawal);
-            redirected_to_route = true;
-            break;
-        }
+        // case 'payment_deposit': {
+        //     history.push(routes.wallets_deposit);
+        //     redirected_to_route = true;
+        //     break;
+        // }
+        // case 'payment_withdraw': {
+        //     if (verification_code?.payment_withdraw) {
+        //         history.push(
+        //             `${routes.wallets_withdrawal}?verification=${verification_code.payment_withdraw}${
+        //                 client.loginid ? `&loginid=${client.loginid}` : ''
+        //             }`
+        //         );
+        //     } else {
+        //         history.push(routes.wallets_withdrawal);
+        //     }
+        //     redirected_to_route = true;
+        //     break;
+        // }
+        // case 'payment_transfer': {
+        //     history.push(routes.wallets_transfer);
+        //     redirected_to_route = true;
+        //     break;
+        // }
+        // case 'crypto_transactions_withdraw': {
+        //     history.push(`${routes.wallets_withdrawal}?action=${action_param}`);
+        //     redirected_to_route = true;
+        //     break;
+        // }
+        // case 'payment_transactions': {
+        //     history.push(routes.wallets_transactions);
+        //     redirected_to_route = true;
+        //     break;
+        // }
+        // case 'payment_agent_withdraw': {
+        //     history.push(routes.wallets_withdrawal);
+        //     redirected_to_route = true;
+        //     break;
+        // }
         case 'add_account': {
             WS.wait('get_account_status').then(() => {
                 if (!currency) return openRealAccountSignup('set_currency');

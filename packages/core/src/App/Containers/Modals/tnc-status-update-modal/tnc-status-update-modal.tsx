@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Button, Modal, StaticUrl, Text } from '@deriv/components';
 import { WS } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';

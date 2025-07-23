@@ -95,7 +95,7 @@ const ServiceErrorSheet = observer(() => {
                     content: <Localize i18n_default_text='Submit Proof' />,
                     onAction: () => {
                         resetServicesError();
-                        history.push(routes.proof_of_identity);
+                        onClose();
                     },
                 },
             };

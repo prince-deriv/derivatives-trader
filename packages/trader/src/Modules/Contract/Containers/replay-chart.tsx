@@ -49,7 +49,7 @@ const ReplayChart = observer(
          * as a result, if any user come to report detail pages
          * from DBot, we should force it to have light theme
          */
-        const from_platform = getPlatformRedirect(app_routing_history);
+        const from_platform = getPlatformRedirect();
         const should_force_light_theme = from_platform.name === 'DBot';
         const settings = {
             language: current_language,

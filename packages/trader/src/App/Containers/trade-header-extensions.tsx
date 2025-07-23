@@ -1,6 +1,6 @@
 import React from 'react';
 import { when } from 'mobx';
-import { routes, WS } from '@deriv/shared';
+import { WS } from '@deriv/shared';
 import PopulateHeader from './populate-header';
 import { observer, useStore } from '@deriv/stores';
 import TraderProviders from '../../trader-providers';
@@ -18,7 +18,7 @@ const TradeHeaderExtensions = observer(({ store }: TradeHeaderExtensionsProps) =
     const { is_logged_in, is_populating_account_list } = client;
     const { isDesktop } = useDevice();
 
-    const show_positions_toggle = location.pathname !== routes.mt5;
+    const show_positions_toggle = location.pathname !== '/mt5'; // Using string literal instead of routes
     const show_component = is_logged_in && show_positions_toggle && !isDesktop;
 
     const populateHeaderfunction = React.useCallback(() => {

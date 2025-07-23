@@ -7,14 +7,12 @@ import { platforms, routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { useDevice } from '@deriv-com/ui';
 
-import { MenuLinks, PlatformSwitcher } from 'App/Components/Layout/Header';
+import { MenuLinks } from 'App/Components/Layout/Header';
 import { AccountsInfoLoader } from 'App/Components/Layout/Header/Components/Preloader';
 import ToggleMenuDrawer from 'App/Components/Layout/Header/toggle-menu-drawer.jsx';
 import ToggleMenuDrawerAccountsOS from 'App/Components/Layout/Header/toggle-menu-drawer-accounts-os.jsx';
 import platform_config from 'App/Constants/platform-config';
-import CurrencySelectionModal from 'App/Containers/CurrencySelectionModal';
 import NewVersionNotification from 'App/Containers/new-version-notification.jsx';
-import SetAccountCurrencyModal from 'App/Containers/SetAccountCurrencyModal';
 
 import DerivShortLogo from './deriv-short-logo';
 import HeaderAccountActions from './header-account-actions';
@@ -36,11 +34,9 @@ const HeaderLegacy = observer(() => {
         is_switching,
         is_client_store_initialized,
     } = client;
-    const { app_routing_history, current_language, platform, is_from_tradershub_os } = common;
-    const { header_extension, is_app_disabled, is_route_modal_on, toggleReadyToDepositModal, is_real_acc_signup_on } =
-        ui;
+    const { platform, is_from_tradershub_os } = common;
+    const { header_extension, is_app_disabled, is_route_modal_on, toggleReadyToDepositModal } = ui;
     const { addNotificationMessage, client_notifications, removeNotificationMessage } = notifications;
-    const { setTogglePlatformType, modal_data } = traders_hub;
     const { isHubRedirectionEnabled, isHubRedirectionLoaded } = useIsHubRedirectionEnabled();
 
     const { isDesktop } = useDevice();
@@ -87,7 +83,6 @@ const HeaderLegacy = observer(() => {
     const excludedRoutes = [
         routes.trade,
         routes.trader_positions,
-        routes.complaints_policy,
         routes.endpoint,
         routes.redirect,
         routes.index,
@@ -119,7 +114,7 @@ const HeaderLegacy = observer(() => {
                         <React.Fragment>
                             <DerivShortLogo />
                             <div className='header__divider' />
-                            <TradersHubHomeButton />
+                            {/* <TradersHubHomeButton /> */}
                         </React.Fragment>
                     ) : (
                         <React.Fragment>
@@ -142,14 +137,6 @@ const HeaderLegacy = observer(() => {
                         </React.Fragment>
                     )}
                     <MenuLinks is_traders_hub_routes={traders_hub_routes} />
-                    {isDesktop && !traders_hub_routes && (
-                        <PlatformSwitcher
-                            app_routing_history={app_routing_history}
-                            platform_config={filterPlatformsForClients(platform_config)}
-                            setTogglePlatformType={setTogglePlatformType}
-                            current_language={current_language}
-                        />
-                    )}
                 </div>
 
                 <div
@@ -181,8 +168,6 @@ const HeaderLegacy = observer(() => {
                     )}
                 </div>
             </div>
-            <SetAccountCurrencyModal />
-            <CurrencySelectionModal is_visible={modal_data.active_modal === 'currency_selection'} />
             <NewVersionNotification onUpdate={addUpdateNotification} />
         </header>
     );

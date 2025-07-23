@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { CSSTransition } from 'react-transition-group';
@@ -28,7 +27,6 @@ const AccountInfo = ({
 
     return (
         <div className='acc-info__wrapper'>
-            {isDesktop && <div className='acc-info__separator' />}
             <AccountInfoWrapper
                 is_disabled={is_disabled}
                 disabled_message={acc_switcher_disabled_message}

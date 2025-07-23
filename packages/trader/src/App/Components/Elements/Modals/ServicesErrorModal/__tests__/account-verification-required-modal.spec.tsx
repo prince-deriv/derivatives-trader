@@ -99,10 +99,10 @@ describe('<AccountVerificationRequiredModal />', () => {
         const { container } = render(<AccountVerificationRequiredModal {...mocked_props} />);
         expect(container).toBeEmptyDOMElement();
     });
-    it('should navigate to proof_of_identity url on clicking on submit button', () => {
+    it('should call onConfirm on clicking on submit button', async () => {
         renderWithRouter(<AccountVerificationRequiredModal {...mocked_props} />);
         const submit_proof_button = screen.getByText(/submit proof/i);
-        userEvent.click(submit_proof_button);
-        expect(history.location.pathname).toBe(routes.proof_of_identity);
+        await userEvent.click(submit_proof_button);
+        expect(mocked_props.onConfirm).toHaveBeenCalled();
     });
 });

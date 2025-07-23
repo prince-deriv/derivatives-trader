@@ -1,13 +1,12 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 import { Button, Icon, Popover } from '@deriv/components';
-import { useAccountSettingsRedirect } from '@deriv/hooks';
-import { routes, formatMoney, isTabletOs } from '@deriv/shared';
+// import { useAccountSettingsRedirect } from '@deriv/hooks';
+import { formatMoney } from '@deriv/shared';
 import { useStore } from '@deriv/stores';
 import { localize, Localize } from '@deriv/translations';
 import { LoginButton } from './login-button.jsx';
 import { SignupButton } from './signup-button.jsx';
-import ToggleNotifications from './toggle-notifications.jsx';
+// import ToggleNotifications from './toggle-notifications.jsx';
 import 'Sass/app/_common/components/account-switcher.scss';
 import { useDevice } from '@deriv-com/ui';
 
@@ -41,60 +40,48 @@ const AccountInfo = React.lazy(
         )
 );
 
-const AccountSettingsToggle = () => {
-    const { redirect_url } = useAccountSettingsRedirect();
+// const AccountSettingsToggle = () => {
+//     const { redirect_url } = useAccountSettingsRedirect();
 
-    const accountSettings = (
-        <a className='account-settings-toggle' href={redirect_url}>
-            <Icon icon='IcUserOutline' />
-        </a>
-    );
+//     const accountSettings = (
+//         <a className='account-settings-toggle' href={redirect_url}>
+//             <Icon icon='IcUserOutline' />
+//         </a>
+//     );
 
-    if (isTabletOs) return accountSettings;
+//     if (isTabletOs) return accountSettings;
 
-    return (
-        <Popover
-            classNameBubble='account-settings-toggle__tooltip'
-            alignment='bottom'
-            message={<Localize i18n_default_text='Manage account settings' />}
-            should_disable_pointer_events
-            zIndex={'9999'}
-        >
-            {accountSettings}
-        </Popover>
-    );
-};
+//     return (
+//         <Popover
+//             classNameBubble='account-settings-toggle__tooltip'
+//             alignment='bottom'
+//             message={<Localize i18n_default_text='Manage account settings' />}
+//             should_disable_pointer_events
+//             zIndex={'9999'}
+//         >
+//             {accountSettings}
+//         </Popover>
+//     );
+// };
 
-const NotificationsToggle = ({
-    count,
-    is_visible,
-    toggleDialog,
-}: {
-    count?: number;
-    is_visible?: boolean;
-    toggleDialog?: () => void;
-}) => (
-    <ToggleNotifications
-        count={count}
-        is_visible={is_visible}
-        toggleDialog={toggleDialog}
-        tooltip_message={<Localize i18n_default_text='View notifications' />}
-        should_disable_pointer_events
-        showPopover={!isTabletOs}
-    />
-);
-
-const CurrencyButton = ({ openRealAccountSignup }: { openRealAccountSignup: TUiStore['openRealAccountSignup'] }) => (
-    <div className='set-currency'>
-        <Button
-            onClick={() => openRealAccountSignup('set_currency')}
-            has_effect
-            type='button'
-            text={localize('Set currency')}
-            primary
-        />
-    </div>
-);
+// const NotificationsToggle = ({
+//     count,
+//     is_visible,
+//     toggleDialog,
+// }: {
+//     count?: number;
+//     is_visible?: boolean;
+//     toggleDialog?: () => void;
+// }) => (
+//     <ToggleNotifications
+//         count={count}
+//         is_visible={is_visible}
+//         toggleDialog={toggleDialog}
+//         tooltip_message={<Localize i18n_default_text='View notifications' />}
+//         should_disable_pointer_events
+//         showPopover={!isTabletOs}
+//     />
+// );
 
 const DepositButton = ({ onClickDeposit }: { onClickDeposit: () => void }) => (
     <Button className='acc-info__button' has_effect text={localize('Deposit')} onClick={onClickDeposit} primary />
@@ -118,20 +105,17 @@ const AccountActionsComponent = ({
     is_acc_switcher_disabled,
     is_eu,
     is_logged_in,
-    is_notifications_visible,
+    // is_notifications_visible,
     is_traders_hub_routes,
     is_virtual,
-    notifications_count,
+    // notifications_count,
     onClickDeposit,
-    openRealAccountSignup,
+    // openRealAccountSignup,
     toggleAccountsDialog,
-    toggleNotifications,
+    // toggleNotifications,
 }: TAccountActionsProps) => {
     const { isDesktop } = useDevice();
-
     const isDepositButtonVisible = isDesktop && !is_traders_hub_routes && currency;
-    const isCurrencyButtonVisible = isDesktop && !is_traders_hub_routes && !is_virtual && !currency;
-
     const formattedBalance = balance != null ? formatMoney(currency, balance, true) : undefined;
 
     const renderAccountInfo = () => (
@@ -161,15 +145,14 @@ const AccountActionsComponent = ({
 
     return (
         <React.Fragment>
-            {isCurrencyButtonVisible && <CurrencyButton openRealAccountSignup={openRealAccountSignup} />}
             {isDepositButtonVisible && <DepositButton onClickDeposit={onClickDeposit} />}
             {!is_traders_hub_routes && renderAccountInfo()}
-            <NotificationsToggle
+            {/* <NotificationsToggle
                 count={notifications_count}
                 is_visible={is_notifications_visible}
                 toggleDialog={toggleNotifications}
             />
-            {isDesktop && <AccountSettingsToggle />}
+            {isDesktop && <AccountSettingsToggle />} */}
         </React.Fragment>
     );
 };

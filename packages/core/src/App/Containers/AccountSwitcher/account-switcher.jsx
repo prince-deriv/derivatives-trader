@@ -56,7 +56,6 @@ const AccountSwitcher = observer(({ history, is_mobile, is_visible }) => {
         is_dark_mode_on,
         openRealAccountSignup,
         toggleAccountsDialog,
-        toggleSetCurrencyModal,
         should_show_real_accounts_list,
         setShouldShowCooldownModal,
     } = ui;
@@ -99,7 +98,6 @@ const AccountSwitcher = observer(({ history, is_mobile, is_visible }) => {
 
     const setAccountCurrency = () => {
         closeAccountsDialog();
-        toggleSetCurrencyModal();
     };
 
     const doSwitch = async loginid => {
@@ -379,7 +377,7 @@ const AccountSwitcher = observer(({ history, is_mobile, is_visible }) => {
                 }
                 toggleAccountsDialog(false);
                 localStorage.setItem('redirect_to_th_os', 'home');
-                history.push(routes.traders_hub);
+                history.push(routes.trade);
                 setTogglePlatformType('cfd');
             };
 

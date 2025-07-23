@@ -51,7 +51,7 @@ export const AccountSwitcherWallet = observer(({ is_visible, toggle }: TAccountS
             return;
         }
         closeAccountsDialog();
-        history.push(routes.traders_hub);
+        history.push(routes.trade);
     };
 
     return (

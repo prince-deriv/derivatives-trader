@@ -24,14 +24,6 @@ const copyConfig = base => {
             to: 'bot/assets',
         },
         {
-            from: path.resolve(__dirname, '../../../node_modules/@deriv/account/dist/account/js/'),
-            to: 'account/js',
-        },
-        {
-            from: path.resolve(__dirname, '../../../node_modules/@deriv/account/dist/account/css/'),
-            to: 'account/css',
-        },
-        {
             from: path.resolve(__dirname, '../../../node_modules/@deriv/trader/dist/trader'),
             to: 'trader',
         },
@@ -175,7 +167,7 @@ const generateSWConfig = () => ({
             },
         },
         {
-            urlPattern: /(account|trader|reports)\//,
+            urlPattern: /(trader|reports)\//,
             handler: 'CacheFirst',
             options: {
                 cacheName: 'packages-files',

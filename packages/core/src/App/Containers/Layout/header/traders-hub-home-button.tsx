@@ -27,7 +27,7 @@ const TradersHubHomeButton = observer(() => {
 
             window.location.href = `${redirectUrl}/redirect?action=redirect_to&redirect_to=home${account_currency ? `&account=${account_currency}` : ''}`;
         } else {
-            history.push(routes.traders_hub);
+            history.push(routes.trade);
         }
     };
 
@@ -35,8 +35,7 @@ const TradersHubHomeButton = observer(() => {
         <div
             data-testid='dt_traders_hub_home_button'
             className={classNames('traders-hub-header__tradershub', {
-                'traders-hub-header__tradershub--active':
-                    pathname === routes.traders_hub || pathname === routes.traders_hub_v2,
+                'traders-hub-header__tradershub--active': pathname === routes.trade || pathname === routes.trade_v2,
             })}
             onClick={handleTradershubRedirect}
         >

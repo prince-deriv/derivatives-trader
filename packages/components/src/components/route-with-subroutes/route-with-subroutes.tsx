@@ -66,7 +66,7 @@ const RouteWithSubRoutes = ({
             if (should_redirect_login) {
                 redirectToLogin(is_logged_in, language);
             } else {
-                result = <Redirect to={shared_routes.traders_hub} />;
+                result = <Redirect to={shared_routes.trade} />;
             }
         } else {
             const default_subroute = routes.find(r => r.default);
@@ -81,7 +81,7 @@ const RouteWithSubRoutes = ({
                         <Component {...props} routes={routes} />
                     ) : (
                         <React.Fragment>
-                            {should_redirect ? <Redirect to={shared_routes.traders_hub} /> : <Component404 />}
+                            {should_redirect ? <Redirect to={shared_routes.trade} /> : <Component404 />}
                         </React.Fragment>
                     )}
                 </React.Fragment>

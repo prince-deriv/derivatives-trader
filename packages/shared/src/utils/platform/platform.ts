@@ -61,30 +61,12 @@ export const getPathname = () => {
     }
 };
 
-export const getPlatformInformation = (routing_history: TRoutingHistory) => {
-    if (isBot() || isNavigationFromPlatform(routing_history, routes.bot)) {
-        return { header: platform_name.DBot, icon: getPlatformSettings('dbot').icon };
-    }
-
-    if (isMT5() || isNavigationFromPlatform(routing_history, routes.mt5)) {
-        return { header: platform_name.DMT5, icon: getPlatformSettings('mt5').icon };
-    }
-
-    if (isDXtrade() || isNavigationFromPlatform(routing_history, routes.dxtrade)) {
-        return { header: platform_name.DXtrade, icon: getPlatformSettings('dxtrade').icon };
-    }
-
-    if (isNavigationFromExternalPlatform(routing_history, routes.smarttrader)) {
-        return { header: platform_name.SmartTrader, icon: getPlatformSettings('smarttrader').icon };
-    }
-
+export const getPlatformInformation = () => {
     return { header: platform_name.DTrader, icon: getPlatformSettings('trader').icon };
 };
 
 export const getActivePlatform = (routing_history: TRoutingHistory) => {
     switch (true) {
-        case isNavigationFromExternalPlatform(routing_history, routes.smarttrader):
-            return platform_name.SmartTrader;
         case isNavigationFromPlatform(routing_history, '/'):
             return '';
         default:
@@ -92,15 +74,7 @@ export const getActivePlatform = (routing_history: TRoutingHistory) => {
     }
 };
 
-export const getPlatformRedirect = (routing_history: TRoutingHistory) => {
-    if (isBot() || isNavigationFromPlatform(routing_history, routes.bot))
-        return { name: platform_name.DBot, route: routes.bot };
-    if (isMT5() || isNavigationFromPlatform(routing_history, routes.mt5))
-        return { name: platform_name.DMT5, route: routes.mt5 };
-    if (isDXtrade() || isNavigationFromPlatform(routing_history, routes.dxtrade))
-        return { name: platform_name.DXtrade, route: routes.dxtrade };
-    if (isNavigationFromExternalPlatform(routing_history, routes.smarttrader))
-        return { name: platform_name.SmartTrader, route: routes.smarttrader };
+export const getPlatformRedirect = () => {
     return { name: platform_name.DTrader, route: routes.trade };
 };
 
@@ -131,9 +105,7 @@ export const isNavigationFromPlatform = (
                 // Return false when path matches a platform parent path, but don't return anything
                 // when a non-platform path was seen. i.e. navigating between /cashier and /reports
                 // should not affect navigating back to platform when clicking cross.
-                const platform_parent_paths = [routes.mt5, routes.dxtrade, routes.bot, routes.trade].map(route =>
-                    getParentPath(route)
-                );
+                const platform_parent_paths = [routes.trade].map(route => getParentPath(route));
                 const is_other_platform_path = platform_parent_paths.includes(history_item_parent_path);
 
                 if (is_other_platform_path) {

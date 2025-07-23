@@ -322,42 +322,7 @@ export default class CommonStore extends BaseStore {
 
     isCurrentLanguage = lang => lang === this.current_language;
 
-    routeBackInApp(history, additional_platform_path = []) {
-        let route_to_item_idx = -1;
-        const route_to_item = this.app_routing_history.find((history_item, idx) => {
-            if (history_item.action === 'PUSH') {
-                if (history_item.is_external) {
-                    return true;
-                }
-
-                const parent_path = history_item.pathname.split('/')[1];
-                const platform_parent_paths = [routes.mt5, routes.bot, routes.trade, routes.dxtrade].map(
-                    i => i.split('/')[1]
-                ); // map full path to just base path (`/mt5/abc` -> `mt5`)
-
-                if (
-                    platform_parent_paths.includes(parent_path) ||
-                    additional_platform_path.includes(history_item.pathname)
-                ) {
-                    route_to_item_idx = idx;
-                    return true;
-                }
-            }
-
-            return false;
-        });
-
-        if (route_to_item) {
-            if (route_to_item.is_external) {
-                window.location.href = route_to_item.pathname;
-                return;
-            } else if (route_to_item_idx > -1) {
-                this.app_routing_history.splice(0, route_to_item_idx + 1);
-                history.push(route_to_item.pathname);
-                return;
-            }
-        }
-
+    routeBackInApp(history) {
         history.push(routes.trade);
     }
 }

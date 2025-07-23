@@ -54,10 +54,10 @@ const ToggleMenuDrawer = observer(({ platform_config }) => {
 
     const { pathname: route } = useLocation();
 
-    const is_trading_hub_category = route === routes.traders_hub || route.startsWith(routes.account);
+    const is_trading_hub_category = route === routes.trade || route.startsWith(routes.account);
 
     const should_show_regulatory_information = is_eu && show_eu_related_content && !is_virtual;
-    const is_traders_hub_route = route === routes.traders_hub;
+    const is_traders_hub_route = route === routes.trade;
 
     const is_wallet_route = route.startsWith(routes.wallets) || route.startsWith(routes.wallets_compare_accounts);
 
@@ -130,7 +130,7 @@ const ToggleMenuDrawer = observer(({ platform_config }) => {
             // Add a small delay to ensure state is updated before navigation because adding await doesn't work here
             await new Promise(resolve => setTimeout(resolve, 0));
         }
-        history.push(routes.traders_hub);
+        history.push(routes.trade);
         await logoutClient();
     }, [history, logoutClient, toggleDrawer]);
 
@@ -283,7 +283,7 @@ const ToggleMenuDrawer = observer(({ platform_config }) => {
 
             return `${redirectUrl}/redirect?action=redirect_to&redirect_to=home${account_currency ? `&account=${account_currency}` : ''}`;
         }
-        return routes.traders_hub;
+        return routes.trade;
     };
 
     return (
@@ -344,10 +344,10 @@ const ToggleMenuDrawer = observer(({ platform_config }) => {
                                         icon={'IcAppstoreTradersHubHome'}
                                         text={localize("Trader's Hub")}
                                         onClickLink={toggleDrawer}
-                                        is_active={route === routes.traders_hub}
+                                        is_active={route === routes.trade}
                                     />
                                 </MobileDrawer.Item>
-                                {route !== routes.traders_hub && (
+                                {route !== routes.trade && (
                                     <MobileDrawer.Item>
                                         <MenuLink
                                             link_to={routes.trade}

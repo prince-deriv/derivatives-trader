@@ -241,7 +241,7 @@ const BinarySocketGeneral = (() => {
                 if (active_platform === 'DBot') return;
 
                 client_store.logout().then(() => {
-                    let redirect_to = routes.traders_hub;
+                    let redirect_to = routes.trade;
                     const action = getActionFromUrl();
                     if (action === 'system_email_change') {
                         return;
@@ -326,7 +326,7 @@ const ResponseHandlers = (() => {
             // The maximum delay is capped at 10 minutes (600k ms).
             if (is_server_down) {
                 const reconnectionDelay =
-                    Math.min(Math.pow(2, reconnectionCounter + 9), 600000) * (0.5 + Math.random() * 1.5);
+                    Math.min(2 ** (reconnectionCounter + 9), 600000) * (0.5 + Math.random() * 1.5);
 
                 window.setTimeout(() => {
                     reconnectionCounter++;

@@ -37,7 +37,7 @@ const NotificationsContent = ({
     return (
         <div
             className={classNames('notification-messages', {
-                'notification-messages--traders-hub': pathname === routes.traders_hub,
+                'notification-messages--traders-hub': pathname === routes.trade,
             })}
             style={style}
         >

@@ -27,17 +27,9 @@ export const useAccountSettingsRedirect = (redirect_to: RedirectDestination = 'h
         redirect_url = `${base_url}/accounts/redirect?action=redirect_to&redirect_to=${redirect_to}&account=${account_type}`;
         mobile_redirect_url = `${base_url}/accounts/redirect?action=redirect_to&redirect_to=${redirect_to}&account=${account_type}`;
     } else {
-        // Map redirect_to values to specific routes when not using hub redirection
-        switch (redirect_to) {
-            case 'account-limits':
-                redirect_url = routes.account_limits;
-                break;
-            case 'home':
-            default:
-                redirect_url = routes.personal_details;
-                break;
-        }
-        mobile_redirect_url = routes.account;
+        // Since account routes have been removed, we'll redirect to the home page
+        redirect_url = routes.index;
+        mobile_redirect_url = routes.index;
     }
 
     return { redirect_url, mobile_redirect_url };

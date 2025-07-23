@@ -70,15 +70,13 @@ const Routes = observer(({ history, passthrough }: TRoutesProps) => {
                     path_to: route_to.pathname,
                     match_patterns: [
                         {
-                            from: getRoutesConfig()
-                                .flatMap(route => {
-                                    if (route.routes) {
-                                        return route.routes.map(subroute => subroute.path);
-                                    }
-                                    return [route.path];
-                                })
-                                .filter(path => path && path !== routes.mt5 && path !== routes.dxtrade),
-                            to: [routes.mt5, routes.dxtrade],
+                            from: getRoutesConfig().flatMap(route => {
+                                if (route.routes) {
+                                    return route.routes.map(subroute => subroute.path);
+                                }
+                                return [route.path];
+                            }),
+                            to: ['/mt5', '/derivx'], // Using string literals instead of routes
                         },
                     ],
                     action,

@@ -805,7 +805,6 @@ type TUiStore = {
     is_chart_countdown_visible: boolean;
     is_closing_create_real_account_modal: boolean;
     is_from_signup_account: boolean;
-    is_from_success_deposit_modal: boolean;
     is_dark_mode_on: boolean;
     is_loading: boolean;
     is_reports_visible: boolean;
@@ -824,7 +823,6 @@ type TUiStore = {
     is_reset_email_modal_visible: boolean;
     is_services_error_visible: boolean;
     is_trading_assessment_for_existing_user_enabled: boolean;
-    is_wallets_onboarding_tour_guide_visible: boolean;
     isUrlUnavailableModalVisible: boolean;
     onChangeUiStore: ({ name, value }: { name: string; value: unknown }) => void;
     openPositionsDrawer: () => void;
@@ -863,7 +861,6 @@ type TUiStore = {
     setIsClosingCreateRealAccountModal: (value: boolean) => void;
     setIsFromSignupAccount: (value: boolean) => void;
     setIsVerificationModalVisible: (value: boolean) => void;
-    setIsFromSuccessDepositModal: (value: boolean) => void;
     setIsVerificationSubmitted: (value: boolean) => void;
     setRealAccountSignupEnd: (status: boolean) => void;
     setPurchaseState: (index: number) => void;
@@ -889,15 +886,12 @@ type TUiStore = {
     toggleResetEmailModal: (state_change: boolean) => void;
     toggleResetPasswordModal: (state_change: boolean) => void;
     toggleServicesErrorModal: (is_visible: boolean) => void;
-    toggleSetCurrencyModal: () => void;
     toggleShouldShowRealAccountsList: (value: boolean) => void;
     toggleUrlUnavailableModal: (value: boolean) => void;
     removeToast: (key: string) => void;
     is_ready_to_deposit_modal_visible: boolean;
     reports_route_tab_index: number;
     should_show_cancellation_warning: boolean;
-    should_show_one_time_deposit_modal: boolean;
-    should_show_account_success_modal: boolean;
     should_trigger_tour_guide: boolean;
     toggleCancellationWarning: (state_change?: boolean) => void;
     toggleReports: (is_visible: boolean) => void;
@@ -914,10 +908,6 @@ type TUiStore = {
     real_account_signup_target: string;
     closeSuccessTopUpModal: () => void;
     closeTopUpModal: () => void;
-    is_cfd_reset_password_modal_enabled: boolean;
-    is_mt5_migration_modal_enabled: boolean;
-    is_mt5_migration_modal_open: boolean;
-    setCFDPasswordResetModal: (value: boolean) => void;
     openAccountNeededModal: () => void;
     is_accounts_switcher_on: boolean;
     openTopUpModal: () => void;
@@ -928,25 +918,10 @@ type TUiStore = {
     populateHeaderExtensions: (header_items: JSX.Element | null) => void;
     populateSettingsExtensions: (menu_items: Array<TPopulateSettingsExtensionsMenuItem> | null) => void;
     purchase_states: boolean[];
-    setShouldShowCooldownModal: (value: boolean) => void;
-    setShouldTriggerTourGuide: (value: boolean) => void;
-    setShouldShowOneTimeDepositModal: (value: boolean) => void;
-    toggleAccountSuccessModal: () => void;
     setIsMFVericationPendingModal: (value: boolean) => void;
-    setMT5MigrationModalEnabled: (value: boolean) => void;
-    toggleMT5MigrationModal: (value: boolean) => void;
     vanilla_trade_type: 'VANILLALONGCALL' | 'VANILLALONGPUT';
-    setAccountSwitcherDisabledMessage: (message?: string) => void;
-    is_set_currency_modal_visible: boolean;
-    should_show_deposit_now_or_later_modal: boolean;
-    setShouldShowDepositNowOrLaterModal: (value: boolean) => void;
-    should_show_crypto_transaction_processing_modal: boolean;
-    setShouldShowCryptoTransactionProcessingModal: (value: boolean) => void;
     is_trading_disabled_by_residence_modal_visible: boolean;
     setIsTradingDisabledByResidenceModal: (value: boolean) => void;
-    setIsWalletsOnboardingTourGuideVisible: (value: boolean) => void;
-    should_show_same_dob_phone_modal: boolean;
-    setShouldShowSameDOBPhoneModal: (value: boolean) => void;
     field_ref_to_focus: string | null; // field_ref_to_focus accepts a field identifier which will be focused
     setFieldRefToFocus: (value: string | null) => void;
     setHashedValue: (value: string) => void;

@@ -1,8 +1,7 @@
 import React from 'react';
 import { Redirect as RouterRedirect } from 'react-router-dom';
 
-import { Loading } from '@deriv/components';
-import { makeLazyLoader, moduleLoader, routes } from '@deriv/shared';
+import { routes } from '@deriv/shared';
 import { localize } from '@deriv/translations';
 
 import Redirect from 'App/Containers/Redirect';
@@ -16,17 +15,7 @@ const Page404 = React.lazy(() => import(/* webpackChunkName: "404" */ 'Modules/P
 
 const Trader = React.lazy(() => import(/* webpackChunkName: "trader" */ '@deriv/trader'));
 
-const Reports = React.lazy(() => {
-    // eslint-disable-next-line import/no-unresolved
-    return import(/* webpackChunkName: "reports" */ '@deriv/reports');
-});
-
-const Account = React.lazy(() =>
-    moduleLoader(() => {
-        // eslint-disable-next-line import/no-unresolved
-        return import(/* webpackChunkName: "account" */ '@deriv/account');
-    })
-);
+const Reports = React.lazy(() => import(/* webpackChunkName: "reports" */ '@deriv/reports'));
 
 const getModules = () => {
     const modules = [
@@ -59,136 +48,6 @@ const getModules = () => {
             ],
         },
         {
-            path: routes.account_closed,
-            component: Account,
-            getTitle: () => localize('Account deactivated'),
-        },
-        {
-            path: routes.account,
-            component: Account,
-            getTitle: () => localize('Account settings'),
-            icon_component: 'IcUserOutline',
-            is_authenticated: true,
-            routes: [
-                {
-                    getTitle: () => localize('Profile'),
-                    icon: 'IcUserOutline',
-                    subroutes: [
-                        {
-                            path: routes.personal_details,
-                            component: Account,
-                            getTitle: () => localize('Personal details'),
-                            default: true,
-                        },
-
-                        {
-                            path: routes.languages,
-                            component: Account,
-                            getTitle: () => localize('Languages'),
-                        },
-                    ],
-                },
-                {
-                    getTitle: () => localize('Assessments'),
-                    icon: 'IcAssessment',
-                    subroutes: [
-                        {
-                            path: routes.trading_assessment,
-                            component: Account,
-                            getTitle: () => localize('Trading assessment'),
-                        },
-                        {
-                            path: routes.financial_assessment,
-                            component: Account,
-                            getTitle: () => localize('Financial assessment'),
-                        },
-                    ],
-                },
-                {
-                    getTitle: () => localize('Verification'),
-                    icon: 'IcVerification',
-                    subroutes: [
-                        {
-                            path: routes.proof_of_identity,
-                            component: Account,
-                            getTitle: () => localize('Proof of identity'),
-                        },
-                        {
-                            path: routes.proof_of_address,
-                            component: Account,
-                            getTitle: () => localize('Proof of address'),
-                        },
-                        {
-                            path: routes.proof_of_ownership,
-                            component: Account,
-                            getTitle: () => localize('Proof of ownership'),
-                        },
-                        {
-                            path: routes.proof_of_income,
-                            component: Account,
-                            getTitle: () => localize('Proof of income'),
-                        },
-                    ],
-                },
-                {
-                    getTitle: () => localize('Security and safety'),
-                    icon: 'IcSecurity',
-                    subroutes: [
-                        {
-                            path: routes.passwords,
-                            component: Account,
-                            getTitle: () => localize('Email and passwords'),
-                        },
-                        {
-                            path: routes.passkeys,
-                            component: Account,
-                            getTitle: () => (
-                                <>
-                                    {localize('Passkeys')}
-                                    <span className='dc-vertical-tab__header--new'>{localize('NEW')}!</span>
-                                </>
-                            ),
-                        },
-                        {
-                            path: routes.self_exclusion,
-                            component: Account,
-                            getTitle: () => localize('Self-exclusion'),
-                        },
-                        {
-                            path: routes.account_limits,
-                            component: Account,
-                            getTitle: () => localize('Account limits'),
-                        },
-                        {
-                            path: routes.login_history,
-                            component: Account,
-                            getTitle: () => localize('Login history'),
-                        },
-                        {
-                            path: routes.api_token,
-                            component: Account,
-                            getTitle: () => localize('API token'),
-                        },
-                        {
-                            path: routes.connected_apps,
-                            component: Account,
-                            getTitle: () => localize('Connected apps'),
-                        },
-                        {
-                            path: routes.two_factor_authentication,
-                            component: Account,
-                            getTitle: () => localize('Two-factor authentication'),
-                        },
-                        {
-                            path: routes.closing_account,
-                            component: Account,
-                            getTitle: () => localize('Close your account'),
-                        },
-                    ],
-                },
-            ],
-        },
-        {
             path: routes.trade,
             component: Trader,
             getTitle: () => localize('Trader'),
@@ -199,13 +58,6 @@ const getModules = () => {
             getTitle: () => localize('Contract Details'),
             is_authenticated: true,
         },
-        // Trader's Hub no longer exists, trade is now the root path
-        // {
-        //     path: routes.traders_hub,
-        //     component: Trader,
-        //     is_authenticated: false,
-        //     getTitle: () => localize("Trader's Hub"),
-        // },
         {
             path: routes.callback_page,
             component: CallbackPage,
@@ -217,11 +69,6 @@ const getModules = () => {
     return modules;
 };
 
-const lazyLoadComplaintsPolicy = makeLazyLoader(
-    () => moduleLoader(() => import(/* webpackChunkName: "complaints-policy" */ 'Modules/ComplaintsPolicy')),
-    () => <Loading />
-);
-
 // Order matters
 // TODO: search tag: test-route-parent-info -> Enable test for getting route parent info when there are nested routes
 const initRoutesConfig = () => [
@@ -230,13 +77,6 @@ const initRoutesConfig = () => [
     { path: routes.os_redirect, component: OSRedirect, getTitle: () => localize('Redirect') },
     { path: routes.redirect, component: Redirect, getTitle: () => localize('Redirect') },
     { path: routes.callback_page, component: CallbackPage, getTitle: () => 'Callback' },
-    {
-        path: routes.complaints_policy,
-        component: lazyLoadComplaintsPolicy(),
-        getTitle: () => localize('Complaints policy'),
-        icon_component: 'IcComplaintsPolicy',
-        is_authenticated: true,
-    },
     ...getModules(),
 ];
 

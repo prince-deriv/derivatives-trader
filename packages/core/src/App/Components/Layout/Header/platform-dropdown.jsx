@@ -89,10 +89,10 @@ const PlatformDropdown = ({ app_routing_history, closeDrawer, platform_config, s
                             return;
                         }
                         if (!isDesktop) {
-                            history.push(routes.traders_hub);
+                            history.push(routes.trade);
                             setTogglePlatformType('cfd');
                         }
-                        history.push(routes.traders_hub);
+                        history.push(routes.trade);
                     }}
                 >
                     <Text size='xs' weight='bold' align='center' className='platform-dropdown__cta--link'>

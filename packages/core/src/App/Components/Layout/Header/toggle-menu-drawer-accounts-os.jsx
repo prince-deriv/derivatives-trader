@@ -37,7 +37,7 @@ const ToggleMenuDrawerAccountsOS = observer(() => {
 
     const { pathname: route } = useLocation();
 
-    const is_trading_hub_category = route === routes.traders_hub || route.startsWith(routes.account);
+    const is_trading_hub_category = route === routes.trade || route.startsWith(routes.account);
 
     const [is_open, setIsOpen] = React.useState(false);
     const [transitionExit, setTransitionExit] = React.useState(false);
@@ -96,7 +96,7 @@ const ToggleMenuDrawerAccountsOS = observer(() => {
             // Add a small delay to ensure state is updated before navigation because adding await doesn't work here
             await new Promise(resolve => setTimeout(resolve, 0));
         }
-        history.push(routes.traders_hub);
+        history.push(routes.trade);
         await logoutClient();
     }, [history, logoutClient, toggleDrawer]);
 

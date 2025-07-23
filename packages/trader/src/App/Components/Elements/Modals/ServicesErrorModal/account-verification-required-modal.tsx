@@ -32,12 +32,7 @@ const AccountVerificationRequiredModal = observer(
 
                 <div className='account-verification-required-modal-button'>
                     <Modal.Footer>
-                        <Button
-                            has_effect
-                            text={localize('Submit Proof')}
-                            onClick={() => history.push(routes.proof_of_identity)}
-                            primary
-                        />
+                        <Button has_effect text={localize('Submit Proof')} onClick={onConfirm} primary />
                     </Modal.Footer>
                 </div>
             </Modal>

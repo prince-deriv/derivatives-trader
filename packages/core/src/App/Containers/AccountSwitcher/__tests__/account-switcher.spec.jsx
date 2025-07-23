@@ -134,7 +134,6 @@ let store = mockStore({
         openRealAccountSignup: jest.fn(),
         toggleAccountsDialog: jest.fn(),
         togglePositionsDrawer: jest.fn(),
-        toggleSetCurrencyModal: jest.fn(),
         should_show_real_accounts_list: true,
         setShouldShowCooldownModal: jest.fn(),
     },

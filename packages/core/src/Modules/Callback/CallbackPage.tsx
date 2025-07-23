@@ -119,8 +119,8 @@ const CallbackPage = () => {
                         window.history.replaceState({}, '', postLoginRedirectUri);
                         window.location.href = postLoginRedirectUri;
                     } else {
-                        window.history.replaceState({}, '', routes.traders_hub);
-                        window.location.href = routes.traders_hub;
+                        window.history.replaceState({}, '', routes.trade);
+                        window.location.href = routes.trade;
                     }
                 }
             }}

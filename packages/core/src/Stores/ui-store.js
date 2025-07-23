@@ -38,9 +38,7 @@ export default class UIStore extends BaseStore {
     // Purchase Controls
     // @observable is_purchase_confirm_on    = false;
     is_services_error_visible = false;
-    is_account_signup_modal_visible = false;
     is_link_expired_modal_visible = false;
-    is_set_residence_modal_visible = false;
     is_reset_password_modal_visible = false;
     is_reset_email_modal_visible = false;
     is_update_email_modal_visible = false;
@@ -85,17 +83,11 @@ export default class UIStore extends BaseStore {
     deposit_real_account_signup_target = undefined;
     has_real_account_signup_ended = false;
 
-    // wallets onboarding tour guide
-    is_wallets_onboarding_tour_guide_visible = false;
-
     // verification modal
     is_verification_modal_visible = false;
 
     //verification document submitted modal
     is_verification_submitted = false;
-
-    // set currency modal
-    is_set_currency_modal_visible = false;
 
     // position states
     show_positions_toggle = true;
@@ -143,7 +135,6 @@ export default class UIStore extends BaseStore {
 
     // MT5 account needed modal
     is_account_needed_modal_on = false;
-    is_mt5_migration_modal_open = false;
     account_needed_modal_props = {
         target: '',
         target_label: '',
@@ -160,19 +151,8 @@ export default class UIStore extends BaseStore {
     // add crypto accounts
     should_show_cancel = false;
 
-    should_show_same_dob_phone_modal = false;
-    should_show_deposit_now_or_later_modal = false;
-    should_show_crypto_transaction_processing_modal = false;
-    should_show_risk_warning_modal = false;
-    should_show_appropriateness_warning_modal = false;
-    should_show_risk_accept_modal = false;
-    should_show_cooldown_modal = false;
-    should_show_trading_assessment_modal = false;
-    should_show_account_success_modal = false;
-    should_show_one_time_deposit_modal = false;
     should_show_trade_assessment_form = false;
     should_trigger_tour_guide = false;
-    is_from_success_deposit_modal = false;
     is_trading_assessment_for_existing_user_enabled = false;
     is_trading_assessment_for_new_user_enabled = false;
     should_show_assessment_complete_modal = false;
@@ -182,7 +162,6 @@ export default class UIStore extends BaseStore {
     is_wallet_modal_visible = false;
     is_ready_to_deposit_modal_visible = false;
     is_switch_to_deriv_account_modal_visible = false;
-    is_cfd_reset_password_modal_enabled = false;
     is_mt5_migration_modal_enabled = false;
     isUrlUnavailableModalVisible = false;
     sub_section_index = 0;
@@ -224,14 +203,11 @@ export default class UIStore extends BaseStore {
             has_only_forward_starting_contracts: observable,
             is_ready_to_deposit_modal_visible: observable,
             is_services_error_visible: observable,
-            is_account_signup_modal_visible: observable,
             is_link_expired_modal_visible: observable,
-            is_set_residence_modal_visible: observable,
             is_reset_password_modal_visible: observable,
             is_reset_email_modal_visible: observable,
             is_update_email_modal_visible: observable,
             is_reset_trading_password_modal_visible: observable,
-            is_cfd_reset_password_modal_enabled: observable,
             sub_section_index: observable,
             is_chart_countdown_visible: observable,
             is_chart_layout_default: observable,
@@ -284,7 +260,6 @@ export default class UIStore extends BaseStore {
             is_real_tab_enabled: observable,
             is_reports_visible: observable,
             is_route_modal_on: observable,
-            is_set_currency_modal_visible: observable,
             is_settings_modal_on: observable,
             is_switch_to_deriv_account_modal_visible: observable,
             is_top_up_virtual_in_progress: observable,
@@ -293,10 +268,7 @@ export default class UIStore extends BaseStore {
             is_trading_assessment_for_existing_user_enabled: observable,
             is_trading_assessment_for_new_user_enabled: observable,
             is_verification_modal_visible: observable,
-            is_wallets_onboarding_tour_guide_visible: observable,
             is_verification_submitted: observable,
-            is_mt5_migration_modal_open: observable,
-            is_mt5_migration_modal_enabled: observable,
             is_tnc_update_modal_open: observable,
             isUrlUnavailableModalVisible: observable,
             manage_real_account_tab_index: observable,
@@ -310,23 +282,11 @@ export default class UIStore extends BaseStore {
             reports_route_tab_index: observable,
             settings_extension: observable,
             should_show_phone_number_otp: observable,
-            should_show_same_dob_phone_modal: observable,
-            should_show_deposit_now_or_later_modal: observable,
-            should_show_crypto_transaction_processing_modal: observable,
-            should_show_appropriateness_warning_modal: observable,
             should_show_assessment_complete_modal: observable,
             should_show_cancel: observable,
             should_show_cancellation_warning: observable,
-            should_show_cooldown_modal: observable,
-            should_show_account_success_modal: observable,
-            should_show_one_time_deposit_modal: observable,
             should_show_real_accounts_list: observable,
-            should_show_risk_accept_modal: observable,
-            should_show_risk_warning_modal: observable,
-            should_show_trade_assessment_form: observable,
-            should_show_trading_assessment_modal: observable,
             should_trigger_tour_guide: observable,
-            is_from_success_deposit_modal: observable,
             show_positions_toggle: observable,
             simple_duration_unit: observable,
             toasts: observable.shallow,
@@ -366,7 +326,6 @@ export default class UIStore extends BaseStore {
             setShouldShowPhoneNumberOTP: action.bound,
             setAccountSwitcherDisabledMessage: action.bound,
             setAppContentsScrollRef: action.bound,
-            setCFDPasswordResetModal: action.bound,
             setChartCountdown: action.bound,
             setChartLayout: action.bound,
             setCurrentFocus: action.bound,
@@ -384,13 +343,11 @@ export default class UIStore extends BaseStore {
             toggleReadyToDepositModal: action.bound,
             toggleShouldShowRealAccountsList: action.bound,
             shouldNavigateAfterChooseCrypto: action.bound,
-            setShouldShowRiskWarningModal: action.bound,
             setRedirectFromEmail: action.bound,
             setIsWalletModalVisible: action.bound,
             setIsRealTabEnabled: action.bound,
             setIsTradingAssessmentForExistingUserEnabled: action.bound,
             setIsTradingAssessmentForNewUserEnabled: action.bound,
-            setIsWalletsOnboardingTourGuideVisible: action.bound,
             setManageRealAccountActiveTabIndex: action.bound,
             setModalIndex: action.bound,
             setPromptHandler: action.bound,
@@ -400,45 +357,26 @@ export default class UIStore extends BaseStore {
             setRealAccountSignupParams: action.bound,
             setResetTradingPasswordModalOpen: action.bound,
             setRouteModal: action.bound,
-            setShouldShowAppropriatenessWarningModal: action.bound,
-            setShouldShowAssessmentCompleteModal: action.bound,
             setShouldShowCancel: action.bound,
-            setShouldShowCooldownModal: action.bound,
-            setShouldShowOneTimeDepositModal: action.bound,
-            setShouldShowTradeAssessmentForm: action.bound,
-            setShouldShowTradingAssessmentModal: action.bound,
-            setShouldShowWarningModal: action.bound,
-            setShouldTriggerTourGuide: action.bound,
-            setIsFromSuccessDepositModal: action.bound,
             setSubSectionIndex: action.bound,
             setTopUpInProgress: action.bound,
             setIsMFVericationPendingModal: action.bound,
             setIsTradingDisabledByResidenceModal: action.bound,
-            setMT5MigrationModalEnabled: action.bound,
             setMobileLanguageMenuOpen: action.bound,
             toggleAccountsDialog: action.bound,
             toggleAccountSettings: action.bound,
-            toggleAccountSignupModal: action.bound,
             toggleCancellationWarning: action.bound,
             toggleHistoryTab: action.bound,
-            toggleLinkExpiredModal: action.bound,
             toggleOnScreenKeyboard: action.bound,
             togglePositionsDrawer: action.bound,
             toggleReports: action.bound,
             toggleResetEmailModal: action.bound,
             toggleResetPasswordModal: action.bound,
             toggleServicesErrorModal: action.bound,
-            toggleSetCurrencyModal: action.bound,
-            toggleSetResidenceModal: action.bound,
             toggleSettingsModal: action.bound,
             toggleLanguageSettingsModal: action.bound,
             toggleUpdateEmailModal: action.bound,
-            toggleAccountSuccessModal: action.bound,
-            toggleMT5MigrationModal: action.bound,
             toggleUrlUnavailableModal: action.bound,
-            setShouldShowDepositNowOrLaterModal: action.bound,
-            setShouldShowCryptoTransactionProcessingModal: action.bound,
-            setShouldShowSameDOBPhoneModal: action.bound,
             field_ref_to_focus: observable,
             setFieldRefToFocus: action.bound,
             toggleTncUpdateModal: action.bound,
@@ -639,10 +577,6 @@ export default class UIStore extends BaseStore {
         this.is_mobile_language_menu_open = is_mobile_language_menu_open;
     }
 
-    toggleSetCurrencyModal() {
-        this.is_set_currency_modal_visible = !this.is_set_currency_modal_visible;
-    }
-
     setModalIndex(index = 0) {
         this.modal_index = index;
     }
@@ -747,14 +681,6 @@ export default class UIStore extends BaseStore {
 
     setHasOnlyForwardingContracts(has_only_forward_starting_contracts) {
         this.has_only_forward_starting_contracts = has_only_forward_starting_contracts;
-    }
-
-    toggleAccountSignupModal(state_change = !this.is_account_signup_modal_visible) {
-        this.is_account_signup_modal_visible = state_change;
-    }
-
-    toggleSetResidenceModal(state_change = !this.is_set_residence_modal_visible) {
-        this.is_set_residence_modal_visible = state_change;
     }
 
     toggleCancellationWarning(state_change = !this.should_show_cancellation_warning) {
@@ -911,10 +837,6 @@ export default class UIStore extends BaseStore {
         this.is_wallet_modal_visible = value;
     }
 
-    setShouldShowRiskWarningModal(value) {
-        this.should_show_risk_warning_modal = value;
-    }
-
     setIsTradingAssessmentForExistingUserEnabled(value) {
         this.is_trading_assessment_for_existing_user_enabled = value;
     }
@@ -923,40 +845,12 @@ export default class UIStore extends BaseStore {
         this.is_trading_assessment_for_new_user_enabled = value;
     }
 
-    setShouldShowAppropriatenessWarningModal(value) {
-        this.should_show_appropriateness_warning_modal = value;
-    }
-
-    setShouldShowWarningModal(value) {
-        this.should_show_risk_accept_modal = value;
-    }
-
-    setShouldShowAssessmentCompleteModal(value) {
-        this.should_show_assessment_complete_modal = value;
-    }
-
-    setShouldShowCooldownModal(value) {
-        this.should_show_cooldown_modal = value;
-    }
-
-    setShouldShowTradingAssessmentModal(value) {
-        this.should_show_trading_assessment_modal = value;
-    }
-
-    setShouldShowTradeAssessmentForm(value) {
-        this.should_show_trade_assessment_form = value;
-    }
-
     openSwitchToRealAccountModal() {
         this.is_switch_to_deriv_account_modal_visible = !this.is_switch_to_deriv_account_modal_visible;
     }
 
     toggleReadyToDepositModal() {
         this.is_ready_to_deposit_modal_visible = !this.is_ready_to_deposit_modal_visible;
-    }
-
-    setCFDPasswordResetModal(val) {
-        this.is_cfd_reset_password_modal_enabled = !!val;
     }
 
     setSubSectionIndex(index) {
@@ -971,24 +865,8 @@ export default class UIStore extends BaseStore {
         this.is_verification_submitted = value;
     }
 
-    setShouldShowOneTimeDepositModal(value) {
-        this.should_show_one_time_deposit_modal = value;
-    }
-
-    toggleAccountSuccessModal() {
-        this.should_show_account_success_modal = !this.should_show_account_success_modal;
-    }
-
     setShouldTriggerTourGuide(value) {
         this.should_trigger_tour_guide = value;
-    }
-
-    setIsFromSuccessDepositModal(value) {
-        this.is_from_success_deposit_modal = value;
-    }
-
-    setIsWalletsOnboardingTourGuideVisible(value) {
-        this.is_wallets_onboarding_tour_guide_visible = value;
     }
 
     setIsMFVericationPendingModal(value) {
@@ -999,28 +877,8 @@ export default class UIStore extends BaseStore {
         this.is_trading_disabled_by_residence_modal_visible = value;
     }
 
-    setMT5MigrationModalEnabled(value) {
-        this.is_mt5_migration_modal_enabled = value;
-    }
-
-    toggleMT5MigrationModal(value) {
-        this.is_mt5_migration_modal_open = value;
-    }
-
     toggleUrlUnavailableModal(value) {
         this.isUrlUnavailableModalVisible = value;
-    }
-
-    setShouldShowDepositNowOrLaterModal(value) {
-        this.should_show_deposit_now_or_later_modal = value;
-    }
-
-    setShouldShowCryptoTransactionProcessingModal(value) {
-        this.should_show_crypto_transaction_processing_modal = value;
-    }
-
-    setShouldShowSameDOBPhoneModal(value) {
-        this.should_show_same_dob_phone_modal = value;
     }
 
     toggleTncUpdateModal(value) {
