@@ -6,7 +6,6 @@ import { observer } from '@deriv/stores';
 import { Localize } from '@deriv/translations';
 import { useIsHubRedirectionEnabled, useStoreWalletAccountsList } from '@deriv/hooks';
 import { AccountSwitcherWalletList } from './account-switcher-wallet-list';
-import './account-switcher-wallet.scss';
 
 type TAccountSwitcherWalletProps = {
     is_visible: boolean;

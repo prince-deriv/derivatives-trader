@@ -16,13 +16,13 @@ import {
     Loading,
 } from '@deriv/components';
 import { observer, useStore } from '@deriv/stores';
-import { routes, formatMoney, ContentFlag } from '@deriv/shared';
+import { routes, formatMoney } from '@deriv/shared';
 import { localize, Localize } from '@deriv/translations';
 import { useHasSetCurrency } from '@deriv/hooks';
 import { BinaryLink } from 'App/Components/Routes';
 import AccountList from './account-switcher-account-list.jsx';
 import AccountWrapper from './account-switcher-account-wrapper.jsx';
-import { getSortedAccountList, getSortedCFDList, isDemo } from './helpers';
+import { getSortedAccountList } from './helpers';
 
 const AccountSwitcher = observer(({ history, is_mobile, is_visible }) => {
     const { client, ui, traders_hub } = useStore();
@@ -40,7 +40,6 @@ const AccountSwitcher = observer(({ history, is_mobile, is_visible }) => {
         is_logged_in,
         is_virtual,
         has_fiat,
-        mt5_login_list,
         obj_total_balance,
         switchAccount,
         resetVirtualBalance,
@@ -51,7 +50,7 @@ const AccountSwitcher = observer(({ history, is_mobile, is_visible }) => {
         virtual_account_loginid,
         has_maltainvest_account,
     } = client;
-    const { show_eu_related_content, content_flag, selectRegion, setTogglePlatformType } = traders_hub;
+    const { show_eu_related_content, selectRegion, setTogglePlatformType } = traders_hub;
     const {
         is_dark_mode_on,
         openRealAccountSignup,
@@ -115,19 +114,6 @@ const AccountSwitcher = observer(({ history, is_mobile, is_visible }) => {
     const isRealAccountTab = active_tab_index === 0;
     const isDemoAccountTab = active_tab_index === 1;
 
-    const getRealMT5 = () => {
-        if (is_landing_company_loaded) {
-            const low_risk_non_eu = content_flag === ContentFlag.LOW_RISK_CR_NON_EU;
-            if (low_risk_non_eu) {
-                return getSortedCFDList(mt5_login_list).filter(
-                    account => !isDemo(account) && account.landing_company_short !== 'maltainvest'
-                );
-            }
-            return getSortedCFDList(mt5_login_list).filter(account => !isDemo(account));
-        }
-        return [];
-    };
-
     const canOpenMulti = () => {
         if (available_crypto_currencies.length < 1 && !has_fiat) return true;
         return !is_virtual;
@@ -159,23 +145,6 @@ const AccountSwitcher = observer(({ history, is_mobile, is_visible }) => {
     const canResetBalance = account => {
         const account_init_balance = 10000;
         return account?.is_virtual && account?.balance !== account_init_balance;
-    };
-
-    const checkMultipleSvgAcc = () => {
-        const all_svg_acc = [];
-        getRealMT5().map(acc => {
-            if (acc.landing_company_short === 'svg' && acc.market_type === 'synthetic') {
-                if (all_svg_acc.length) {
-                    all_svg_acc.forEach(svg_acc => {
-                        if (svg_acc.server !== acc.server) all_svg_acc.push(acc);
-                        return all_svg_acc;
-                    });
-                } else {
-                    all_svg_acc.push(acc);
-                }
-            }
-        });
-        return all_svg_acc.length > 1;
     };
 
     const have_more_accounts = type =>
@@ -262,7 +231,6 @@ const AccountSwitcher = observer(({ history, is_mobile, is_visible }) => {
                                                 account.is_disabled ? undefined : () => doSwitch(account.loginid)
                                             }
                                             selected_loginid={account_loginid}
-                                            should_show_server_name={checkMultipleSvgAcc()}
                                         />
                                     );
                                 })}
@@ -328,7 +296,6 @@ const AccountSwitcher = observer(({ history, is_mobile, is_visible }) => {
                                                 account.is_disabled ? undefined : () => doSwitch(account.loginid)
                                             }
                                             selected_loginid={account_loginid}
-                                            should_show_server_name={checkMultipleSvgAcc()}
                                         />
                                     );
                                 })}

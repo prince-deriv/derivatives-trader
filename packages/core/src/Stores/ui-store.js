@@ -11,7 +11,6 @@ const store_name = 'ui_store';
 
 export default class UIStore extends BaseStore {
     url_hashed_values = '';
-    is_account_settings_visible = false;
     is_positions_drawer_on = false;
     is_reports_visible = false;
     reports_route_tab_index = 0;
@@ -159,8 +158,6 @@ export default class UIStore extends BaseStore {
     app_contents_scroll_ref = null;
     is_deriv_account_needed_modal_visible = false;
     is_redirected_from_email = false;
-    is_wallet_modal_visible = false;
-    is_ready_to_deposit_modal_visible = false;
     is_switch_to_deriv_account_modal_visible = false;
     is_mt5_migration_modal_enabled = false;
     isUrlUnavailableModalVisible = false;
@@ -183,7 +180,6 @@ export default class UIStore extends BaseStore {
             'duration_m',
             'duration_h',
             'duration_d',
-            'is_account_settings_visible',
             'is_chart_asset_info_visible',
             'is_chart_countdown_visible',
             'is_chart_layout_default',
@@ -201,7 +197,6 @@ export default class UIStore extends BaseStore {
             account_needed_modal_props: observable,
             account_switcher_disabled_message: observable,
             has_only_forward_starting_contracts: observable,
-            is_ready_to_deposit_modal_visible: observable,
             is_services_error_visible: observable,
             is_link_expired_modal_visible: observable,
             is_reset_password_modal_visible: observable,
@@ -231,7 +226,6 @@ export default class UIStore extends BaseStore {
             has_real_account_signup_ended: observable,
             header_extension: observable,
             is_account_needed_modal_on: observable,
-            is_account_settings_visible: observable,
             is_forced_to_exit_pnv: observable,
             is_phone_verification_completed: observable,
 
@@ -245,7 +239,6 @@ export default class UIStore extends BaseStore {
             is_deriv_account_needed_modal_visible: observable,
             is_from_signup_account: observable,
             is_redirected_from_email: observable,
-            is_wallet_modal_visible: observable,
 
             is_history_tab_active: observable,
             is_landscape: observable,
@@ -340,11 +333,9 @@ export default class UIStore extends BaseStore {
             setIsVerificationModalVisible: action.bound,
             setIsVerificationSubmitted: action.bound,
             setReportsTabIndex: action.bound,
-            toggleReadyToDepositModal: action.bound,
             toggleShouldShowRealAccountsList: action.bound,
             shouldNavigateAfterChooseCrypto: action.bound,
             setRedirectFromEmail: action.bound,
-            setIsWalletModalVisible: action.bound,
             setIsRealTabEnabled: action.bound,
             setIsTradingAssessmentForExistingUserEnabled: action.bound,
             setIsTradingAssessmentForNewUserEnabled: action.bound,
@@ -364,7 +355,6 @@ export default class UIStore extends BaseStore {
             setIsTradingDisabledByResidenceModal: action.bound,
             setMobileLanguageMenuOpen: action.bound,
             toggleAccountsDialog: action.bound,
-            toggleAccountSettings: action.bound,
             toggleCancellationWarning: action.bound,
             toggleHistoryTab: action.bound,
             toggleOnScreenKeyboard: action.bound,
@@ -659,10 +649,6 @@ export default class UIStore extends BaseStore {
         this.is_positions_drawer_on = !this.is_positions_drawer_on;
     }
 
-    toggleAccountSettings(is_visible) {
-        this.is_account_settings_visible = is_visible;
-    }
-
     toggleReports(is_visible) {
         this.is_reports_visible = is_visible;
     }
@@ -833,10 +819,6 @@ export default class UIStore extends BaseStore {
         this.is_redirected_from_email = value;
     }
 
-    setIsWalletModalVisible(value) {
-        this.is_wallet_modal_visible = value;
-    }
-
     setIsTradingAssessmentForExistingUserEnabled(value) {
         this.is_trading_assessment_for_existing_user_enabled = value;
     }
@@ -847,10 +829,6 @@ export default class UIStore extends BaseStore {
 
     openSwitchToRealAccountModal() {
         this.is_switch_to_deriv_account_modal_visible = !this.is_switch_to_deriv_account_modal_visible;
-    }
-
-    toggleReadyToDepositModal() {
-        this.is_ready_to_deposit_modal_visible = !this.is_ready_to_deposit_modal_visible;
     }
 
     setSubSectionIndex(index) {

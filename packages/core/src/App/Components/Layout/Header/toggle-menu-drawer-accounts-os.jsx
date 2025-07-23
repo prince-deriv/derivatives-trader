@@ -225,7 +225,6 @@ const ToggleMenuDrawerAccountsOS = observer(() => {
                     <div className='header__menu-mobile-body-wrapper'>
                         <React.Fragment>
                             <MobileDrawer.Body className='tradershub-os-header'>
-                                <div className='header__menu-mobile-platform-switcher' id='mobile_platform_switcher' />
                                 {primary_routes_config.map((route_config, idx) =>
                                     getRoutesWithSubMenu(route_config, idx)
                                 )}

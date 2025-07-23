@@ -10,7 +10,7 @@ const TradersHubOnboarding = observer(() => {
     const onboardingIcon = (
         <Icon
             data_testid='dt_traders_hub_onboarding_icon'
-            icon={is_dark_mode_on ? 'IcAppstoreTradingHubOnboardingDark' : 'IcAppstoreTradingHubOnboarding'}
+            icon={is_dark_mode_on ? 'IcTradingHubOnboardingDark' : 'IcTradingHubOnboarding'}
             size={20}
         />
     );

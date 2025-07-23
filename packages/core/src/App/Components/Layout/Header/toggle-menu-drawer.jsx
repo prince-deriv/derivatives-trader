@@ -18,11 +18,9 @@ import ServerTime from 'App/Containers/server-time.jsx';
 
 import { MenuTitle, MobileLanguageMenu } from './Components/ToggleMenu';
 import MenuLink from './menu-link';
-import PlatformSwitcher from './platform-switcher';
 
-const ToggleMenuDrawer = observer(({ platform_config }) => {
-    const { common, ui, client, traders_hub } = useStore();
-    const { app_routing_history, current_language } = common;
+const ToggleMenuDrawer = observer(() => {
+    const { ui, client, traders_hub } = useStore();
     const {
         disableApp,
         enableApp,
@@ -37,19 +35,17 @@ const ToggleMenuDrawer = observer(({ platform_config }) => {
         account_status,
         has_wallet,
         is_logged_in,
-        is_logging_in,
         is_virtual,
         logout: logoutClient,
         setIsLoggingOut,
         should_allow_authentication,
         should_allow_poinc_authentication,
         landing_company_shortcode: active_account_landing_company,
-        is_landing_company_loaded,
         is_proof_of_ownership_enabled,
         is_eu,
         is_passkey_supported,
     } = client;
-    const { show_eu_related_content, setTogglePlatformType } = traders_hub;
+    const { show_eu_related_content } = traders_hub;
     const { mobile_redirect_url } = useAccountSettingsRedirect();
 
     const { pathname: route } = useLocation();
@@ -67,7 +63,7 @@ const ToggleMenuDrawer = observer(({ platform_config }) => {
     const [is_open, setIsOpen] = React.useState(false);
     const [transitionExit, setTransitionExit] = React.useState(false);
     const [primary_routes_config, setPrimaryRoutesConfig] = React.useState([]);
-    const [is_submenu_expanded, expandSubMenu] = React.useState(false);
+    const [expandSubMenu] = React.useState(false);
 
     const timeout = React.useRef();
     const history = useHistory();
@@ -308,28 +304,7 @@ const ToggleMenuDrawer = observer(({ platform_config }) => {
                 <Div100vhContainer height_offset='40px'>
                     <div className='header__menu-mobile-body-wrapper'>
                         <React.Fragment>
-                            {!(is_traders_hub_route || is_wallet_route) && (
-                                <MobileDrawer.SubHeader
-                                    className={classNames({
-                                        'dc-mobile-drawer__subheader--hidden': is_submenu_expanded,
-                                    })}
-                                >
-                                    <PlatformSwitcher
-                                        app_routing_history={app_routing_history}
-                                        is_mobile
-                                        is_landing_company_loaded={is_landing_company_loaded}
-                                        is_logged_in={is_logged_in}
-                                        is_logging_in={is_logging_in}
-                                        platform_config={platform_config}
-                                        toggleDrawer={toggleDrawer}
-                                        current_language={current_language}
-                                        setTogglePlatformType={setTogglePlatformType}
-                                    />
-                                </MobileDrawer.SubHeader>
-                            )}
-
                             <MobileDrawer.Body className={is_traders_hub_route || is_wallet_route ? 'no-padding' : ''}>
-                                <div className='header__menu-mobile-platform-switcher' id='mobile_platform_switcher' />
                                 <MobileDrawer.Item>
                                     <MenuLink
                                         link_to={getStaticUrl('/')}

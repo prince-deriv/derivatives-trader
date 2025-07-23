@@ -1,4 +1,3 @@
-import React from 'react';
 import { Router } from 'react-router';
 import { createBrowserHistory } from 'history';
 import { StoreProvider, mockStore } from '@deriv/stores';
@@ -36,11 +35,6 @@ jest.mock('@deriv/shared', () => ({
         bot: '/bot',
         smarttrader: 'https://smarttrader.deriv.com',
     },
-}));
-
-jest.mock('App/Components/Layout/Header', () => ({
-    MenuLinks: jest.fn(() => <div>Mocked Menu Links</div>),
-    PlatformSwitcher: jest.fn(() => <div>Mocked Platform Switcher</div>),
 }));
 
 jest.mock('App/Components/Layout/Header/Components/Preloader', () => ({
@@ -127,39 +121,6 @@ describe('HeaderLegacy', () => {
                 </StoreProvider>
             </Router>
         );
-
-    it('should render Traders Home button, Menu Links, Platform Switcher, Account actions and Real Account SignUp components, in Desktop view', () => {
-        renderComponent();
-        const desktop_view_text_content = [
-            'Mocked Traders Home Button',
-            'Mocked Menu Links',
-            'Mocked Platform Switcher',
-            'Mocked Header Account Action',
-            'Mocked Real Account SignUp',
-        ];
-        desktop_view_text_content.forEach(text => expect(screen.getByText(text)).toBeInTheDocument());
-    });
-
-    it('should render Toggle Menu Drawer, Menu Links, Header Account Action and Real Account SignUp components, in Mobile view', () => {
-        (useDevice as jest.Mock).mockImplementationOnce(() => ({ isDesktop: false }));
-        renderComponent(
-            mockStore({
-                ...default_mock,
-                ui: {
-                    ...default_mock.ui,
-                    is_desktop: false,
-                },
-            })
-        );
-        const mobile_view_text_content = [
-            'Mocked Toggle Menu Drawer',
-            'Mocked Menu Links',
-            'Mocked Header Account Action',
-            'Mocked Real Account SignUp',
-        ];
-        mobile_view_text_content.forEach(text => expect(screen.getByText(text)).toBeInTheDocument());
-        expect(screen.queryByText('Mocked Platform Switcher')).not.toBeInTheDocument();
-    });
 
     it('should render Toggle Menu Drawer OS when is_from_tradershub_os is true in mobile view', () => {
         (useDevice as jest.Mock).mockImplementationOnce(() => ({ isDesktop: false }));
@@ -311,16 +272,5 @@ describe('HeaderLegacy', () => {
 
         const header = screen.getByRole('banner');
         expect(header).toHaveClass('header--tradershub_os_desktop');
-    });
-
-    it('should not render platform switcher when pathname includes traders-hub', () => {
-        const reactRouterDom = jest.requireMock('react-router-dom') as jest.Mocked<typeof import('react-router-dom')>;
-        reactRouterDom.useLocation.mockReturnValue({
-            pathname: '/traders-hub',
-        });
-
-        renderComponent();
-
-        expect(screen.queryByText('Mocked Platform Switcher')).not.toBeInTheDocument();
     });
 });

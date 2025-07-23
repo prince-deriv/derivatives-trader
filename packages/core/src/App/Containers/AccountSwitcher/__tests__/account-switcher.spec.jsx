@@ -39,14 +39,6 @@ let store = mockStore({
                         max: 5001.78,
                         min: 1,
                     },
-                    limits_dxtrade: {
-                        max: 2500.89,
-                        min: 0.01,
-                    },
-                    limits_mt5: {
-                        max: 15005.33,
-                        min: 0.01,
-                    },
                 },
                 type: 'crypto',
             },
@@ -112,13 +104,8 @@ let store = mockStore({
         is_virtual: true,
         has_fiat: true,
         landing_company_shortcode: 'svg',
-        mt5_login_list: [
-            {
-                account_type: 'demo',
-                sub_account_type: 'financial_stp',
-            },
-        ],
-        obj_total_balance: { amount_real: 5000, amount_mt5: 300, amount_dxtrade: 100, currency: 'USD' },
+        mt5_login_list: [],
+        obj_total_balance: { amount_real: 5000, currency: 'USD' },
         switchAccount: jest.fn(),
         resetVirtualBalance: jest.fn(),
         has_active_real_account: true,

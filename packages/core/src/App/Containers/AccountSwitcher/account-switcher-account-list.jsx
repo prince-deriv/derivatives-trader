@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 import { Icon, Money, Button, Text } from '@deriv/components';
-import { formatMoney, getCurrencyName, getCFDAccountDisplay, getCurrencyDisplayCode, isBot } from '@deriv/shared';
+import { formatMoney, getCurrencyName, getCurrencyDisplayCode, isBot } from '@deriv/shared';
 import { Localize, localize } from '@deriv/translations';
 
 const AccountList = ({
@@ -131,16 +131,14 @@ const CurrencyDisplay = ({ currency, loginid, is_virtual }) => {
 const AccountDisplay = ({
     has_error,
     market_type,
-    sub_account_type,
     platform,
     server,
-    product,
     is_dark_mode_on,
-    is_eu,
     shortcode,
     should_show_server_name,
 }) => {
-    const account_title = getCFDAccountDisplay({ market_type, sub_account_type, platform, is_eu, shortcode, product });
+    // Simple account title based on market_type
+    const account_title = market_type === 'synthetic' ? localize('Synthetic') : localize('Financial');
     // TODO: Remove once account with error has market_type and sub_account_type in details response
     const getServerName = React.useCallback(account => {
         if (account) {

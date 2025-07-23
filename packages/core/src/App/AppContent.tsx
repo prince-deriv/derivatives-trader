@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 
 import { useRemoteConfig } from '@deriv/api';
 import {
-    useFreshChat,
     useGrowthbookGetFeatureValue,
     useGrowthbookIsOn,
     useIntercom,
@@ -107,7 +106,6 @@ const AppContent: React.FC<{ passthrough: unknown }> = observer(({ passthrough }
     useLiveChat(livechat_client_information);
     const active_account = accounts?.[loginid ?? ''];
     const token = active_account ? active_account.token : null;
-    useFreshChat(token);
     useIntercom(token);
 
     React.useEffect(() => {
