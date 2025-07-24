@@ -4,7 +4,6 @@
 
 ![Prerequisite](https://img.shields.io/badge/node-18.x-blue.svg)
 ![Prerequisite](https://img.shields.io/badge/npm-9.x-blue.svg)
-[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
 ![Sonar Tech Debt](https://img.shields.io/sonar/tech_debt/binary-com_deriv-app?server=https%3A%2F%2Fsonarcloud.io)
 ![Sonar Violations](https://img.shields.io/sonar/violations/binary-com_deriv-app?server=https%3A%2F%2Fsonarcloud.io)
 [![Coverage Status](https://coveralls.io/repos/github/deriv-com/deriv-app/badge.svg?branch=master)](https://coveralls.io/github/deriv-com/deriv-app?branch=master)
@@ -50,20 +49,13 @@ Before working with this repository, ensure you have the following installed:
     cd deriv-app
     ```
 
-3. **Set up NX Cloud** (Internal developers only)
-
-    ```
-    # Copy the nx-cloud.env.example file to nx-cloud.env
-    # Replace <token> with the provided access token
-    ```
-
-4. **Install dependencies**
+3. **Install dependencies**
 
     ```sh
     npm run bootstrap
     ```
 
-5. **Build all packages**
+4. **Build all packages**
 
     ```sh
     npm run build:all
@@ -71,7 +63,7 @@ Before working with this repository, ensure you have the following installed:
 
 ## Repository Structure
 
-This project uses a monorepo structure managed with Lerna. All individual packages are located in the `packages/` directory.
+This project uses a monorepo structure managed with npm workspaces. All individual packages are located in the `packages/` directory.
 
 ### Packages
 
@@ -104,12 +96,6 @@ npm run serve components
 
 # Instead of:
 npm run serve @deriv/components
-```
-
-However, when using Lerna commands directly, you must use the full package name with prefix:
-
-```sh
-lerna exec --scope=@deriv/components -- npm run build
 ```
 
 ### Starting Development Servers
@@ -242,21 +228,21 @@ There are three types of releases:
     cd packages/trader
     npm i package-name
 
-    # Or with lerna:
-    lerna exec --scope=@deriv/trader -- npm i package-name
+    # Or with npm workspaces:
+    npm i package-name --workspace=@deriv/trader
     ```
 
 2. **Uninstalling packages**
 
     ```sh
-    lerna exec --scope=@deriv/translations -- npm un package-name
+    npm uninstall package-name --workspace=@deriv/translations
     ```
 
 3. **Using package-lock.json**
 
     ```sh
     # Option 1:
-    lerna exec --scope=@deriv/trader -- npm ci
+    npm ci --workspace=@deriv/trader
 
     # Option 2:
     cd packages/trader && npm ci
@@ -266,7 +252,7 @@ There are three types of releases:
 
     ```sh
     # Try these in order:
-    npx lerna exec -- npm rebuild node-sass
+    npm rebuild node-sass --workspaces
 
     # If that doesn't work:
     npm cache clean --force
