@@ -7,7 +7,7 @@ import { Localize } from '@deriv/translations';
 import { LabelPairedChevronDownMdRegularIcon } from '@deriv/quill-icons';
 import { observer } from '@deriv/stores';
 import { useTraderStore } from 'Stores/useTraderStores';
-import { getMarketNamesMap } from '@deriv/shared';
+import { getMarketNamesMap, getSymbolDisplayName } from '@deriv/shared';
 import useContractsForCompany from 'AppV2/Hooks/useContractsForCompany';
 import { TContractType } from 'Modules/Trading/Components/Form/ContractType/types';
 
@@ -75,7 +75,7 @@ const MarketSelector = observer(() => {
                     <SymbolIconsMapper symbol={storeSymbol} />
                     <div className='market-selector-info'>
                         <div className='market-selector-info__label'>
-                            <Text bold>{currentSymbol?.display_name}</Text>
+                            <Text bold>{getSymbolDisplayName([], currentSymbol?.symbol || '')}</Text>
                             {!currentSymbol?.exchange_is_open && (
                                 <Tag
                                     label={<Localize key='closed' i18n_default_text='CLOSED' />}
@@ -87,11 +87,11 @@ const MarketSelector = observer(() => {
                             )}
                             <LabelPairedChevronDownMdRegularIcon fill='var(--component-textIcon-normal-default' />
                         </div>
-                        {current_spot ? (
+                        {/* {current_spot ? (
                             <CaptionText className='market-selector-info__price'>{current_spot}</CaptionText>
                         ) : (
                             current_spot_replacement
-                        )}
+                        )} */}
                     </div>
                 </div>
             </div>

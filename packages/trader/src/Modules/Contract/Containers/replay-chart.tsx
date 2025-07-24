@@ -144,6 +144,7 @@ const ReplayChart = observer(
                     <ResetContractChartElements contract_info={contract_info} />
                 )}
             </SmartChart>
+            // <>Chart here</>
         );
     }
 );

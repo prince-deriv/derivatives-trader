@@ -19,7 +19,7 @@ const FavoriteSymbols = observer(({ selectedSymbol, setSelectedSymbol, setIsOpen
                 <div className='favorite-symbols__container'>
                     {favoriteSymbols.map(symbol => (
                         <MarketCategoryItem
-                            key={symbol?.display_name}
+                            key={symbol?.symbol}
                             item={symbol}
                             selectedSymbol={selectedSymbol}
                             setSelectedSymbol={setSelectedSymbol}

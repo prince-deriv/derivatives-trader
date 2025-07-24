@@ -44,7 +44,7 @@ const MarketCategory = ({ category, selectedSymbol, setSelectedSymbol, setIsOpen
                                 <div className='market-category-items'>
                                     {submarket.items.map((item: ActiveSymbols[0]) => (
                                         <MarketCategoryItem
-                                            key={item.display_name}
+                                            key={item.symbol}
                                             ref={
                                                 item.symbol === selectedSymbol
                                                     ? el => (itemRefs.current[item.symbol] = el)

@@ -26,7 +26,7 @@ const SymbolSearchResults = observer(({ searchValue, setIsOpen, setSelectedSymbo
                 (searchResults.length > 0 ? (
                     searchResults.map(symbol => (
                         <MarketCategoryItem
-                            key={symbol?.display_name}
+                            key={symbol?.symbol}
                             item={symbol}
                             selectedSymbol={''}
                             setSelectedSymbol={setSelectedSymbol}

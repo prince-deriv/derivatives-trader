@@ -39,6 +39,7 @@ describe('useContractsForCompany', () => {
                 trade: {
                     setContractTypesListV2: jest.fn(),
                     onChange: jest.fn(),
+                    symbol: 'R_50',
                 },
             },
         };
@@ -59,17 +60,14 @@ describe('useContractsForCompany', () => {
     });
 
     afterEach(() => {
-        invalidateDTraderCache([
-            'contracts_for_company',
-            mocked_store.client.loginid ?? '',
-            mocked_store.client.landing_company_shortcode,
-        ]);
+        invalidateDTraderCache(['contracts_for', mocked_store.client.loginid ?? '', mocked_store.modules.trade.symbol]);
     });
 
     it('should fetch and set contract types for the company successfully', async () => {
         WS.authorized.send.mockResolvedValue({
-            contracts_for_company: {
+            contracts_for: {
                 available: [{ contract_type: 'type_1' }, { contract_type: 'type_2' }],
+                hit_count: 2,
             },
         });
 
@@ -102,8 +100,9 @@ describe('useContractsForCompany', () => {
 
     it('should not set unsupported contract types', async () => {
         WS.authorized.send.mockResolvedValue({
-            contracts_for_company: {
+            contracts_for: {
                 available: [{ contract_type: 'unsupported_type' }],
+                hit_count: 1,
             },
         });
 

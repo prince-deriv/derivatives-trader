@@ -9,13 +9,11 @@ import { getTradeTypesList } from 'AppV2/Utils/trade-types-utils';
 import { TContractType } from 'Modules/Trading/Components/Form/ContractType/types';
 import { checkContractTypePrefix } from 'AppV2/Utils/contract-type';
 
-type TContractsForCompanyResponse = {
-    contracts_for_company: {
+type TContractsForResponse = {
+    contracts_for: {
         available: {
             barrier_category: string;
             contract_category: string;
-            contract_category_display: string;
-            contract_display: string;
             contract_type: string;
             default_stake: number;
             sentiment: string;
@@ -35,20 +33,19 @@ const useContractsForCompany = () => {
     const prev_landing_company_shortcode_ref = React.useRef(landing_company_shortcode);
 
     const isQueryEnabled = useCallback(() => {
-        if (isLoginidDefined(loginid) && !landing_company_shortcode) return false;
+        if (isLoginidDefined(loginid) && !symbol) return false;
         if (is_switching) return false;
         return true;
-    }, [loginid, is_switching, landing_company_shortcode]);
+    }, [loginid, is_switching, symbol]);
 
     const {
         data: response,
         error,
         is_fetching,
-    } = useDtraderQuery<TContractsForCompanyResponse>(
-        ['contracts_for_company', loginid ?? '', landing_company_shortcode],
+    } = useDtraderQuery<TContractsForResponse>(
+        ['contracts_for', loginid ?? '', symbol],
         {
-            contracts_for_company: 1,
-            landing_company: landing_company_shortcode,
+            contracts_for: symbol,
         },
         {
             enabled: isQueryEnabled(),
@@ -113,12 +110,12 @@ const useContractsForCompany = () => {
 
     useEffect(() => {
         try {
-            const { contracts_for_company } = response || {};
+            const { contracts_for } = response || {};
             const available_contract_types: ReturnType<typeof getContractTypesConfig> = {};
             is_fetching_ref.current = false;
 
-            if (!error && contracts_for_company?.available.length) {
-                contracts_for_company.available.forEach(contract => {
+            if (!error && contracts_for?.available.length) {
+                contracts_for.available.forEach(contract => {
                     const type = Object.keys(contract_types).find(
                         key =>
                             contract_types[key].trade_types.indexOf(contract.contract_type) !== -1 &&
@@ -166,7 +163,7 @@ const useContractsForCompany = () => {
                 const new_contract_type = getNewContractType(trade_types);
                 processNewContractType(new_contract_type);
 
-                if (landing_company_shortcode !== prev_landing_company_shortcode_ref.current) {
+                if (symbol !== prev_landing_company_shortcode_ref.current) {
                     onChange({
                         target: {
                             name: 'symbol',
@@ -174,7 +171,7 @@ const useContractsForCompany = () => {
                         },
                     }).then(() => {
                         processContractsForV2();
-                        prev_landing_company_shortcode_ref.current = landing_company_shortcode;
+                        prev_landing_company_shortcode_ref.current = symbol;
                     });
                 }
             }

@@ -87,7 +87,7 @@ const TradeChart = observer((props: TTradeChartProps) => {
         const has_synthetic_index = active_symbols.some(s => s.market === synthetic_index);
         return active_symbols
             .slice()
-            .sort((a, b) => (a.display_name < b.display_name ? -1 : 1))
+            .sort((a, b) => (a.symbol < b.symbol ? -1 : 1))
             .map(s => s.market)
             .reduce(
                 (arr, market) => {
@@ -169,6 +169,7 @@ const TradeChart = observer((props: TTradeChartProps) => {
                 />
             )}
         </SmartChart>
+        // <>Chart here</>
     );
 });
 export default TradeChart;

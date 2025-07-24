@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { mockStore } from '@deriv/stores';
-import { ReportsStoreProvider } from '../../../../../../reports/src/Stores/useReportsStores';
+import { ReportsStoreProvider } from '@deriv/reports/src/Stores/useReportsStores';
 import TraderProviders from '../../../../trader-providers';
 import ModulesProvider from 'Stores/Providers/modules-providers';
 import Trade from '../trade';
@@ -11,8 +11,9 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 
 const mock_contract_data = {
-    contracts_for_company: {
+    contracts_for: {
         available: [{ contract_type: 'type_1' }, { contract_type: 'type_2' }, { contract_type: 'unsupported_type' }],
+        hit_count: 3,
     },
 };
 const localStorage_key = 'guide_dtrader_v2';
@@ -66,7 +67,7 @@ jest.mock('AppV2/Hooks/useContractsForCompany', () => ({
     __esModule: true,
     default: jest.fn(() => ({
         is_fetching_ref: { current: false },
-        trade_types: mock_contract_data.contracts_for_company.available,
+        trade_types: mock_contract_data.contracts_for.available,
         resetTradeTypes: jest.fn(),
     })),
 }));
@@ -228,7 +229,7 @@ describe('Trade', () => {
         expect(screen.getByText('Log in or create a free account to place a trade.')).toBeInTheDocument();
     });
 
-    it('should call history.push to deposit when Deposit now button is clicked', () => {
+    it('should call history.push to deposit when Deposit now button is clicked', async () => {
         default_mock_store.common.services_error = {
             code: 'InsufficientBalance',
             message: 'You do not have enough balance.',
@@ -236,11 +237,11 @@ describe('Trade', () => {
         render(mockTrade());
 
         const depositButton = screen.getByText('Deposit now');
-        userEvent.click(depositButton);
+        await userEvent.click(depositButton);
         expect(history.location.pathname).toBe('/cashier/deposit');
     });
 
-    it('should handle login when Login button is clicked', () => {
+    it('should handle login when Login button is clicked', async () => {
         default_mock_store.common.services_error = {
             code: 'AuthorizationRequired',
             message: 'You need to log in to place a trade',
@@ -250,12 +251,12 @@ describe('Trade', () => {
         render(mockTrade());
 
         const loginButton = screen.getByText('Login');
-        userEvent.click(loginButton);
+        await userEvent.click(loginButton);
 
         expect(redirectToLogin).toHaveBeenCalled();
     });
 
-    it('should handle sign-up when Create free account button is clicked', () => {
+    it('should handle sign-up when Create free account button is clicked', async () => {
         default_mock_store.common.services_error = {
             code: 'AuthorizationRequired',
             message: 'You need to log in to place a trade',
@@ -265,7 +266,7 @@ describe('Trade', () => {
         render(mockTrade());
 
         const signupButton = screen.getByText('Create free account');
-        userEvent.click(signupButton);
+        await userEvent.click(signupButton);
 
         expect(redirectToSignUp).toHaveBeenCalled();
     });

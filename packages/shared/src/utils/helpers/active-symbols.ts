@@ -5,6 +5,7 @@ import { WS } from '../../services';
 
 import { getLanguage, localize } from '@deriv/translations';
 import { ActiveSymbols } from '@deriv/api-types';
+import { getMarketNamesMap } from '../constants/contract';
 
 type TResidenceList = {
     residence_list: {
@@ -129,12 +130,32 @@ const isSymbolOffered = async (symbol?: string) => {
 
 export type TActiveSymbols = {
     symbol: string;
-    display_name: string;
 }[];
 
-export const getSymbolDisplayName = (active_symbols: TActiveSymbols = [], symbol: string) =>
-    (
-        active_symbols.find(symbol_info => symbol_info.symbol.toUpperCase() === symbol.toUpperCase()) || {
-            display_name: '',
+export const getSymbolDisplayName = (active_symbols: TActiveSymbols = [], symbol: string) => {
+    const market_names_map = getMarketNamesMap() as Record<string, string>;
+    const symbol_upper = symbol.toUpperCase();
+
+    // First try to get display name from the market names map
+    if (market_names_map[symbol_upper]) {
+        return market_names_map[symbol_upper];
+    }
+
+    // Fallback: try to format common symbol patterns
+    if (symbol_upper.startsWith('FRX')) {
+        // Forex symbols like FRXEURUSD -> EUR/USD
+        const currency_pair = symbol_upper.replace('FRX', '');
+        if (currency_pair.length === 6) {
+            return `${currency_pair.slice(0, 3)}/${currency_pair.slice(3)}`;
         }
-    ).display_name;
+    } else if (symbol_upper.startsWith('CRY')) {
+        // Crypto symbols like CRYBTCUSD -> BTC/USD
+        const crypto_pair = symbol_upper.replace('CRY', '');
+        if (crypto_pair.length === 6) {
+            return `${crypto_pair.slice(0, 3)}/${crypto_pair.slice(3)}`;
+        }
+    }
+
+    // If no mapping found, return the symbol as-is
+    return symbol;
+};

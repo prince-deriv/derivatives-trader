@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { observer } from '@deriv/stores';
 import { useTraderStore } from 'Stores/useTraderStores';
 import { useModulesStore } from 'Stores/useModulesStores';
-import { clickAndKeyEventHandler } from '@deriv/shared';
+import { clickAndKeyEventHandler, getSymbolDisplayName } from '@deriv/shared';
 
 type TMarketCategoryItem = {
     item: ActiveSymbols[0];
@@ -87,7 +87,7 @@ const MarketCategoryItem = forwardRef(
                             'market-category-item-symbol--selected': selectedSymbol === item.symbol,
                         })}
                     >
-                        <span>{item.display_name}</span>
+                        <span>{getSymbolDisplayName([], item.symbol)}</span>
                     </Text>
                     {!item.exchange_is_open && (
                         <Tag
