@@ -64,10 +64,6 @@ export default class ClientStore extends BaseStore {
     is_trading_platform_available_account_loaded = false;
     trading_platform_available_accounts = [];
     ctrader_trading_platform_available_accounts = [];
-    pre_switch_broadcast = false;
-    switched = '';
-    is_switching = false;
-    switch_broadcast = false;
     initialized_broadcast = false;
     currencies_list = {};
     residence_list = [];
@@ -195,10 +191,6 @@ export default class ClientStore extends BaseStore {
             is_trading_platform_available_account_loaded: observable,
             trading_platform_available_accounts: observable,
             ctrader_trading_platform_available_accounts: observable,
-            pre_switch_broadcast: observable,
-            switched: observable,
-            is_switching: observable,
-            switch_broadcast: observable,
             initialized_broadcast: observable,
             currencies_list: observable,
             residence_list: observable,
@@ -357,9 +349,7 @@ export default class ClientStore extends BaseStore {
             residence: computed,
             email_address: computed,
             updateAccountList: action.bound,
-            switchAccount: action.bound,
             resetVirtualBalance: action.bound,
-            switchEndSignal: action.bound,
             init: action.bound,
             resetMt5AccountListPopulation: action.bound,
             responseWebsiteStatus: action.bound,
@@ -368,15 +358,10 @@ export default class ClientStore extends BaseStore {
             setStandpoint: action.bound,
             setLoginId: action.bound,
             setAccounts: action.bound,
-            setSwitched: action.bound,
             setUrlParams: action.bound,
             setIsAuthorize: action.bound,
             setIsLoggingIn: action.bound,
             setIsSingleLoggingIn: action.bound,
-            setPreSwitchAccount: action.bound,
-            broadcastAccountChange: action.bound,
-            switchAccountHandler: action.bound,
-            registerReactions: action.bound,
             setBalanceActiveAccount: action.bound,
             setBalanceOtherAccounts: action.bound,
             selectCurrency: action.bound,
@@ -1343,7 +1328,6 @@ export default class ClientStore extends BaseStore {
         LocalStore.set(storage_key, JSON.stringify(client_accounts));
         this.is_populating_account_list = false;
         this.upgrade_info = this.getBasicUpgradeInfo();
-        this.setSwitched(client_id);
         this.syncWithLegacyPlatforms(client_id, client_accounts);
     }
 
@@ -1489,26 +1473,6 @@ export default class ClientStore extends BaseStore {
         });
     }
 
-    /**
-     * Switch to the given loginid account.
-     *
-     * @param {string} loginid
-     */
-    async switchAccount(loginid) {
-        if (!loginid || this.is_logging_in) return;
-
-        this.setPreSwitchAccount(true);
-        this.setIsLoggingIn(true);
-        this.root_store.notifications.removeNotifications(true);
-        this.root_store.notifications.removeTradeNotifications();
-        this.root_store.notifications.removeAllNotificationMessages(true);
-        if (!this.is_virtual && /VRTC|VRW/.test(loginid)) {
-            this.setPrevRealAccountLoginid(this.loginid);
-        }
-        this.setSwitched(loginid);
-        this.responsePayoutCurrencies(await WS.authorized.payoutCurrencies());
-    }
-
     async resetVirtualBalance() {
         if (this.is_tradershub_tracking) {
             Analytics.trackEvent('ce_tradershub_dashboard_form', {
@@ -1524,10 +1488,6 @@ export default class ClientStore extends BaseStore {
             should_show_again: true,
         });
         await WS.authorized.topupVirtual();
-    }
-
-    switchEndSignal() {
-        this.switch_broadcast = false;
     }
 
     /**
@@ -1592,7 +1552,6 @@ export default class ClientStore extends BaseStore {
             });
             this.setIsLoggingIn(false);
             this.setInitialized(false);
-            this.setSwitched('');
             return false;
         }
 
@@ -1611,7 +1570,6 @@ export default class ClientStore extends BaseStore {
             );
         this.user_id = LocalStore.get('active_user_id');
         this.setAccounts(LocalStore.getObject(storage_key));
-        this.setSwitched('');
         if (action_param === 'request_email' && this.is_logged_in) {
             const request_email_code = code_param ?? LocalStore.get(`verification_code.${action_param}`) ?? '';
             if (request_email_code) {
@@ -1670,11 +1628,6 @@ export default class ClientStore extends BaseStore {
             if (!this.is_virtual) {
                 this.setPrevRealAccountLoginid(this.loginid);
             }
-            const no_cr_account = this.active_accounts.some(acc => acc.landing_company_shortcode === 'svg');
-
-            if (!no_cr_account && this.is_low_risk) {
-                this.switchAccount(this.virtual_account_loginid);
-            }
         }
         this.selectCurrency('');
 
@@ -1726,7 +1679,6 @@ export default class ClientStore extends BaseStore {
         }
         this.responseWebsiteStatus(await WS.wait('website_status'));
 
-        this.registerReactions();
         this.setIsLoggingIn(false);
         this.setInitialized(true);
 
@@ -1793,10 +1745,6 @@ export default class ClientStore extends BaseStore {
 
     setAccounts(accounts) {
         this.accounts = accounts;
-    }
-
-    setSwitched(switched) {
-        this.switched = switched;
     }
 
     /**
@@ -1918,20 +1866,6 @@ export default class ClientStore extends BaseStore {
         this.is_single_logging_in = bool;
     }
 
-    setPreSwitchAccount(is_pre_switch) {
-        this.pre_switch_broadcast = is_pre_switch;
-    }
-
-    broadcastAccountChange() {
-        this.switch_broadcast = true;
-    }
-
-    broadcastAccountChangeAfterAuthorize() {
-        return BinarySocket?.wait('authorize')?.then(() => {
-            this.broadcastAccountChange();
-        });
-    }
-
     handleNotFoundLoginId() {
         // Logout if the switched_account doesn't belong to any loginid.
         this.root_store.notifications.addNotificationMessage({
@@ -1942,88 +1876,9 @@ export default class ClientStore extends BaseStore {
         this.logout();
     }
 
+    // For single account model, we always have a valid login ID if we're logged in
     isUnableToFindLoginId() {
-        return !this.all_loginids.some(id => id !== this.switched) || this.switched === this.loginid;
-    }
-
-    async switchAccountHandler() {
-        if (!this.switched || !this.switched.length) {
-            if (this.isUnableToFindLoginId()) {
-                this.handleNotFoundLoginId();
-                return;
-            }
-
-            // Send a toast message to let the user know we can't switch his account.
-            this.root_store.notifications.addNotificationMessage({
-                message: localize('Switching to default account.'),
-                type: 'info',
-            });
-
-            // switch to default account.
-            this.switchAccount(this.all_loginids[0]);
-            await this.switchAccountHandler();
-            return;
-        }
-
-        const switched_account = this.getAccount(this.switched);
-        if (!switched_account?.token) {
-            this.handleNotFoundLoginId();
-            return;
-        }
-
-        runInAction(() => (this.is_switching = true));
-        this.setIsAuthorize(false);
-        const from_login_id = this.loginid;
-        this.resetLocalStorageValues(this.switched);
-        SocketCache.clear();
-
-        // if real to virtual --> switch to blue
-        // if virtual to real --> switch to green
-        // else keep the existing connection
-        const should_switch_socket_connection = this.is_virtual || /VRTC|VRW/.test(from_login_id);
-
-        if (should_switch_socket_connection) {
-            BinarySocket.closeAndOpenNewConnection();
-            await BinarySocket?.wait('authorize');
-        } else {
-            await WS.forgetAll('balance');
-            await BinarySocket.authorize(switched_account.token);
-        }
-        if (this.root_store.common.has_error) this.root_store.common.setError(false, null);
-        sessionStorage.setItem('active_tab', '1');
-
-        // set local storage
-        this.root_store.gtm.setLoginFlag();
-        await this.init();
-
-        // broadcastAccountChange is already called after new connection is authorized
-        if (!should_switch_socket_connection) this.broadcastAccountChange();
-
-        runInAction(() => (this.is_switching = false));
-
-        if (this.root_store.contract_trade) {
-            this.root_store.contract_trade.setBarriersLoadingState(false);
-
-            if (this.root_store.modules?.trade?.contract_type === 'ACCU') {
-                this.root_store.modules.trade.requestProposal();
-            }
-        }
-    }
-
-    registerReactions() {
-        // Switch account reactions.
-        when(
-            () => this.switched,
-            () => {
-                // Remove real account notifications upon switching to virtual
-                if (this.accounts[this.switched]?.is_virtual) {
-                    this.root_store.notifications.removeNotifications(true);
-                    this.root_store.notifications.removeAllNotificationMessages();
-                }
-
-                this.switchAccountHandler();
-            }
-        );
+        return false; // Always return false for single account model
     }
 
     setBalanceActiveAccount(obj_balance) {
@@ -2563,14 +2418,12 @@ export default class ClientStore extends BaseStore {
     }
 
     async switchToNewlyCreatedAccount(client_id, oauth_token, currency) {
-        this.setPreSwitchAccount(true);
         const new_user_login = {
             acct1: client_id,
             token1: oauth_token,
             curr1: currency,
         };
         await this.init(new_user_login);
-        this.broadcastAccountChange();
     }
 
     fetchAccountSettings() {

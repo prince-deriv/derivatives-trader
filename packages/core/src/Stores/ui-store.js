@@ -29,8 +29,6 @@ export default class UIStore extends BaseStore {
     is_settings_modal_on = false;
     is_language_settings_modal_on = false;
     is_mobile_language_menu_open = false;
-    is_accounts_switcher_on = false;
-    account_switcher_disabled_message = '';
 
     has_only_forward_starting_contracts = false;
 
@@ -195,7 +193,6 @@ export default class UIStore extends BaseStore {
 
         makeObservable(this, {
             account_needed_modal_props: observable,
-            account_switcher_disabled_message: observable,
             has_only_forward_starting_contracts: observable,
             is_services_error_visible: observable,
             is_link_expired_modal_visible: observable,
@@ -228,8 +225,6 @@ export default class UIStore extends BaseStore {
             is_account_needed_modal_on: observable,
             is_forced_to_exit_pnv: observable,
             is_phone_verification_completed: observable,
-
-            is_accounts_switcher_on: observable,
 
             is_app_disabled: observable,
             is_cfd_page: observable,
@@ -295,7 +290,6 @@ export default class UIStore extends BaseStore {
             handleResize: action.bound,
             init: action.bound,
             installWithDeferredPrompt: action.bound,
-            is_account_switcher_disabled: computed,
             is_desktop: computed,
             is_mobile: computed,
             is_tablet: computed,
@@ -317,7 +311,6 @@ export default class UIStore extends BaseStore {
             resetRealAccountSignupParams: action.bound,
             resetRealAccountSignupTarget: action.bound,
             setShouldShowPhoneNumberOTP: action.bound,
-            setAccountSwitcherDisabledMessage: action.bound,
             setAppContentsScrollRef: action.bound,
             setChartCountdown: action.bound,
             setChartLayout: action.bound,
@@ -354,7 +347,6 @@ export default class UIStore extends BaseStore {
             setIsMFVericationPendingModal: action.bound,
             setIsTradingDisabledByResidenceModal: action.bound,
             setMobileLanguageMenuOpen: action.bound,
-            toggleAccountsDialog: action.bound,
             toggleCancellationWarning: action.bound,
             toggleHistoryTab: action.bound,
             toggleOnScreenKeyboard: action.bound,
@@ -465,10 +457,6 @@ export default class UIStore extends BaseStore {
         return MAX_MOBILE_WIDTH < this.screen_width && this.screen_width <= MAX_TABLET_WIDTH;
     }
 
-    get is_account_switcher_disabled() {
-        return !!this.account_switcher_disabled_message;
-    }
-
     setRouteModal() {
         this.is_route_modal_on = true;
     }
@@ -483,19 +471,6 @@ export default class UIStore extends BaseStore {
 
     enableApp() {
         this.is_app_disabled = false;
-    }
-
-    toggleAccountsDialog(status = !this.is_accounts_switcher_on) {
-        this.is_accounts_switcher_on = status;
-    }
-
-    setAccountSwitcherDisabledMessage(message) {
-        if (message) {
-            this.is_accounts_switcher_on = false;
-            this.account_switcher_disabled_message = message;
-        } else {
-            this.account_switcher_disabled_message = '';
-        }
     }
 
     setIsFromSignupAccount(is_from_signup_account) {
@@ -596,7 +571,6 @@ export default class UIStore extends BaseStore {
                 this.is_real_acc_signup_on = true;
             }
             this.real_account_signup_target = target;
-            this.is_accounts_switcher_on = false;
             localStorage.removeItem('current_question_index');
         }
     }

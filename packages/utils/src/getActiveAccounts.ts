@@ -5,15 +5,6 @@ import { requestSessionActive } from '@deriv-com/auth-client';
 import Chat from './chat';
 import isTmbEnabled from './isTmbEnabled';
 
-type TMBApiReturnedValue = {
-    tokens?: {
-        loginid: string;
-        token: string;
-        cur: string;
-    };
-    active?: boolean;
-};
-
 const domains = ['deriv.com', 'deriv.dev', 'binary.sx', 'pages.dev', 'localhost', 'deriv.be', 'deriv.me'];
 function endChat() {
     window.LC_API?.close_chat?.();
@@ -93,128 +84,38 @@ const getActiveAccounts = async () => {
 
         localStorage.setItem('clientAccounts', activeSessionTokens);
 
-        // Get account from URL params and set the loginid to session storage
-        const params = new URLSearchParams(location.search);
-        let account = params.get('account');
-        const loginID =
-            params.get('loginid') ||
-            sessionStorage.getItem('active_wallet_loginid') ||
-            sessionStorage.getItem('active_loginid');
+        // COMMENTED OUT: Multi-account selection logic for single account model
+        // For single account model, just use the first/primary account
+        const tokens = Array.isArray(activeSessions.tokens)
+            ? activeSessions.tokens
+            : activeSessions.tokens
+              ? [activeSessions.tokens]
+              : [];
+        const primaryAccount = tokens.length > 0 ? tokens[0] : null;
 
-        // If no account in params, determine from first available account
-        if (!account && !loginID && activeSessions?.tokens?.length > 0) {
-            const firstAccount = activeSessions.tokens[0];
-
-            // Set account based on account type (demo or real)
-            account = firstAccount.loginid.startsWith('VR') ? 'demo' : firstAccount.cur;
+        if (primaryAccount) {
+            // Set single account in session storage
+            const isWallet =
+                primaryAccount.loginid.startsWith('CRW') ||
+                primaryAccount.loginid.startsWith('MFW') ||
+                primaryAccount.loginid.startsWith('VRW');
+            setAccountInSessionStorage(primaryAccount.loginid, isWallet);
 
             // Update URL params to reflect the selected account
+            const params = new URLSearchParams(location.search);
+            const account = primaryAccount.loginid.startsWith('VR') ? 'demo' : primaryAccount.cur;
             params.set('account', account ?? '');
             const newUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
             window.history.replaceState({}, '', newUrl);
-        } else if (!account && loginID && activeSessions?.tokens?.length > 0) {
-            // Handle case where loginID is provided in query params
-            const matchingToken = activeSessions.tokens.find(token => token.loginid === loginID);
-
-            if (matchingToken) {
-                // Set account based on the loginID's currency and type
-                account = matchingToken.loginid.startsWith('VR') ? 'demo' : matchingToken.cur;
-
-                // Update URL params to reflect the selected account
-                params.set('account', account ?? '');
-                const newUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
-                window.history.replaceState({}, '', newUrl);
-            } else {
-                const firstAccount = activeSessions.tokens[0];
-
-                // Set account based on account type (demo or real)
-                account = firstAccount.loginid.startsWith('VR') ? 'demo' : firstAccount.cur;
-
-                // Update URL params to reflect the selected account
-                params.set('account', account ?? '');
-                const newUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
-                window.history.replaceState({}, '', newUrl);
-            }
         }
 
-        if (account?.toLocaleUpperCase() === 'DEMO') {
-            // Handle account selection based on type (demo or real)
-            // For demo accounts, find virtual accounts with USD currency
-            const demoAccount = activeSessions?.tokens?.find(
-                item => item?.cur?.toLocaleUpperCase() === 'USD' && item.loginid.startsWith('VRTC')
-            );
-
-            const demoWalletAccount = activeSessions?.tokens?.find(
-                item => item?.cur?.toLocaleUpperCase() === 'USD' && item.loginid.startsWith('VRW')
-            );
-
-            if (!demoAccount && (sessionStorage.getItem('active_loginid') || localStorage.getItem('active_loginid'))) {
-                sessionStorage.removeItem('active_loginid');
-                localStorage.removeItem('active_loginid');
-            }
-
-            if (
-                !demoWalletAccount &&
-                (sessionStorage.getItem('active_wallet_loginid') || localStorage.getItem('active_wallet_loginid'))
-            ) {
-                sessionStorage.removeItem('active_wallet_loginid');
-                localStorage.removeItem('active_wallet_loginid');
-            }
-
-            setAccountInSessionStorage(demoAccount?.loginid);
-            setAccountInSessionStorage(demoWalletAccount?.loginid, true);
-        } else {
-            // For real accounts, find accounts matching the selected currency
-            const realAccount = activeSessions?.tokens?.find(
-                item =>
-                    item?.cur?.toLocaleUpperCase() === account?.toLocaleUpperCase() &&
-                    ((item?.loginid.startsWith('CR') && !item?.loginid.startsWith('CRW')) ||
-                        (item?.loginid.startsWith('MF') && !item.loginid.startsWith('MFW')))
-            );
-
-            const realWalletAccount = activeSessions?.tokens?.find(
-                item =>
-                    item?.cur?.toLocaleUpperCase() === account?.toLocaleUpperCase() &&
-                    (item?.loginid.startsWith('CRW') || item?.loginid.startsWith('MFW'))
-            );
-
-            // Check if stored loginid exists in active sessions before removing
-            const storedLoginid = sessionStorage.getItem('active_loginid') || localStorage.getItem('active_loginid');
-            const storedWalletLoginid =
-                sessionStorage.getItem('active_wallet_loginid') || localStorage.getItem('active_wallet_loginid');
-
-            const storedLoginidExists =
-                storedLoginid && activeSessions?.tokens?.some(token => token.loginid === storedLoginid);
-            const storedWalletLoginidExists =
-                storedWalletLoginid && activeSessions?.tokens?.some(token => token.loginid === storedWalletLoginid);
-
-            if (!realAccount && storedLoginid && !storedLoginidExists) {
-                sessionStorage.removeItem('active_loginid');
-                localStorage.removeItem('active_loginid');
-            }
-
-            if (!realWalletAccount && storedWalletLoginid && !storedWalletLoginidExists) {
-                sessionStorage.removeItem('active_wallet_loginid');
-                localStorage.removeItem('active_wallet_loginid');
-            }
-
-            // If we have a stored loginid that exists in active sessions, use that instead of realAccount
-            const accountToUse = realAccount ?? activeSessions?.tokens?.find(token => token.loginid === storedLoginid);
-            const walletAccountToUse =
-                realWalletAccount ?? activeSessions?.tokens?.find(token => token.loginid === storedWalletLoginid);
-
-            setAccountInSessionStorage(accountToUse?.loginid);
-            setAccountInSessionStorage(walletAccountToUse?.loginid, true);
+        // Simplified result for single account model
+        const convertedResult: Record<string, string> = {};
+        if (primaryAccount) {
+            convertedResult.acct1 = primaryAccount.loginid;
+            convertedResult.token1 = primaryAccount.token;
+            convertedResult.cur1 = primaryAccount.cur;
         }
-
-        const convertedResult = {};
-
-        activeSessions.tokens.forEach((account: TMBApiReturnedValue['tokens'], index: number) => {
-            const num = index + 1;
-            account?.loginid && ((convertedResult as Record<string, string>)[`acct${num}`] = account.loginid);
-            account?.token && ((convertedResult as Record<string, string>)[`token${num}`] = account.token);
-            account?.cur && ((convertedResult as Record<string, string>)[`cur${num}`] = account.cur);
-        });
 
         return shouldReinitializeClientStore ? convertedResult : undefined;
     }
