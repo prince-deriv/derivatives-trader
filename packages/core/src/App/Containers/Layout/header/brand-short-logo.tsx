@@ -1,14 +1,14 @@
 import { StaticUrl } from '@deriv/components';
-import DerivBrandShortLogo from 'Assets/SvgComponents/header/deriv-logo-short.svg';
+import BrandShortLogoSVG from 'Assets/SvgComponents/header/brand-short-logo.svg';
 
-const DerivShortLogo = () => {
+const BrandShortLogo = () => {
     return (
         <div className='header__menu-left-logo'>
             <StaticUrl href='/'>
-                <DerivBrandShortLogo />
+                <BrandShortLogoSVG />
             </StaticUrl>
         </div>
     );
 };
 
-export default DerivShortLogo;
+export default BrandShortLogo;

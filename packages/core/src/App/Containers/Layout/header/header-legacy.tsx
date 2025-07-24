@@ -14,12 +14,11 @@ import ToggleMenuDrawerAccountsOS from 'App/Components/Layout/Header/toggle-menu
 import platform_config from 'App/Constants/platform-config';
 import NewVersionNotification from 'App/Containers/new-version-notification.jsx';
 
-import DerivShortLogo from './deriv-short-logo';
+import BrandShortLogo from './brand-short-logo';
 import HeaderAccountActions from './header-account-actions';
-import TradersHubHomeButton from './traders-hub-home-button';
 
 const HeaderLegacy = observer(() => {
-    const { client, common, ui, notifications, traders_hub } = useStore();
+    const { client, common, ui, notifications } = useStore();
     const {
         currency,
         has_any_real_account,
@@ -112,7 +111,7 @@ const HeaderLegacy = observer(() => {
                 <div className='header__menu-left'>
                     {isDesktop ? (
                         <React.Fragment>
-                            <DerivShortLogo />
+                            <BrandShortLogo />
                             <div className='header__divider' />
                             {/* <TradersHubHomeButton /> */}
                         </React.Fragment>
@@ -123,12 +122,12 @@ const HeaderLegacy = observer(() => {
                                     <ToggleMenuDrawerAccountsOS
                                         platform_config={filterPlatformsForClients(platform_config)}
                                     />
-                                    <DerivShortLogo />
+                                    <BrandShortLogo />
                                 </>
                             ) : (
                                 <>
                                     <ToggleMenuDrawer platform_config={filterPlatformsForClients(platform_config)} />
-                                    <DerivShortLogo />
+                                    <BrandShortLogo />
                                     {header_extension && is_logged_in && (
                                         <div className='header__menu-left-extensions'>{header_extension}</div>
                                     )}

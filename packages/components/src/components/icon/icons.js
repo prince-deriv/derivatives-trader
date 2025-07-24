@@ -86,6 +86,7 @@ import './brand/ic-brand-dmt5-financial-stp.svg';
 import './brand/ic-brand-dmt5-financial.svg';
 import './brand/ic-brand-dmt5-synthetics.svg';
 import './brand/ic-brand-dxtrade-wordmark.svg';
+import './brand/ic-brand-short-logo.svg';
 import './cashier/ic-cashier-add.svg';
 import './cashier/ic-cashier-air-tm-dark.svg';
 import './cashier/ic-cashier-air-tm-light.svg';
