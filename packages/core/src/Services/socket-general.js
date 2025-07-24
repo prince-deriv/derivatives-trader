@@ -75,17 +75,16 @@ const BinarySocketGeneral = (() => {
                     }
                     client_store.logout();
                 } else if (!/authorize/.test(State.get('skip_response'))) {
-                    // is_populating_account_list is a check to avoid logout on the first logged-in session
-                    // In any other case, if the response loginid does not match the store's loginid, user must be logged out
-                    if (
-                        response.authorize.loginid !== client_store.loginid &&
-                        !client_store.is_populating_account_list &&
-                        !client_store.is_switching
-                    ) {
-                        client_store.logout();
-                    } else if (response.authorize.loginid === client_store.loginid) {
-                        // All other cases continue with the loginid and authorize the profile
+                    // Simplified authorization for single account model
+                    if (response.authorize.loginid === client_store.loginid) {
                         authorizeAccount(response);
+                    } else if (client_store.is_populating_account_list) {
+                        // During initial login, allow loginid mismatch and update the store
+                        client_store.setLoginId(response.authorize.loginid);
+                        authorizeAccount(response);
+                    } else {
+                        // Only logout if it's not during initial account population
+                        client_store.logout();
                     }
                 }
                 break;
