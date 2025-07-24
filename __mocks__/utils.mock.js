@@ -31,9 +31,6 @@ module.exports = {
     getTruncatedString: jest.fn((str, length) => str?.substring(0, length) || ''),
     unFormatLocaleString: jest.fn(str => str),
 
-    // Data formatting functions
-    getLoginHistoryFormattedData: jest.fn(() => []),
-
     // Feature flag functions
     getFeatureFlag: jest.fn(() => false),
 

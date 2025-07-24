@@ -67,8 +67,6 @@ jest.mock('../header-account-actions', () =>
 
 jest.mock('../traders-hub-home-button', () => jest.fn(() => <div>Mocked Traders Home Button</div>));
 
-jest.mock('../deriv-short-logo', () => jest.fn(() => <div>Deriv Short Logo</div>));
-
 describe('HeaderLegacy', () => {
     const history = createBrowserHistory();
     const default_mock = {

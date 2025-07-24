@@ -308,7 +308,7 @@ const ToggleMenuDrawer = observer(() => {
                                 <MobileDrawer.Item>
                                     <MenuLink
                                         link_to={getStaticUrl('/')}
-                                        icon='IcDerivShortLogo'
+                                        icon='IcBrandShortLogo'
                                         text='Deriv.com'
                                         onClickLink={toggleDrawer}
                                     />

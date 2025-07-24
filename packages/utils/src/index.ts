@@ -8,7 +8,6 @@ export { default as getToken } from './getToken';
 export { default as groupTransactionsByDay } from './groupTransactionsByDay';
 export { default as getTruncatedString } from './getTruncatedString';
 export { default as unFormatLocaleString } from './unFormatLocaleString';
-export { default as getLoginHistoryFormattedData } from './getLoginHistoryFormattedData';
 export { default as getFeatureFlag } from './getFeatureFlag';
 export { default as Chat } from './chat';
 export { default as getTmbToken } from './getTmbToken';
