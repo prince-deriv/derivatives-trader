@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 
 import { Loading } from '@deriv/components';
 import { useLocalStorageData } from '@deriv/hooks';
+import { getSymbolDisplayName } from '@deriv/shared';
 import { useStore } from '@deriv/stores';
 
 import AccumulatorStats from 'AppV2/Components/AccumulatorStats';
@@ -65,8 +66,8 @@ const Trade = observer(() => {
 
     const symbols = React.useMemo(
         () =>
-            active_symbols.map(({ display_name, symbol: underlying }) => ({
-                text: display_name,
+            active_symbols.map(({ symbol: underlying }) => ({
+                text: getSymbolDisplayName([], underlying),
                 value: underlying,
             })),
         [active_symbols]

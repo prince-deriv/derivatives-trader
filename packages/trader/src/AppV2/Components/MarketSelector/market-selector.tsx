@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import ActiveSymbolsList from '../ActiveSymbolsList';
-import useActiveSymbols from 'AppV2/Hooks/useActiveSymbols';
-import SymbolIconsMapper from '../SymbolIconsMapper/symbol-icons-mapper';
-import { CaptionText, Skeleton, Tag, Text, useSnackbar } from '@deriv-com/quill-ui';
-import { Localize } from '@deriv/translations';
+
 import { LabelPairedChevronDownMdRegularIcon } from '@deriv/quill-icons';
+import { getMarketNamesMap, getSymbolDisplayName } from '@deriv/shared';
 import { observer } from '@deriv/stores';
-import { useTraderStore } from 'Stores/useTraderStores';
-import { getMarketNamesMap } from '@deriv/shared';
+import { Localize } from '@deriv/translations';
+import { CaptionText, Skeleton, Tag, Text, useSnackbar } from '@deriv-com/quill-ui';
+
+import useActiveSymbols from 'AppV2/Hooks/useActiveSymbols';
 import useContractsForCompany from 'AppV2/Hooks/useContractsForCompany';
 import { TContractType } from 'Modules/Trading/Components/Form/ContractType/types';
+import { useTraderStore } from 'Stores/useTraderStores';
+
+import ActiveSymbolsList from '../ActiveSymbolsList';
+import SymbolIconsMapper from '../SymbolIconsMapper/symbol-icons-mapper';
 
 const MarketSelector = observer(() => {
     const [isOpen, setIsOpen] = useState(false);
@@ -75,7 +78,12 @@ const MarketSelector = observer(() => {
                     <SymbolIconsMapper symbol={storeSymbol} />
                     <div className='market-selector-info'>
                         <div className='market-selector-info__label'>
-                            <Text bold>{currentSymbol?.display_name}</Text>
+                            <Text bold>
+                                {getSymbolDisplayName(
+                                    [],
+                                    (currentSymbol as any)?.underlying_symbol || currentSymbol?.symbol || ''
+                                )}
+                            </Text>
                             {!currentSymbol?.exchange_is_open && (
                                 <Tag
                                     label={<Localize key='closed' i18n_default_text='CLOSED' />}
@@ -87,11 +95,11 @@ const MarketSelector = observer(() => {
                             )}
                             <LabelPairedChevronDownMdRegularIcon fill='var(--component-textIcon-normal-default' />
                         </div>
-                        {current_spot ? (
+                        {/* {current_spot ? (
                             <CaptionText className='market-selector-info__price'>{current_spot}</CaptionText>
                         ) : (
                             current_spot_replacement
-                        )}
+                        )} */}
                     </div>
                 </div>
             </div>

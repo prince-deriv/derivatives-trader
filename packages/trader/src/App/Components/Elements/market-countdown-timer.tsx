@@ -1,11 +1,13 @@
-import classNames from 'classnames';
 import React from 'react';
-import { Text } from '@deriv/components';
-import { useIsMounted, WS, convertTimeFormat, isMarketClosed, toMoment } from '@deriv/shared';
-import { Localize } from '@deriv/translations';
-import { observer, useStore } from '@deriv/stores';
-import { useTraderStore } from 'Stores/useTraderStores';
+import classNames from 'classnames';
+
 import { TradingTimesRequest, TradingTimesResponse } from '@deriv/api-types';
+import { Text } from '@deriv/components';
+import { convertTimeFormat, isMarketClosed, toMoment, useIsMounted, WS } from '@deriv/shared';
+import { observer, useStore } from '@deriv/stores';
+import { Localize } from '@deriv/translations';
+
+import { useTraderStore } from 'Stores/useTraderStores';
 
 type TMarketCountDownTimer = {
     is_main_page: boolean;
@@ -42,7 +44,7 @@ const getSymbol = (
         if (submarkets) {
             for (let j = 0; j < submarkets.length; j++) {
                 const { symbols } = submarkets[j];
-                symbol = symbols?.find(item => item.symbol === target_symbol);
+                symbol = symbols?.find(item => ((item as any).underlying_symbol || item.symbol) === target_symbol);
                 if (symbol !== undefined) return symbol;
             }
         }

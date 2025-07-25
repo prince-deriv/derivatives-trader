@@ -1,14 +1,18 @@
 import React from 'react';
+
 import { ActiveSymbols } from '@deriv/api-types';
-import { useDevice } from '@deriv-com/ui';
 import { ChartBarrierStore } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
+import { useDevice } from '@deriv-com/ui';
+
+import { SmartChart } from 'Modules/SmartChart';
 import { useTraderStore } from 'Stores/useTraderStores';
-import { ChartBottomWidgets } from './chart-widgets';
+
 import AccumulatorsChartElements from '../../SmartChart/Components/Markers/accumulators-chart-elements';
 import ToolbarWidgets from '../../SmartChart/Components/toolbar-widgets';
+
+import { ChartBottomWidgets } from './chart-widgets';
 import type { TBottomWidgetsParams } from './trade';
-import { SmartChart } from 'Modules/SmartChart';
 
 type TTradeChartProps = {
     bottomWidgets?: (props: TBottomWidgetsParams) => React.ReactElement;
@@ -87,7 +91,9 @@ const TradeChart = observer((props: TTradeChartProps) => {
         const has_synthetic_index = active_symbols.some(s => s.market === synthetic_index);
         return active_symbols
             .slice()
-            .sort((a, b) => (a.display_name < b.display_name ? -1 : 1))
+            .sort((a, b) =>
+                ((a as any).underlying_symbol || a.symbol) < ((b as any).underlying_symbol || b.symbol) ? -1 : 1
+            )
             .map(s => s.market)
             .reduce(
                 (arr, market) => {
@@ -105,70 +111,71 @@ const TradeChart = observer((props: TTradeChartProps) => {
 
     if (!symbol || !active_symbols.length) return null;
     return (
-        <SmartChart
-            ref={ref}
-            barriers={barriers}
-            contracts_array={markers_array}
-            bottomWidgets={(is_accumulator || show_digits_stats) && !isMobile ? bottomWidgets : props.bottomWidgets}
-            crosshair={isMobile ? 0 : undefined}
-            crosshairTooltipLeftAllow={560}
-            showLastDigitStats={show_digits_stats}
-            chartControlsWidgets={null}
-            chartStatusListener={(v: boolean) => setChartStatus(!v, true)}
-            chartType={chart_type}
-            initialData={{
-                activeSymbols: JSON.parse(JSON.stringify(active_symbols)),
-            }}
-            chartData={{
-                activeSymbols: JSON.parse(JSON.stringify(active_symbols)),
-            }}
-            feedCall={{
-                activeSymbols: false,
-            }}
-            enabledNavigationWidget={!isMobile}
-            enabledChartFooter={false}
-            id='trade'
-            isMobile={isMobile}
-            maxTick={isMobile ? max_ticks : undefined}
-            granularity={show_digits_stats || is_accumulator ? 0 : granularity}
-            requestAPI={wsSendRequest}
-            requestForget={wsForget}
-            requestForgetStream={wsForgetStream}
-            requestSubscribe={wsSubscribe}
-            settings={settings}
-            allowTickChartTypeOnly={show_digits_stats || is_accumulator}
-            stateChangeListener={chartStateChange}
-            symbol={symbol}
-            topWidgets={is_trade_enabled ? topWidgets : null}
-            isConnectionOpened={is_socket_opened}
-            clearChart={false}
-            toolbarWidget={() => {
-                return <ToolbarWidgets updateChartType={updateChartType} updateGranularity={updateGranularity} />;
-            }}
-            importedLayout={chart_layout}
-            onExportLayout={exportLayout}
-            shouldFetchTradingTimes={false}
-            hasAlternativeSource={has_alternative_source}
-            getMarketsOrder={getMarketsOrder}
-            should_zoom_out_on_yaxis={is_accumulator}
-            yAxisMargin={{
-                top: isMobile ? 76 : 106,
-            }}
-            isLive
-            leftMargin={!isMobile && is_positions_drawer_on ? 328 : 80}
-        >
-            {is_accumulator && (
-                <AccumulatorsChartElements
-                    all_positions={all_positions}
-                    current_spot={current_spot}
-                    current_spot_time={current_spot_time}
-                    has_crossed_accu_barriers={has_crossed_accu_barriers}
-                    should_show_profit_text={!!accumulator_contract_barriers_data.accumulators_high_barrier}
-                    symbol={symbol}
-                    is_mobile={isMobile}
-                />
-            )}
-        </SmartChart>
+        // <SmartChart
+        //     ref={ref}
+        //     barriers={barriers}
+        //     contracts_array={markers_array}
+        //     bottomWidgets={(is_accumulator || show_digits_stats) && !isMobile ? bottomWidgets : props.bottomWidgets}
+        //     crosshair={isMobile ? 0 : undefined}
+        //     crosshairTooltipLeftAllow={560}
+        //     showLastDigitStats={show_digits_stats}
+        //     chartControlsWidgets={null}
+        //     chartStatusListener={(v: boolean) => setChartStatus(!v, true)}
+        //     chartType={chart_type}
+        //     initialData={{
+        //         activeSymbols: JSON.parse(JSON.stringify(active_symbols)),
+        //     }}
+        //     chartData={{
+        //         activeSymbols: JSON.parse(JSON.stringify(active_symbols)),
+        //     }}
+        //     feedCall={{
+        //         activeSymbols: false,
+        //     }}
+        //     enabledNavigationWidget={!isMobile}
+        //     enabledChartFooter={false}
+        //     id='trade'
+        //     isMobile={isMobile}
+        //     maxTick={isMobile ? max_ticks : undefined}
+        //     granularity={show_digits_stats || is_accumulator ? 0 : granularity}
+        //     requestAPI={wsSendRequest}
+        //     requestForget={wsForget}
+        //     requestForgetStream={wsForgetStream}
+        //     requestSubscribe={wsSubscribe}
+        //     settings={settings}
+        //     allowTickChartTypeOnly={show_digits_stats || is_accumulator}
+        //     stateChangeListener={chartStateChange}
+        //     symbol={symbol}
+        //     topWidgets={is_trade_enabled ? topWidgets : null}
+        //     isConnectionOpened={is_socket_opened}
+        //     clearChart={false}
+        //     toolbarWidget={() => {
+        //         return <ToolbarWidgets updateChartType={updateChartType} updateGranularity={updateGranularity} />;
+        //     }}
+        //     importedLayout={chart_layout}
+        //     onExportLayout={exportLayout}
+        //     shouldFetchTradingTimes={false}
+        //     hasAlternativeSource={has_alternative_source}
+        //     getMarketsOrder={getMarketsOrder}
+        //     should_zoom_out_on_yaxis={is_accumulator}
+        //     yAxisMargin={{
+        //         top: isMobile ? 76 : 106,
+        //     }}
+        //     isLive
+        //     leftMargin={!isMobile && is_positions_drawer_on ? 328 : 80}
+        // >
+        //     {is_accumulator && (
+        //         <AccumulatorsChartElements
+        //             all_positions={all_positions}
+        //             current_spot={current_spot}
+        //             current_spot_time={current_spot_time}
+        //             has_crossed_accu_barriers={has_crossed_accu_barriers}
+        //             should_show_profit_text={!!accumulator_contract_barriers_data.accumulators_high_barrier}
+        //             symbol={symbol}
+        //             is_mobile={isMobile}
+        //         />
+        //     )}
+        // </SmartChart>
+        <>Chart here</>
     );
 });
 export default TradeChart;

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Icon, InlineMessage, Text } from '@deriv/components';
-import { CONTRACT_STORAGE_VALUES, TRADE_TYPES } from '@deriv/shared';
+import { CONTRACT_STORAGE_VALUES, TRADE_TYPES, getSymbolDisplayName } from '@deriv/shared';
 
 import { observer, useStore } from '@deriv/stores';
 import { Localize, localize } from '@deriv/translations';
@@ -302,7 +302,7 @@ const ContractTypeWidget = observer(
                     <Localize
                         i18n_default_text='Some trade types are unavailable for {{symbol}}.'
                         values={{
-                            symbol: active_symbols.find(s => s.symbol === symbol)?.display_name,
+                            symbol: getSymbolDisplayName([], symbol),
                         }}
                         shouldUnescape
                     />

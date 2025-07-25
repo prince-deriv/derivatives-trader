@@ -17,21 +17,9 @@ export const buildForwardStartingConfig = (
 ) => {
     const forward_starting_config: TConfig = [];
 
-    if ((contract.forward_starting_options || []).length) {
-        (contract.forward_starting_options ?? []).forEach(option => {
-            const duplicated_option = forward_starting_config.find(opt => opt.value === parseInt(option.date ?? ''));
-            const current_session = { open: toMoment(option.open), close: toMoment(option.close) };
-            if (duplicated_option) {
-                duplicated_option.sessions.push(current_session);
-            } else {
-                forward_starting_config.push({
-                    text: toMoment(option.date).format('ddd - DD MMM, YYYY'),
-                    value: parseInt(option.date ?? ''),
-                    sessions: [current_session],
-                });
-            }
-        });
-    }
+    // forward_starting_options property has been removed from the API
+    // This function now returns the fallback forward_starting_dates or empty config
+    // since forward starting options are no longer provided by the API
 
-    return forward_starting_config.length ? forward_starting_config : forward_starting_dates;
+    return forward_starting_dates || [];
 };

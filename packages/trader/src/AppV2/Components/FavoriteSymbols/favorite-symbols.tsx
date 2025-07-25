@@ -1,8 +1,12 @@
 import React from 'react';
-import MarketCategoryItem from '../MarketCategoryItem';
-import { useGetFavoriteSymbols } from 'AppV2/Hooks/useGetFavoriteSymbols';
-import NoFavoriteSymbols from './no-favorite-symbols';
+
 import { observer } from '@deriv/stores';
+
+import { useGetFavoriteSymbols } from 'AppV2/Hooks/useGetFavoriteSymbols';
+
+import MarketCategoryItem from '../MarketCategoryItem';
+
+import NoFavoriteSymbols from './no-favorite-symbols';
 
 type TFavoriteSymbols = {
     selectedSymbol: string;
@@ -19,7 +23,7 @@ const FavoriteSymbols = observer(({ selectedSymbol, setSelectedSymbol, setIsOpen
                 <div className='favorite-symbols__container'>
                     {favoriteSymbols.map(symbol => (
                         <MarketCategoryItem
-                            key={symbol?.display_name}
+                            key={(symbol as any)?.underlying_symbol || symbol?.symbol}
                             item={symbol}
                             selectedSymbol={selectedSymbol}
                             setSelectedSymbol={setSelectedSymbol}

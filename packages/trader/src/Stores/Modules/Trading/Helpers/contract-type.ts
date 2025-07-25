@@ -165,7 +165,9 @@ export const ContractType = (() => {
         contract: ContractsFor['available'][number],
         trade_types: { [key: string]: string } = {}
     ) => {
-        trade_types[contract.contract_type] = contract.contract_display ?? '';
+        // contract_display property has been removed from the API
+        // Using contract_type as the display value since display properties are no longer provided
+        trade_types[contract.contract_type] = contract.contract_type;
         return trade_types;
     };
 
