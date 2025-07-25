@@ -1,10 +1,12 @@
 import React from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+
+import { cloneObject, getContractCategoriesConfig, getContractTypesConfig, WS } from '@deriv/shared';
 import { mockStore } from '@deriv/stores';
-import TraderProviders from '../../../trader-providers';
-import { WS, getContractCategoriesConfig, getContractTypesConfig, cloneObject } from '@deriv/shared';
-import useContractsForCompany from '../useContractsForCompany';
 import { waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
+
+import TraderProviders from '../../../trader-providers';
+import useContractsForCompany from '../useContractsForCompany';
 import { invalidateDTraderCache } from '../useDtraderQuery';
 
 jest.mock('@deriv/shared', () => ({
@@ -66,7 +68,10 @@ describe('useContractsForCompany', () => {
     it('should fetch and set contract types for the company successfully', async () => {
         WS.authorized.send.mockResolvedValue({
             contracts_for: {
-                available: [{ contract_type: 'type_1' }, { contract_type: 'type_2' }],
+                available: [
+                    { contract_type: 'type_1', underlying_symbol: 'EURUSD' },
+                    { contract_type: 'type_2', underlying_symbol: 'GBPUSD' },
+                ],
                 hit_count: 2,
             },
         });
@@ -101,7 +106,7 @@ describe('useContractsForCompany', () => {
     it('should not set unsupported contract types', async () => {
         WS.authorized.send.mockResolvedValue({
             contracts_for: {
-                available: [{ contract_type: 'unsupported_type' }],
+                available: [{ contract_type: 'unsupported_type', underlying_symbol: 'UNSUPPORTED' }],
                 hit_count: 1,
             },
         });

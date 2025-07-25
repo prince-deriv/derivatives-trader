@@ -1,13 +1,16 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { useTraderStore } from 'Stores/useTraderStores';
-import { useStore } from '@deriv/stores';
+
 import { cloneObject, getContractCategoriesConfig, getContractTypesConfig, setTradeURLParams } from '@deriv/shared';
-import { TConfig, TContractTypesList } from 'Types';
-import { useDtraderQuery } from './useDtraderQuery';
+import { useStore } from '@deriv/stores';
+
 import { isLoginidDefined } from 'AppV2/Utils/client';
+import { checkContractTypePrefix } from 'AppV2/Utils/contract-type';
 import { getTradeTypesList } from 'AppV2/Utils/trade-types-utils';
 import { TContractType } from 'Modules/Trading/Components/Form/ContractType/types';
-import { checkContractTypePrefix } from 'AppV2/Utils/contract-type';
+import { useTraderStore } from 'Stores/useTraderStores';
+import { TConfig, TContractTypesList } from 'Types';
+
+import { useDtraderQuery } from './useDtraderQuery';
 
 type TContractsForResponse = {
     contracts_for: {
@@ -17,6 +20,8 @@ type TContractsForResponse = {
             contract_type: string;
             default_stake: number;
             sentiment: string;
+            underlying_symbol?: string; // New field (symbol → underlying_symbol)
+            symbol?: string; // Legacy field for backward compatibility
         }[];
         hit_count: number;
     };
