@@ -10,18 +10,10 @@ const fs = require('fs');
 const path = require('path');
 
 const BLOCKED_IMPORTS = {
-    '/packages/account': ['@deriv/api-v2'],
     '/packages/api': ['@deriv/api-v2'],
-    '/packages/appstore': ['@deriv/api-v2'],
-    '/packages/bot-skeleton': ['@deriv/api-v2'],
-    '/packages/bot-web-ui': ['@deriv/api-v2'],
-    '/packages/cfd': ['@deriv/api-v2'],
     '/packages/components': ['@deriv/api-v2'],
     '/packages/core': ['@deriv/api-v2'],
     '/packages/hooks': ['@deriv/api-v2'],
-    '/packages/indicators': ['@deriv/api-v2'],
-    '/packages/integration': ['@deriv/api-v2'],
-    '/packages/publisher': ['@deriv/api-v2'],
     '/packages/reports': ['@deriv/api-v2'],
     '/packages/shared': ['@deriv/api-v2'],
     '/packages/stores': ['@deriv/api-v2'],

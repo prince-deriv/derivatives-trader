@@ -29,7 +29,6 @@ The codebase is organized into multiple packages:
 - **translations**: Internationalization support using i18n
 - **utils**: Utility functions for common operations
 - **hooks**: Custom React hooks shared across the application
-- **indicators**: Trading indicators for technical analysis
 - **reports**: Reporting and analysis functionality
 - **core**: Core business logic and domain models
 

@@ -4,8 +4,6 @@
 
 ![Prerequisite](https://img.shields.io/badge/node-18.x-blue.svg)
 ![Prerequisite](https://img.shields.io/badge/npm-9.x-blue.svg)
-![Sonar Tech Debt](https://img.shields.io/sonar/tech_debt/binary-com_deriv-app?server=https%3A%2F%2Fsonarcloud.io)
-![Sonar Violations](https://img.shields.io/sonar/violations/binary-com_deriv-app?server=https%3A%2F%2Fsonarcloud.io)
 [![Coverage Status](https://coveralls.io/repos/github/deriv-com/deriv-app/badge.svg?branch=master)](https://coveralls.io/github/deriv-com/deriv-app?branch=master)
 
 ## Table of Contents
@@ -74,7 +72,6 @@ This project uses a monorepo structure managed with npm workspaces. All individu
 | `Components`   | Shared UI component library     | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/components/README.md)   |
 | `Core`         | Core application framework      | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/core/README.md)         |
 | `Hooks`        | Shared React hooks              | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/hooks/README.md)        |
-| `Indicators`   | Technical indicators and charts | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/indicators/README.md)   |
 | `Reports`      | Transaction and trading reports | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/reports/README.md)      |
 | `Shared`       | Shared utilities and helpers    | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/shared/README.md)       |
 | `Stores`       | State management stores         | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](packages/stores/README.md)       |
