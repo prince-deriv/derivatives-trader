@@ -60,49 +60,13 @@
 
 # ================================================
 
-# ali-hosseini-deriv
-
-# amina-deriv
-
-# balakrishna-deriv
-
-# dan-deriv
-
-# farrah-deriv
-
-# habib-deriv
-
-# heorhi-deriv
-
-# hirad-deriv
-
 # jim-deriv
-
-# likhith-deriv
 
 # matin-deriv
 
-# nada-deriv
-
 # nijil-deriv
 
-# sandeep-deriv
-
-# shafin-deriv
-
-# vinu-deriv
-
-# wojciech-deriv
-
-# yashim-deriv
-
 # farabi-deriv
-
-# maryia-matskevich-deriv
-
-# shahzaib-deriv
-
-# rupato-deriv
 
 # akmal-deriv
 
@@ -136,41 +100,7 @@
 
 # ==============================================================
 
--                                                               @ali-hosseini-deriv @dan-deriv @matin-deriv @wojciech-deriv @yashim-deriv
-
-# ==============================================================
-
-# deriv-app/account
-
-# ==============================================================
-
-/packages/account/\*_/_ @ali-hosseini-deriv @amina-deriv @likhith-deriv @matin-deriv
-
-# ==============================================================
-
-# deriv-app/bot
-
-# ==============================================================
-
-/packages/bot-skeleton/**/\* @sandeep-deriv @shafin-deriv @wojciech-deriv
-/packages/bot-web-ui/**/_ @sandeep-deriv @shafin-deriv @wojciech-deriv
-/packages/indicators/\*\*/_ @sandeep-deriv @shafin-deriv @wojciech-deriv
-
-# ==============================================================
-
-# deriv-app/cashier
-
-# ==============================================================
-
-/packages/cashier/\*_/_ @heorhi-deriv @nijil-deriv @wojciech-deriv
-
-# ==============================================================
-
-# deriv-app/cfd
-
-# ==============================================================
-
-/packages/cfd/\*_/_ @ali-hosseini-deriv @habib-deriv @hirad-deriv
+- @matin-deriv @nijil-deriv
 
 # ==============================================================
 
@@ -178,29 +108,7 @@
 
 # ==============================================================
 
-/packages/core/**/\* @ali-hosseini-deriv @amina-deriv @balakrishna-deriv @farrah-deriv @habib-deriv @matin-deriv @nijil-deriv @sandeep-deriv @wojciech-deriv @yashim-deriv
-/packages/shared/**/_ @ali-hosseini-deriv @amina-deriv @balakrishna-deriv @farrah-deriv @habib-deriv @matin-deriv @nijil-deriv @sandeep-deriv @wojciech-deriv @yashim-deriv
-/packages/components/\*\*/_ @ali-hosseini-deriv @amina-deriv @balakrishna-deriv @farrah-deriv @habib-deriv @matin-deriv @nijil-deriv @sandeep-deriv @wojciech-deriv @yashim-deriv
-/packages/translations/**/\* @ali-hosseini-deriv @amina-deriv @balakrishna-deriv @farrah-deriv @habib-deriv @matin-deriv @nijil-deriv @sandeep-deriv @wojciech-deriv @yashim-deriv @heorhi-deriv @jim-deriv @vinu-deriv @nada-deriv @hirad-deriv @farabi-deriv @likhith-deriv @maryia-matskevich-deriv @shahzaib-deriv @rupato-deriv @akmal-deriv
-/packages/utils/**/_ @ali-hosseini-deriv @amina-deriv @balakrishna-deriv @farrah-deriv @habib-deriv @matin-deriv @nijil-deriv @sandeep-deriv @wojciech-deriv @yashim-deriv
-/packages/hooks/\*\*/_ @ali-hosseini-deriv @amina-deriv @balakrishna-deriv @farrah-deriv @habib-deriv @matin-deriv @nijil-deriv @sandeep-deriv @wojciech-deriv @yashim-deriv
-/packages/stores/\*_/_ @ali-hosseini-deriv @amina-deriv @balakrishna-deriv @farrah-deriv @habib-deriv @matin-deriv @nijil-deriv @sandeep-deriv @wojciech-deriv @yashim-deriv
-
-# ==============================================================
-
-# deriv-app/p2p
-
-# ==============================================================
-
-/packages/p2p/\*_/_ @ali-hosseini-deriv @farrah-deriv @matin-deriv @nada-deriv
-
-# ==============================================================
-
-# deriv-app/publisher
-
-# ==============================================================
-
-/packages/publisher/\*_/_ @ali-hosseini-deriv @wojciech-deriv
+/packages/core/\*\*/\* @matin-deriv @nijil-deriv
 
 # ==============================================================
 
@@ -208,7 +116,7 @@
 
 # ==============================================================
 
-/packages/reports/\*_/_ @heorhi-deriv @nijil-deriv @vinu-deriv @wojciech-deriv
+/packages/reports/\*_/_ @akmal-deriv @farabi-deriv
 
 # ==============================================================
 
@@ -216,15 +124,7 @@
 
 # ==============================================================
 
-/packages/trader/\*_/_ @nijil-deriv @vinu-deriv @wojciech-deriv
-
-# ==============================================================
-
-# deriv-app/wallets
-
-# ==============================================================
-
-/packages/wallets/\*_/_ @heorhi-deriv @jim-deriv @nijil-deriv @wojciech-deriv
+/packages/trader/\*_/_ @nijil-deriv @matin-deriv @akmal-deriv @farabi-deriv
 
 # ==============================================================
 
@@ -234,7 +134,7 @@
 
 # ==============================================================
 
-/packages/api/\*_/_ @ali-hosseini-deriv @wojciech-deriv
+/packages/api/\*_/_ @matin-deriv @nijil-deriv
 
 # ==============================================================
 
@@ -242,7 +142,7 @@
 
 # ==============================================================
 
-/packages/api-v2/\*_/_ @ali-hosseini-deriv @amina-deriv @balakrishna-deriv @farrah-deriv @habib-deriv @matin-deriv @nijil-deriv @sandeep-deriv @wojciech-deriv @yashim-deriv
+/packages/api-v2/\*_/_ @nijil-deriv @matin-deriv @akmal-deriv @farabi-deriv @jim-deriv
 
 # ==============================================================
 
@@ -250,4 +150,4 @@
 
 # ==============================================================
 
-/scripts/check-imports.js @ali-hosseini-deriv @matin-deriv @wojciech-deriv @yashim-deriv
+/scripts/check-imports.js @matin-deriv
