@@ -153,8 +153,27 @@ const PositionsDrawerCard = ({
         </React.Fragment>
     );
 
+    // Compute effective underlying with fallback extraction from shortcode
+    const getEffectiveUnderlying = () => {
+        if (contract_info?.underlying) {
+            return contract_info.underlying;
+        }
+
+        // Fallback: Extract underlying from shortcode if missing
+        if (contract_info?.shortcode) {
+            const parts = contract_info.shortcode.split('_');
+            if (parts.length >= 2) {
+                return parts[1];
+            }
+        }
+
+        return null;
+    };
+
+    const effective_underlying = getEffectiveUnderlying();
+
     const contract_card_body = is_link_disabled ? (
-        <div className={contract_card_classname}>{contract_info?.underlying ? contract_el : loader_el}</div>
+        <div className={contract_card_classname}>{effective_underlying ? contract_el : loader_el}</div>
     ) : (
         <NavLink
             className={contract_card_classname}
@@ -162,7 +181,7 @@ const PositionsDrawerCard = ({
                 pathname: `/contract/${contract_info?.contract_id}`,
             }}
         >
-            {contract_info?.underlying ? contract_el : loader_el}
+            {effective_underlying ? contract_el : loader_el}
         </NavLink>
     );
 

@@ -160,10 +160,22 @@ export default class PortfolioStore extends BaseStore {
     }
 
     onBuyResponse({ contract_id, longcode, contract_type }) {
+        // Extract underlying from shortcode if available
+        let underlying;
+        if (longcode) {
+            // Shortcode format: "CALL_1HZ100V_19.79_1753695396_1753373396_S0P0"
+            // Extract the second part which is the underlying symbol
+            const parts = longcode.split('_');
+            if (parts.length >= 2) {
+                underlying = parts[1];
+            }
+        }
+
         const new_pos = {
             contract_id,
             longcode,
             contract_type,
+            underlying, // Add the extracted underlying
         };
         this.pushNewPosition(new_pos);
     }
@@ -478,6 +490,7 @@ export default class PortfolioStore extends BaseStore {
 
     pushNewPosition(new_pos) {
         const position = formatPortfolioPosition(new_pos, this.root_store.active_symbols.active_symbols);
+
         if (this.positions_map[position.id]) return;
 
         this.positions.unshift(position);
