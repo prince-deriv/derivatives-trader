@@ -1,4 +1,4 @@
-name: Deriv App Production Workflow
+name: Derivatives Trader Production Workflow
 on:
   push:
     tags:
@@ -9,7 +9,6 @@ jobs:
   build_test_and_publish:
     name: Build, Test and Publish to Cloudflare Pages Production
     environment: Production
-    runs-on: Runner_16cores_Deriv-app
     permissions:
       contents: read
       actions: write
@@ -66,60 +65,3 @@ jobs:
         name: build
         path: packages/core/dist
         retention-days: 1
-
-  send_slack_failure:
-    name: Send Release Slack notification failure
-    runs-on: Runner_8cores_Deriv-app
-    environment: Production
-    if: failure()
-    needs: [build_test_and_publish]
-    steps:
-      - name: Send Slack Notification
-        uses: "deriv-com/shared-actions/.github/actions/send_slack_notification@master"
-        with:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          MESSAGE: "${{ env.RELEASE_TYPE }} Release failed for app.deriv.com with version ${{ needs.build_test_and_publish.outputs.RELEASE_VERSION }}"
-
-  send_slack_success:
-    name: Send Release Slack notification success
-    runs-on: Runner_8cores_Deriv-app
-    environment: Production
-    if: success()
-    needs: [build_test_and_publish]
-    steps:
-      - name: Send Slack Notification
-        uses: "deriv-com/shared-actions/.github/actions/send_slack_notification@master"
-        with:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          MESSAGE: "${{ env.RELEASE_TYPE }} Release succeeded for app.deriv.com with version ${{ needs.build_test_and_publish.outputs.RELEASE_VERSION }}"
-
-  build_and_publish_to_DR_solution:
-    name: Build Docker image and push to Docker hub and K8S
-    runs-on: Runner_8cores_Deriv-app
-    environment: Production
-    needs: [build_test_and_publish]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - name: Download Build Artifact
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          name: build
-          path: packages/core/dist
-      - name: Upload to vercel
-        id: vercel-upload
-        uses: 'deriv-com/shared-actions/.github/actions/vercel_DR_publish@master'
-        with:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_API_TOKEN }}
-          ENVIRONMENT: Production
-          VERCEL_SCOPE: deriv
-          ALIAS_DOMAIN_URL: 'app-dr.binary.sx'
-
-      - name: Send DR Slack Notification
-        uses: "deriv-com/shared-actions/.github/actions/send_slack_notification@master"
-        if: ${{ steps.vercel-upload.outcome != 'success' }}
-        with:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          MESSAGE: Disaster Recovery Release to vercel failed for app.deriv.com with version ${{ needs.build_test_and_publish.outputs.RELEASE_VERSION }}

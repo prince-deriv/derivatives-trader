@@ -1,4 +1,4 @@
-name: Deriv App Staging Workflow
+name: Derivatives Trader Staging Workflow
 on:
   push:
     branches:
@@ -7,7 +7,6 @@ on:
 jobs:
   build_test_and_publish:
     name: Build, Test and Publish to Cloudflare Staging
-    runs-on: Runner_16cores_Deriv-app
     permissions:
       contents: read
       actions: write
@@ -54,14 +53,3 @@ jobs:
       with:
         CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-
-    - name: Upload to vercel
-      id: vercel-upload
-      uses: 'deriv-com/shared-actions/.github/actions/vercel_DR_publish@master'
-      with:
-        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        VERCEL_TOKEN: ${{ secrets.VERCEL_API_TOKEN }}
-        ENVIRONMENT: Preview
-        VERCEL_SCOPE: deriv
-        ALIAS_DOMAIN_URL: 'staging-app-dr.binary.sx'

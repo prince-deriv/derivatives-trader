@@ -34,7 +34,7 @@ jobs:
       - name: Wait for logs to accumulate
         run: |
           sleep 10
-      - name: Release issues in Deriv.app
+      - name: Release issues in Derivatives Trader
         uses: binary-com/fe-toolbox@v0.0.2
         with:
           release_tag_task_url: ${{ inputs.release_tag_task_url }}

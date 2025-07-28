@@ -16,7 +16,7 @@ on:
 
 jobs:
   push_and_pull_crowdin_translations:
-    if: github.repository == 'deriv-com/deriv-app'
+    if: github.repository == 'deriv-com/derivatives-trader'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -52,7 +52,7 @@ jobs:
           GIT_COMMITTER_NAME: ${{ steps.import-gpg.outputs.name }}
           GIT_COMMITTER_EMAIL: ${{ steps.import-gpg.outputs.email }}
         run: |
-          branch_name="deriv_app_translations"
+          branch_name="derivatives_trader_translations"
 
           echo "Installing Crowdin CLI and bootstrapping project"
           sudo npm i -g @crowdin/cli

@@ -1,3 +1,4 @@
+# TODO: Change the project name to derivatives-trader
 project_id: '360131'
 api_token_env: 'CROWDIN_API_KEY'
 
