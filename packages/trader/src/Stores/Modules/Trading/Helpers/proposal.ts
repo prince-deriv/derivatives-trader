@@ -199,8 +199,6 @@ export const createProposalRequestForContract = (store: TTradeStore, type_of_con
         contract_type: type_of_contract,
         currency: store.currency,
         underlying_symbol: store.symbol,
-        // Backward compatibility: include symbol field as fallback
-        ...(store.symbol && { symbol: store.symbol }),
         ...(store.start_date && store.start_time && { date_start: convertToUnix(store.start_date, store.start_time) }),
         ...(store.expiry_type === 'duration'
             ? {

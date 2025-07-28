@@ -707,9 +707,11 @@ export default class TradeStore extends BaseStore {
     }
 
     get is_symbol_in_active_symbols() {
-        return this.active_symbols.some(
-            symbol_info => symbol_info.symbol === this.symbol && symbol_info.exchange_is_open === 1
-        );
+        return this.active_symbols.some(symbol_info => {
+            const underlying = (symbol_info as any).underlying_symbol;
+            const symbol = (symbol_info as any).symbol;
+            return (underlying === this.symbol || symbol === this.symbol) && symbol_info.exchange_is_open === 1;
+        });
     }
 
     get has_open_accu_contract() {
