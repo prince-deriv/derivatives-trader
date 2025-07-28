@@ -514,14 +514,22 @@ export default class ClientStore extends BaseStore {
     }
 
     get balance() {
-        if (isEmptyObject(this.accounts)) return undefined;
+        if (isEmptyObject(this.accounts) || !this.loginid) return undefined;
+
+        // For simplified auth, return balance directly
+        if (this.isSimplifiedAuth()) {
+            const account = this.accounts[this.loginid];
+            return account && typeof account.balance !== 'undefined' ? account.balance.toString() : undefined;
+        }
+
+        // Existing multi-account logic
         return this.accounts[this.loginid] && 'balance' in this.accounts[this.loginid]
             ? this.accounts[this.loginid].balance.toString()
             : undefined;
     }
 
     get account_open_date() {
-        if (isEmptyObject(this.accounts) || !this.accounts[this.loginid]) return undefined;
+        if (isEmptyObject(this.accounts) || !this.loginid || !this.accounts[this.loginid]) return undefined;
         return Object.keys(this.accounts[this.loginid]).includes('created_at')
             ? this.accounts[this.loginid].created_at
             : undefined;
@@ -698,7 +706,7 @@ export default class ClientStore extends BaseStore {
     get currency() {
         if (this.selected_currency.length) {
             return this.selected_currency;
-        } else if (this.is_logged_in) {
+        } else if (this.is_logged_in && this.loginid && this.accounts && this.accounts[this.loginid]) {
             return this.accounts[this.loginid].currency;
         }
 
@@ -810,7 +818,7 @@ export default class ClientStore extends BaseStore {
     }
 
     get landing_company_shortcode() {
-        if (this.accounts[this.loginid]) {
+        if (this.loginid && this.accounts && this.accounts[this.loginid]) {
             return this.accounts[this.loginid].landing_company_shortcode;
         }
         return undefined;
@@ -821,12 +829,22 @@ export default class ClientStore extends BaseStore {
     }
 
     get is_logged_in() {
-        return !!(
-            !isEmptyObject(this.accounts) &&
-            Object.keys(this.accounts).length > 0 &&
-            this.loginid &&
-            this.accounts[this.loginid]?.token
-        );
+        if (
+            isEmptyObject(this.accounts) ||
+            !Object.keys(this.accounts).length ||
+            !this.loginid ||
+            !this.accounts[this.loginid]
+        ) {
+            return false;
+        }
+
+        // For simplified auth, we don't require a token since authentication is handled differently
+        if (this.isSimplifiedAuth()) {
+            return true;
+        }
+
+        // For multi-account auth, require a valid token
+        return !!this.accounts[this.loginid].token;
     }
 
     get has_restricted_mt5_account() {
@@ -857,7 +875,12 @@ export default class ClientStore extends BaseStore {
     }
 
     get is_virtual() {
-        return !isEmptyObject(this.accounts) && this.accounts[this.loginid] && !!this.accounts[this.loginid].is_virtual;
+        return (
+            !isEmptyObject(this.accounts) &&
+            this.loginid &&
+            this.accounts[this.loginid] &&
+            !!this.accounts[this.loginid].is_virtual
+        );
     }
 
     get is_eu() {
@@ -1218,7 +1241,98 @@ export default class ClientStore extends BaseStore {
         this.selectCurrency('');
     }
 
+    // Helper method to detect simplified auth response format
+    isSimplifiedAuthResponse(response) {
+        const auth_data = response.authorize;
+        return (
+            auth_data &&
+            typeof auth_data.balance !== 'undefined' &&
+            typeof auth_data.currency !== 'undefined' &&
+            typeof auth_data.is_virtual !== 'undefined' &&
+            typeof auth_data.loginid !== 'undefined' &&
+            !auth_data.account_list
+        ); // No account_list in simplified format
+    }
+
+    // Handle simplified authentication response
+    handleSimplifiedAuth(response) {
+        const { balance, currency, is_virtual, loginid, email, landing_company_name, country, user_id } =
+            response.authorize;
+
+        // Create single account structure for backward compatibility
+        this.accounts = {
+            [loginid]: {
+                balance,
+                currency,
+                is_virtual: +is_virtual,
+                loginid,
+                email: email || '',
+                landing_company_shortcode: landing_company_name || '',
+                country: country || '',
+                token: this.getToken(loginid) || localStorage.getItem('config.account1') || 'simplified_auth_token',
+                session_start: parseInt(moment().utc().valueOf() / 1000),
+                // Mark as simplified auth for detection
+                is_simplified_auth: true,
+            },
+        };
+
+        // Set current account and update storage
+        this.loginid = loginid;
+
+        // Set active_loginid in storage for simplified auth
+        if (/^(CR|MF|VRTC)\d/.test(loginid)) {
+            sessionStorage.setItem('active_loginid', loginid);
+            localStorage.setItem('active_loginid', loginid);
+        }
+        if (/^(CRW|MFW|VRW)\d/.test(loginid)) {
+            sessionStorage.setItem('active_wallet_loginid', loginid);
+        }
+
+        // Call resetLocalStorageValues to sync all storage properly
+        this.resetLocalStorageValues(loginid);
+
+        // Continue with existing responseAuthorize logic for compatibility
+        this.upgrade_info = this.getBasicUpgradeInfo();
+        this.user_id = user_id;
+        if (this.user_id) {
+            localStorage.setItem('active_user_id', this.user_id);
+        }
+        localStorage.setItem(storage_key, JSON.stringify(this.accounts));
+
+        // Set upgradeable landing companies (empty for simplified auth)
+        this.upgradeable_landing_companies = response.authorize.upgradeable_landing_companies
+            ? [...new Set(response.authorize.upgradeable_landing_companies)]
+            : [];
+
+        // Set local currency config if available
+        if (response.authorize.local_currencies && Object.keys(response.authorize.local_currencies).length > 0) {
+            this.local_currency_config.currency = Object.keys(response.authorize.local_currencies)[0];
+            const default_fractional_digits = 2;
+            const fractional_digits =
+                +response.authorize.local_currencies[this.local_currency_config.currency].fractional_digits;
+            this.local_currency_config.decimal_places = fractional_digits || default_fractional_digits;
+        } else {
+            // Default currency config for simplified auth
+            this.local_currency_config.currency = currency;
+            this.local_currency_config.decimal_places = 2;
+        }
+
+        // Handle notifications for simplified auth
+        const notification_messages = LocalStore.getObject('notification_messages');
+        const messages = notification_messages[this.loginid] ?? [];
+        LocalStore.setObject('notification_messages', {
+            [this.loginid]: messages,
+        });
+    }
+
     responseAuthorize(response) {
+        // Check if this is simplified auth format (no account_list)
+        if (this.isSimplifiedAuthResponse(response)) {
+            this.handleSimplifiedAuth(response);
+            return;
+        }
+
+        // Continue with existing multi-account logic
         this.accounts[this.loginid].email = response.authorize.email;
         this.accounts[this.loginid].currency = response.authorize.currency;
         this.accounts[this.loginid].is_virtual = +response.authorize.is_virtual;
@@ -1458,9 +1572,14 @@ export default class ClientStore extends BaseStore {
     };
 
     updateAccountList(account_list) {
+        // Skip account list updates for simplified auth
+        if (this.isSimplifiedAuth()) {
+            return;
+        }
+
         this.authorize_accounts_list = account_list;
-        account_list.forEach(account => {
-            if (this.accounts[account.loginid]) {
+        account_list?.forEach(account => {
+            if (account && account.loginid && this.accounts[account.loginid]) {
                 this.accounts[account.loginid].excluded_until = account.excluded_until || '';
                 Object.keys(account).forEach(param => {
                     const param_to_set = param === 'country' ? 'residence' : param;
@@ -1494,7 +1613,20 @@ export default class ClientStore extends BaseStore {
      * We initially fetch things from local storage, and then do everything inside the store.
      */
     async init(login_new_user) {
-        const search = SessionStore.get('signup_query_param') || window.location.search;
+        // Enhanced safe property access with comprehensive null checks
+        let search = '';
+        try {
+            search =
+                (SessionStore && typeof SessionStore.get === 'function'
+                    ? SessionStore.get('signup_query_param')
+                    : null) ||
+                (window && window.location && typeof window.location.search === 'string'
+                    ? window.location.search
+                    : '') ||
+                '';
+        } catch (error) {
+            search = '';
+        }
         const search_params = new URLSearchParams(search);
         const redirect_url = search_params?.get('redirect_url');
         const code_param = search_params?.get('code');
@@ -1578,7 +1710,15 @@ export default class ClientStore extends BaseStore {
             }
         }
         const storedToken = localStorage.getItem('config.account1');
-        const client = this.accounts[this.loginid] || (storedToken ? { token: storedToken } : undefined);
+        // Enhanced safe property access for client object
+        let client;
+        try {
+            client =
+                (this.accounts && typeof this.accounts === 'object' && this.loginid && this.accounts[this.loginid]) ||
+                (storedToken ? { token: storedToken } : undefined);
+        } catch (error) {
+            client = storedToken ? { token: storedToken } : undefined;
+        }
 
         // If there is an authorize_response, it means it was the first login
         if (authorize_response) {
@@ -1590,9 +1730,14 @@ export default class ClientStore extends BaseStore {
                 await this.root_store.gtm.pushDataLayer({
                     event: 'login',
                 });
-            } else {
+            } else if (client && typeof client === 'object' && client.token && typeof client.token === 'string') {
                 // So it will send an authorize with the accepted token, to be handled by socket-general
-                await BinarySocket.authorize(client.token);
+                try {
+                    await BinarySocket.authorize(client.token);
+                } catch (error) {
+                    // Use logError from @deriv/utils instead of console.error
+                    logError('BinarySocket.authorize failed', error);
+                }
             }
             if (redirect_url) {
                 const redirect_route = routes[redirect_url].length > 1 ? routes[redirect_url] : '';
@@ -1754,7 +1899,8 @@ export default class ClientStore extends BaseStore {
      * @returns {string}
      */
     isDisabled(loginid = this.loginid) {
-        return this.getAccount(loginid).is_disabled;
+        const account = this.getAccount(loginid);
+        return account ? account.is_disabled : false;
     }
 
     /**
@@ -1764,7 +1910,8 @@ export default class ClientStore extends BaseStore {
      * @returns {string}
      */
     getToken(loginid = this.loginid) {
-        return this.getAccount(loginid).token;
+        const account = this.getAccount(loginid);
+        return account ? account.token : undefined;
     }
 
     /**
@@ -1774,7 +1921,7 @@ export default class ClientStore extends BaseStore {
      * @returns {object}
      */
     getAccount(loginid = this.loginid) {
-        return this.accounts[loginid];
+        return this.accounts && this.accounts[loginid] ? this.accounts[loginid] : {};
     }
 
     /**
@@ -1785,9 +1932,9 @@ export default class ClientStore extends BaseStore {
      */
     getAccountInfo(loginid = this.loginid) {
         const account = this.getAccount(loginid);
-        const currency = account.currency;
-        const is_disabled = account.is_disabled;
-        const is_virtual = account.is_virtual;
+        const currency = account ? account.currency : '';
+        const is_disabled = account ? account.is_disabled : false;
+        const is_virtual = account ? account.is_virtual : false;
         const account_type = !is_virtual && currency ? currency : this.account_title;
 
         setTimeout(async () => {
@@ -1878,11 +2025,64 @@ export default class ClientStore extends BaseStore {
 
     // For single account model, we always have a valid login ID if we're logged in
     isUnableToFindLoginId() {
-        return false; // Always return false for single account model
+        // Check if we have a valid loginid and account
+        if (!this.loginid || !this.accounts || !this.accounts[this.loginid]) {
+            return true;
+        }
+        return false;
+    }
+
+    // Helper method to detect if current session is simplified auth
+    isSimplifiedAuth() {
+        // Enhanced null checking with multiple layers of safety - protect against 'this' being undefined
+        if (!this || typeof this !== 'object') {
+            return false;
+        }
+        if (!this.loginid || typeof this.loginid !== 'string') {
+            return false;
+        }
+        if (!this.accounts || typeof this.accounts !== 'object') {
+            return false;
+        }
+        // Triple-safe property access
+        const account = this.accounts?.[this.loginid];
+        if (!account || typeof account !== 'object') {
+            return false;
+        }
+        return account.is_simplified_auth === true;
+    }
+
+    // Override account switching for simplified auth
+    switchAccount(loginid) {
+        // Enhanced null checking with comprehensive validation - protect against 'this' being undefined
+        if (!this || typeof this !== 'object') {
+            logError('switchAccount called with invalid context', { loginid });
+            return Promise.resolve();
+        }
+
+        // Safe method call with existence check
+        let isSimplified = false;
+        try {
+            if (typeof this.isSimplifiedAuth === 'function') {
+                isSimplified = this.isSimplifiedAuth();
+            }
+        } catch (error) {
+            logError('Error checking simplified auth status', { error: error.message, loginid });
+            isSimplified = false;
+        }
+
+        if (isSimplified) {
+            logError('Account switching disabled in simplified authentication mode', { requested_loginid: loginid });
+            return Promise.resolve();
+        }
+
+        // TODO: Implement multi-account switching logic here if needed
+        // For now, simplified auth doesn't support account switching
+        return Promise.resolve();
     }
 
     setBalanceActiveAccount(obj_balance) {
-        if (this.accounts[obj_balance?.loginid] && obj_balance.loginid === this.loginid) {
+        if (this.accounts[obj_balance?.loginid] && obj_balance?.loginid === this.loginid) {
             this.accounts[obj_balance.loginid].balance = obj_balance.balance;
             if (this.accounts[obj_balance.loginid].is_virtual) {
                 this.root_store.notifications.resetVirtualBalanceNotification(obj_balance.loginid);
@@ -1913,11 +2113,11 @@ export default class ClientStore extends BaseStore {
 
         // Only the first response of balance:all will include all accounts
         // subsequent requests will be single account balance updates
-        if (this.accounts[obj_balance?.loginid] && !obj_balance.accounts && obj_balance.loginid !== this.loginid) {
+        if (this.accounts[obj_balance?.loginid] && !obj_balance.accounts && obj_balance?.loginid !== this.loginid) {
             this.accounts[obj_balance.loginid].balance = obj_balance.balance;
         }
 
-        if (this.accounts[obj_balance?.loginid] && obj_balance.accounts) {
+        if (this.accounts[obj_balance?.loginid] && obj_balance?.accounts) {
             Object.keys(obj_balance.accounts).forEach(account_id => {
                 const is_active_account_id = account_id === this.loginid;
 
@@ -1948,7 +2148,7 @@ export default class ClientStore extends BaseStore {
     }
 
     setResidence(residence) {
-        if (this.loginid) {
+        if (this.loginid && this.accounts && this.accounts[this.loginid]) {
             this.accounts[this.loginid].residence = residence;
         }
     }
@@ -1958,7 +2158,7 @@ export default class ClientStore extends BaseStore {
     }
 
     setEmail(email) {
-        if (this.loginid) {
+        if (this.loginid && this.accounts && this.accounts[this.loginid]) {
             this.accounts[this.loginid].email = email;
             this.email = email;
         }
@@ -2089,33 +2289,49 @@ export default class ClientStore extends BaseStore {
             active_loginid = obj_params.selected_acct;
         }
 
-        account_list.forEach(function (account) {
-            Object.keys(account).forEach(function (param) {
-                if (param === 'loginid') {
-                    if (!active_loginid && !account.is_disabled) {
-                        if (!account.is_virtual) {
-                            active_loginid = account[param];
-                        } else if (account.is_virtual) {
-                            // TODO: [only_virtual] remove this to stop logging non-SVG clients into virtual
-                            active_loginid = account[param];
+        if (account_list && Array.isArray(account_list)) {
+            account_list.forEach(function (account) {
+                // Enhanced null checking for account object
+                if (!account || typeof account !== 'object') {
+                    return; // Skip invalid account objects
+                }
+                Object.keys(account).forEach(function (param) {
+                    if (param === 'loginid') {
+                        if (!active_loginid && !account.is_disabled) {
+                            if (!account.is_virtual) {
+                                active_loginid = account[param];
+                            } else if (account.is_virtual) {
+                                // TODO: [only_virtual] remove this to stop logging non-SVG clients into virtual
+                                active_loginid = account[param];
+                            }
+                        }
+                    } else {
+                        const param_to_set = map_names[param] || param;
+                        const value_to_set = typeof account[param] === 'undefined' ? '' : account[param];
+                        if (account.loginid && !(account.loginid in client_object)) {
+                            client_object[account.loginid] = {};
+                        }
+                        if (account.loginid) {
+                            client_object[account.loginid][param_to_set] = value_to_set;
                         }
                     }
-                } else {
-                    const param_to_set = map_names[param] || param;
-                    const value_to_set = typeof account[param] === 'undefined' ? '' : account[param];
-                    if (!(account.loginid in client_object)) {
-                        client_object[account.loginid] = {};
-                    }
-                    client_object[account.loginid][param_to_set] = value_to_set;
-                }
+                });
             });
-        });
+        }
 
         let i = 1;
         while (obj_params[`acct${i}`]) {
             const loginid = obj_params[`acct${i}`];
             const token = obj_params[`token${i}`];
-            if (loginid && token) {
+            // Enhanced null checking before token assignment
+            if (
+                loginid &&
+                token &&
+                client_object &&
+                typeof client_object === 'object' &&
+                client_object[loginid] &&
+                typeof client_object[loginid] === 'object'
+            ) {
                 client_object[loginid].token = token;
             }
             i++;
@@ -2258,11 +2474,16 @@ export default class ClientStore extends BaseStore {
     async canStoreClientAccounts(obj_params, account_list) {
         let is_TMB_enabled;
         const is_ready_to_process = account_list && isEmptyObject(this.accounts);
-        const accts = Object.keys(obj_params).filter(value => /^acct./.test(value));
+        const accts = Object.keys(obj_params || {}).filter(value => /^acct./.test(value));
 
-        const is_cross_checked = accts.every(acct =>
-            account_list.some(account => account.loginid === obj_params[acct])
-        );
+        const is_cross_checked = accts.every(acct => {
+            if (!account_list || !Array.isArray(account_list)) {
+                return false;
+            }
+            return account_list.some(account => {
+                return account && typeof account === 'object' && account.loginid === obj_params[acct];
+            });
+        });
 
         const storedValue = localStorage.getItem('is_tmb_enabled');
         try {
@@ -2941,8 +3162,17 @@ export default class ClientStore extends BaseStore {
             await this.unsubscribeByKey('exchange_rates', key);
             delete this.subscriptions?.['exchange_rates']?.[key];
 
-            const currData = { ...this.exchange_rates };
-            delete currData[payload.base_currency];
+            // Enhanced safe deletion with comprehensive null checks
+            const currData = this.exchange_rates ? { ...this.exchange_rates } : {};
+            if (
+                currData &&
+                typeof currData === 'object' &&
+                base_currency &&
+                typeof base_currency === 'string' &&
+                currData[base_currency]
+            ) {
+                delete currData[base_currency];
+            }
             this.setExchangeRates(currData);
         }
     };

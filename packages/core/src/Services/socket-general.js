@@ -75,8 +75,21 @@ const BinarySocketGeneral = (() => {
                     }
                     client_store.logout();
                 } else if (!/authorize/.test(State.get('skip_response'))) {
-                    // Simplified authorization for single account model
-                    if (response.authorize.loginid === client_store.loginid) {
+                    // Check if this is a simplified authentication response
+                    const isSimplified =
+                        response.authorize &&
+                        typeof response.authorize.balance !== 'undefined' &&
+                        typeof response.authorize.currency !== 'undefined' &&
+                        typeof response.authorize.is_virtual !== 'undefined' &&
+                        typeof response.authorize.loginid !== 'undefined' &&
+                        !response.authorize.account_list;
+
+                    if (isSimplified) {
+                        // For simplified auth, always process the response regardless of loginid match
+                        // The client-store will handle the simplified auth logic
+                        authorizeAccount(response);
+                    } else if (response.authorize.loginid === client_store.loginid) {
+                        // Multi-account authorization logic - loginid matches
                         authorizeAccount(response);
                     } else if (client_store.is_populating_account_list) {
                         // During initial login, allow loginid mismatch and update the store

@@ -186,7 +186,12 @@ export default class TradersHubStore extends BaseStore {
     }
 
     async setSwitchEU() {
-        const { account_list, switchAccount, loginid, setIsLoggingIn } = this.root_store.client;
+        const { account_list, switchAccount, loginid, setIsLoggingIn, isSimplifiedAuth } = this.root_store.client;
+
+        // Disable account switching in simplified authentication mode
+        if (isSimplifiedAuth && typeof isSimplifiedAuth === 'function' && isSimplifiedAuth()) {
+            return;
+        }
 
         const mf_account = account_list.find(acc => acc.loginid?.startsWith('MF'))?.loginid;
         const cr_account = account_list.find(acc => acc.loginid?.startsWith('CR'))?.loginid;
@@ -238,8 +243,13 @@ export default class TradersHubStore extends BaseStore {
     }
 
     async selectAccountType(account_type) {
-        const { account_list, switchAccount, prev_real_account_loginid, has_active_real_account } =
+        const { account_list, switchAccount, prev_real_account_loginid, has_active_real_account, isSimplifiedAuth } =
             this.root_store.client;
+
+        // Disable account type switching in simplified authentication mode
+        if (isSimplifiedAuth && typeof isSimplifiedAuth === 'function' && isSimplifiedAuth()) {
+            return;
+        }
 
         if (account_type === 'demo') {
             await switchAccount(account_list.find(acc => acc.is_virtual && !acc.is_disabled)?.loginid);
@@ -264,7 +274,12 @@ export default class TradersHubStore extends BaseStore {
     }
 
     async switchToCRAccount() {
-        const { account_list, switchAccount, prev_real_account_loginid } = this.root_store.client;
+        const { account_list, switchAccount, prev_real_account_loginid, isSimplifiedAuth } = this.root_store.client;
+
+        // Disable account switching in simplified authentication mode
+        if (isSimplifiedAuth && typeof isSimplifiedAuth === 'function' && isSimplifiedAuth()) {
+            return;
+        }
 
         if (prev_real_account_loginid && !prev_real_account_loginid.startsWith('MF')) {
             //switch to previously selected CR account
@@ -285,6 +300,15 @@ export default class TradersHubStore extends BaseStore {
     }
 
     selectRegion(region) {
+        // Disable region switching in simplified authentication mode
+        if (
+            this.root_store.client &&
+            this.root_store.client.isSimplifiedAuth &&
+            typeof this.root_store.client.isSimplifiedAuth === 'function' &&
+            this.root_store.client.isSimplifiedAuth()
+        ) {
+            return;
+        }
         this.selected_region = region;
     }
 
@@ -724,6 +748,16 @@ export default class TradersHubStore extends BaseStore {
     }
 
     handleTabItemClick(idx) {
+        // Disable region tab switching in simplified authentication mode
+        if (
+            this.root_store.client &&
+            this.root_store.client.isSimplifiedAuth &&
+            typeof this.root_store.client.isSimplifiedAuth === 'function' &&
+            this.root_store.client.isSimplifiedAuth()
+        ) {
+            return;
+        }
+
         if (idx === 0) {
             this.selected_region = 'Non-EU';
         } else {
@@ -776,6 +810,16 @@ export default class TradersHubStore extends BaseStore {
     }
 
     selectRealLoginid(loginid) {
+        // Disable loginid selection in simplified authentication mode
+        if (
+            this.root_store.client &&
+            this.root_store.client.isSimplifiedAuth &&
+            typeof this.root_store.client.isSimplifiedAuth === 'function' &&
+            this.root_store.client.isSimplifiedAuth()
+        ) {
+            return;
+        }
+
         const { accounts } = this.root_store.client;
         if (Object.keys(accounts).includes(loginid)) {
             this.selected_loginid = loginid;
