@@ -610,7 +610,6 @@ export default class TradeStore extends BaseStore {
                 const tradeStoreObj = safeParse(tradeStoreString ?? '{}') ?? {};
                 const isValidSymbol = this.active_symbols.some(symbol => symbol.symbol === urlSymbol);
 
-                this.symbol = '1HZ100V'; // default symbol
                 if (urlSymbol) {
                     if (isValidSymbol) {
                         tradeStoreObj.symbol = urlSymbol;
