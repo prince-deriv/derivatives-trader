@@ -163,7 +163,6 @@ describe('Proposal', () => {
                         req_id: 7,
                         subscribe: 1,
                         underlying_symbol: 'frxAUDJPY',
-                        symbol: 'frxAUDJPY',
                     },
                 },
             };
@@ -179,7 +178,6 @@ describe('Proposal', () => {
                     proposal: 1,
                     subscribe: 1,
                     underlying_symbol: 'frxAUDJPY',
-                    symbol: 'frxAUDJPY',
                 },
                 PUT: {
                     proposal: 1,
@@ -189,7 +187,6 @@ describe('Proposal', () => {
                     contract_type: 'PUT',
                     currency: 'USD',
                     underlying_symbol: 'frxAUDJPY',
-                    symbol: 'frxAUDJPY',
                     duration: 5,
                     duration_unit: 't',
                 },
@@ -221,7 +218,6 @@ describe('Proposal', () => {
                         req_id: 7,
                         subscribe: 1,
                         underlying_symbol: 'frxAUDJPY',
-                        symbol: 'frxAUDJPY',
                     },
                 },
             };
@@ -237,7 +233,6 @@ describe('Proposal', () => {
                     proposal: 1,
                     subscribe: 1,
                     underlying_symbol: 'frxAUDJPY',
-                    symbol: 'frxAUDJPY',
                 },
             });
         });
