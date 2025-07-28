@@ -11,6 +11,7 @@ import { checkAndSetEndpointFromUrl } from '@deriv/shared';
 import AppNotificationMessages from './App/Containers/app-notification-messages.jsx';
 import { AnalyticsInitializer } from 'Utils/Analytics';
 import { getActiveAccounts, isTmbEnabled } from '@deriv/utils';
+import './temp-auth'; // Temporary: Authentication flow
 
 AnalyticsInitializer();
 if (
