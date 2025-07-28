@@ -59,7 +59,7 @@
     },
     "scripts": {
         "start": "npm exec --workspace=@deriv/core -- npm run start",
-        "serve": "npm exec --workspace=@deriv/${1:-'core'} -- npm run serve",
+        "serve": "f () { npm exec --workspace=@deriv/${1:-'*'} -- npm run serve $npm_config_open;}; f",
         "bootstrap": "npm ci --strict-peer-deps --verbose",
         "bootstrap:dev": "npm install --strict-peer-deps --verbose",
         "clean": "rm -rf node_modules && rm -rf packages/*/node_modules",
