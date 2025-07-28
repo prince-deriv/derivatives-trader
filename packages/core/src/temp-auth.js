@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 // Token-based authentication for Brand-Platform system
-// Replace TEST_TOKEN with valid token from backend team
+// Token is now loaded from environment variable for security
 
 // Only run debug authentication on the specific QA server
 const serverUrl = localStorage.getItem('config.server_url');
@@ -10,7 +10,8 @@ if (serverUrl !== 'qa197.deriv.dev') {
 } else {
     console.log('🔓 [AUTH] Debug authentication enabled for qa197.deriv.dev');
 
-    const TEST_TOKEN = 'WF6qVPgwqMvekpW9DnfNOuAULhETbCqv'; // Replace with valid token
+    // Get token from environment variable for security
+    const TEST_TOKEN = process.env.QA197_AUTH_TOKEN;
 
     console.log('🚀 [AUTH] Brand-Platform authentication script loaded');
 
