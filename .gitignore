@@ -10,7 +10,6 @@ packages/**/scripts/CNAME
 tsconfig.tsbuildinfo
 *.swp
 npm-debug.log
-lerna-debug.log
 packages/components/lib/
 packages/translations/lib/
 coverage
