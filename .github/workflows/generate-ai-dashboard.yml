@@ -1,4 +1,4 @@
-name: Generate AI Code Dashboard
+name: AI Metrics Dashboard
 
 on:
   # Allow calling from other repositories
@@ -11,9 +11,9 @@ on:
   # Allow manual trigger
   workflow_dispatch:
   
-  # Run when track-merged-prs workflow completes
+  # Run when AI history tracker workflow completes
   workflow_run:
-    workflows: ["Track Merged PRs with AI Analysis"]
+    workflows: ["AI Analysis History Tracker"]
     types:
       - completed
 

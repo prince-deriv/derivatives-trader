@@ -1,4 +1,4 @@
-name: Track Merged PRs with AI Analysis
+name: AI Analysis History Tracker
 
 on:
   # Allow calling from other repositories
@@ -14,9 +14,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  track-merged-pr:
+  update-ai-history:
     # Only run if PR was actually merged
-    # Note: pull_request_target ensures this runs on the target repo with write permissions
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     
