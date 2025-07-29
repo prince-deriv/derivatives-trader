@@ -128,7 +128,7 @@ jobs:
           }
           
           async function main() {
-            console.log('📊 Extracting AI analysis for merged PR #' + PR_NUMBER);
+            console.log('Extracting AI analysis for merged PR #' + PR_NUMBER);
             
             // Get comments for this PR
             const comments = await makeRequest('/repos/' + REPO + '/issues/' + PR_NUMBER + '/comments');
@@ -139,7 +139,7 @@ jobs:
               .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             
             if (aiComments.length === 0) {
-              console.log('❌ No AI analysis found for PR #' + PR_NUMBER);
+              console.log('ERROR: No AI analysis found for PR #' + PR_NUMBER);
               
               // Create a basic entry even without analysis
               const basicEntry = {
@@ -164,11 +164,11 @@ jobs:
               return;
             }
             
-            console.log('✅ Found AI analysis for PR #' + PR_NUMBER);
+            console.log('SUCCESS: Found AI analysis for PR #' + PR_NUMBER);
             
             const analysis = extractAIAnalysis(aiComments[0]);
             if (!analysis) {
-              console.log('❌ Could not parse AI analysis data');
+              console.log('ERROR: Could not parse AI analysis data');
               return;
             }
             
@@ -178,7 +178,7 @@ jobs:
             analysis.mergedAt = '${{ github.event.pull_request.merged_at }}';
             analysis.hasAnalysis = true;
             
-            console.log('📈 PR #' + PR_NUMBER + ': ' + analysis.summary.percentage + '% AI (' + analysis.files.length + ' files)');
+            console.log('PR #' + PR_NUMBER + ': ' + analysis.summary.percentage + '% AI (' + analysis.files.length + ' files)');
             
             fs.writeFileSync('merged_pr_data.json', JSON.stringify(analysis, null, 2));
           }
@@ -232,7 +232,7 @@ jobs:
             // Save updated history
             fs.writeFileSync('.github/data/ai-analysis-history.json', JSON.stringify(history, null, 2));
             
-            console.log('📊 History updated: ' + history.totalMergedPRs + ' total merged PRs tracked');
+            console.log('History updated: ' + history.totalMergedPRs + ' total merged PRs tracked');
           }
           "
 
@@ -298,7 +298,7 @@ jobs:
             const prAuthor = process.env.PR_AUTHOR;
             const { owner, repo } = context.repo;
             
-            console.log('🔍 Environment check:');
+            console.log('Environment check:');
             console.log('  BRANCH_NAME:', branchName);
             console.log('  PR_NUMBER:', prNumber);
             console.log('  PR_TITLE:', prTitle);
@@ -356,8 +356,8 @@ jobs:
                   body: prBody
                 });
                 
-                console.log('✅ Updated existing dashboard PR #' + pr.number + ': ' + pr.html_url);
-                console.log('📊 Added data for merged PR #' + prNumber);
+                console.log('Updated existing dashboard PR #' + pr.number + ': ' + pr.html_url);
+                console.log('Added data for merged PR #' + prNumber);
                 
               } else {
                 // Create new PR
@@ -371,8 +371,8 @@ jobs:
                   draft: false
                 });
                 
-                console.log('✅ Created new dashboard PR #' + newPR.number + ': ' + newPR.html_url);
-                console.log('📊 Tracking merged PR #' + prNumber);
+                console.log('Created new dashboard PR #' + newPR.number + ': ' + newPR.html_url);
+                console.log('Tracking merged PR #' + prNumber);
               }
               
             } catch (error) {
@@ -381,24 +381,24 @@ jobs:
             }
 
       - name: Auto-merge Dashboard PR
-        if: env.SHIFTAI_TOKEN != ''
+        if: ${{ secrets.SHIFTAI_TOKEN != '' }}
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           github-token: ${{ secrets.SHIFTAI_TOKEN }}
-                     script: |
-             const branchName = process.env.BRANCH_NAME;
-             const { owner, repo } = context.repo;
-             
-             console.log('🤖 SHIFTAI_TOKEN detected - attempting auto-merge...');
-             console.log('🔍 Auto-merge environment check:');
-             console.log('  BRANCH_NAME:', branchName);
-             
-             if (!branchName || branchName.trim() === '') {
-               console.log('❌ BRANCH_NAME not set - cannot auto-merge');
-               return;
-             }
-             
-             try {
+          script: |
+            const branchName = process.env.BRANCH_NAME;
+            const { owner, repo } = context.repo;
+            
+            console.log('SHIFTAI_TOKEN detected - attempting auto-merge...');
+            console.log('Auto-merge environment check:');
+            console.log('  BRANCH_NAME:', branchName);
+            
+            if (!branchName || branchName.trim() === '') {
+              console.log('ERROR: BRANCH_NAME not set - cannot auto-merge');
+              return;
+            }
+            
+            try {
               // Find the dashboard PR
               const { data: existingPRs } = await github.rest.pulls.list({
                 owner,
@@ -423,16 +423,16 @@ jobs:
                   commit_message: 'Automatically merged dashboard update PR via SHIFTAI_TOKEN\n\n🤖 This PR was auto-merged using administrative privileges to maintain dashboard currency.'
                 });
                 
-                console.log('✅ Auto-merged dashboard PR #' + pr.number);
-                console.log('🚀 Dashboard is now live with latest data!');
+                console.log('SUCCESS: Auto-merged dashboard PR #' + pr.number);
+                console.log('Dashboard is now live with latest data!');
                 
               } else {
-                console.log('⚠️  No open dashboard PR found to auto-merge');
+                console.log('WARNING: No open dashboard PR found to auto-merge');
               }
               
             } catch (error) {
-              console.error('❌ Auto-merge failed:', error.message);
-              console.log('💡 PR will remain open for manual review and merge');
+              console.error('ERROR: Auto-merge failed:', error.message);
+              console.log('PR will remain open for manual review and merge');
               // Don't throw - let workflow continue
             }
 
@@ -447,7 +447,7 @@ jobs:
           echo "🔄 Update process:"
           echo "   • ✅ Added to historical tracking data"
           echo "   • ✅ Generated updated dashboard"
-          echo "   • ✅ Created/updated dashboard PR"
+          echo "   • Created/updated dashboard PR"
           if [ -n "${{ secrets.SHIFTAI_TOKEN }}" ]; then
             echo "   • 🤖 Auto-merge attempted (SHIFTAI_TOKEN detected)"
           else
