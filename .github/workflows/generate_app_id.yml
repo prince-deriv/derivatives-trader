@@ -1,4 +1,4 @@
-name: Deriv App ID Generator
+name: Derivatives Trader ID Generator
 
 permissions:
   actions: write
@@ -17,6 +17,7 @@ jobs:
         timeout-minutes: 5
         runs-on: ubuntu-latest
         steps:
+            # Extract the Vercel preview URL from PR comments
             - name: Capture Vercel preview URL
               id: vercel_preview_url
               uses: binary-com/vercel-preview-url-action@v1.0.5
@@ -32,10 +33,11 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   max_retries: 5
                   vercel_preview_url: ${{ steps.vercel_preview_url.outputs.vercel_preview_url }}
+            # Post a comment on the PR with the generated App ID and URLs
             - name: Comment on pull request with App ID and URLs
               id: sticky_comment_on_pr
               if: steps.generate_app_id.outputs.should_post_comment
-              uses: marocchino/sticky-pull-request-comment@331f8f5b4215f0445d3c07b4967662a32a2d3e31
+              uses: marocchino/sticky-pull-request-comment@v2.5.0
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   header: deriv-app-id-action
@@ -61,10 +63,11 @@ jobs:
                         ```
                       </details>
 
+            # Store and upload the generated URL for later use
             - name: Store generated URL in artifact
-              run: echo "HOME_URL=${{ steps.vercel_preview_url.outputs.vercel_preview_url }}?qa_server=red.derivws.com&app_id=${{ steps.generate_app_id.outputs.app_id }}" >> ${{ github.workspace }}/url.txt
+              run: echo "HOME_URL=${{ steps.vercel_preview_url.outputs.vercel_preview_url }}?qa_server=red.derivws.com&app_id=${{ steps.generate_app_id.outputs.app_id }}" >> ${{ github.workspace }}/url.txt              
             - name: Upload artifact
-              uses: actions/upload-artifact@master
+              uses: actions/upload-artifact@v4
               with:
                   name: generated_url
                   path: ${{ github.workspace }}/url.txt

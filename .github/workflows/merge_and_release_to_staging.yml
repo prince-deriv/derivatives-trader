@@ -19,19 +19,18 @@ jobs:
   release_issues:
     permissions: write-all
     runs-on: ubuntu-latest
-    timeout-minutes: 600
+    # Reduced timeout from 10 hours to 2 hours, which should be sufficient
+    timeout-minutes: 120
     steps:
       - name: Checkout to repo
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        uses: actions/checkout@v4
         with:
           ref: master
       - name: Setup node
-        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8
-      - name: Wait for logs to accumulate
-        run: |
-          sleep 10
+        uses: actions/setup-node@v4
       - name: Release issues in Derivatives Trader
         uses: binary-com/fe-toolbox@v0.0.2
+        timeout-minutes: 60
         with:
           release_tag_task_url: ${{ inputs.release_tag_task_url }}
           platform: 'Deriv.app'
