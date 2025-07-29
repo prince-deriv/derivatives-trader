@@ -1,0 +1,35 @@
+{
+  "lastUpdated": "2025-07-29T13:10:14.091Z",
+  "totalMergedPRs": 1,
+  "analyses": [
+    {
+      "timestamp": "2025-07-29T13:06:59.109Z",
+      "pullRequest": 11,
+      "branch": "fix-dashboard-pr-generator",
+      "author": "prince-deriv",
+      "files": [
+        {
+          "name": ".github/workflows/generate-ai-dashboard.yml",
+          "totalCharacters": 10899,
+          "aiCharacters": 0,
+          "percentage": 0
+        },
+        {
+          "name": ".github/workflows/track-merged-prs.yml",
+          "totalCharacters": 19543,
+          "aiCharacters": 0,
+          "percentage": 0
+        }
+      ],
+      "summary": {
+        "totalCharacters": 30442,
+        "aiCharacters": 0,
+        "percentage": 0
+      },
+      "prTitle": "fix: workflow syntax error",
+      "prUrl": "https://github.com/prince-deriv/derivatives-trader/pull/11",
+      "mergedAt": "2025-07-29T13:09:36Z",
+      "hasAnalysis": true
+    }
+  ]
+}
