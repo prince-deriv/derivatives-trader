@@ -1,18 +1,12 @@
 # ==================================================================================
 
-# ==================================================================================
-
 # Deriv CODEOWNERS
 
 # ==================================================================================
 
-# ==================================================================================
-
 #
 
-# Configuration of code ownership and review approvals for the deriv-com/deriv-app repo.
-
-#
+# Configuration of code ownership and review approvals for the derivatives-trader repository.
 
 # More info: https://help.github.com/articles/about-codeowners/
 
@@ -26,37 +20,37 @@
 
 #
 
-# - we trust that people do the right thing and not approve changes they don't feel confident reviewing
+# - We trust that people do the right thing and not approve changes they don't feel confident reviewing
 
-# - we use github teams so that we funnel code reviews to the most appropriate reviewer, this is why the team structure is fine-grained
+# - We use GitHub teams so that we funnel code reviews to the most appropriate reviewer
 
-# - we enforce that only approved PRs get merged to ensure that unreviewed code doesn't get accidentally merged
+# - We enforce that only approved PRs get merged to ensure that unreviewed code doesn't get accidentally merged
 
-# - we delegate approval rights as much as possible so that we can scale better
+# - We delegate approval rights as much as possible so that we can scale better
 
-# - each group must have at least one person, but several people are preferable to avoid a single point of failure issues
-
-#
-
-# Configuration nuances:
+# - Each group must have at least one person, but several people are preferable to avoid single point of failure issues
 
 #
 
-# - This configuration works in conjunction with the protected branch settings that require all changes to be made via pull requests with at least one approval.
-
-# - This approval can come from an appropriate codeowner, or any repo collaborator (person with write access) if the PR is authored by a codeowner.
-
-# - Each codeowners team must have write access to the repo, otherwise their reviews won't count.
+# Configuration notes:
 
 #
 
-# In the case of emergency, the repo administrators can bypass this requirement.
+# - This configuration works with protected branch settings that require all changes to be made via pull requests with at least one approval
+
+# - This approval can come from an appropriate codeowner, or any repo collaborator if the PR is authored by a codeowner
+
+# - Each codeowners team must have write access to the repo, otherwise their reviews won't count
+
+#
+
+# In case of emergency, repo administrators can bypass this requirement.
+
+#
 
 # ================================================
 
 # GitHub username registry
-
-# (just to make this file easier to understand)
 
 # ================================================
 
@@ -70,17 +64,17 @@
 
 # akmal-deriv
 
-######################################################################################################
-
 #
+
+# ==================================================================================
 
 # CODEOWNERS rules
 
-# -----------------
+# ==================================================================================
 
 #
 
-# All the following rules are applied in the order specified in this file.
+# All rules are applied in the order specified in this file.
 
 # The last rule that matches wins!
 
@@ -90,13 +84,13 @@
 
 #
 
-######################################################################################################
+# ==================================================================================
 
 # ==============================================================
 
 # Default Owners
 
-# (in case no pattern matches a path in a PR - this should be treated as a bug and result in adding the path to CODEOWNERS)
+# (in case no pattern matches a path in a PR)
 
 # ==============================================================
 
@@ -104,15 +98,15 @@
 
 # ==============================================================
 
-# deriv-app/core
+# Package: core
 
 # ==============================================================
 
-/packages/core/\*\*/\* @matin-deriv @nijil-deriv
+/packages/core/\*_/_ @matin-deriv @nijil-deriv
 
 # ==============================================================
 
-# deriv-app/reports
+# Package: reports
 
 # ==============================================================
 
@@ -120,7 +114,7 @@
 
 # ==============================================================
 
-# deriv-app/trader
+# Package: trader
 
 # ==============================================================
 
@@ -128,9 +122,9 @@
 
 # ==============================================================
 
-# deriv-app/api
+# Package: api (Deprecated)
 
-# Deprecated - do not use. For -v2 projects use api-v2. For old projects - do not use api nor api-v2, use old patterns / old hooks.
+# Do not use. For -v2 projects use api-v2.
 
 # ==============================================================
 
@@ -138,7 +132,7 @@
 
 # ==============================================================
 
-# deriv-app/api-v2
+# Package: api-v2
 
 # ==============================================================
 
@@ -146,7 +140,35 @@
 
 # ==============================================================
 
-# scripts/check-imports.js
+# Package: components
+
+# ==============================================================
+
+/packages/components/\*_/_ @matin-deriv @nijil-deriv
+
+# ==============================================================
+
+# Documentation
+
+# ==============================================================
+
+/docs/\*_/_ @matin-deriv @nijil-deriv
+
+# ==============================================================
+
+# Development Tools & Configuration
+
+# ==============================================================
+
+/**mocks**/**/\* @matin-deriv @nijil-deriv
+/hooks/**/_ @matin-deriv @nijil-deriv
+/eslint-local-rules/\*\*/_ @matin-deriv @nijil-deriv
+/types/**/\* @matin-deriv @nijil-deriv
+/scripts/**/\* @matin-deriv @nijil-deriv
+
+# ==============================================================
+
+# Specific Files
 
 # ==============================================================
 
