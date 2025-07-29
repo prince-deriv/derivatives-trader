@@ -245,6 +245,11 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
+          # Define branch name first (before any potential exits)
+          BRANCH_NAME="dashboard-update-$(date +%Y%m%d)"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "🔧 Set BRANCH_NAME=$BRANCH_NAME"
+          
           # Add all changes
           git add .github/data/ai-analysis-history.json AI-DASHBOARD.md
           
@@ -253,9 +258,6 @@ jobs:
             echo "ℹ️  No changes to commit"
             exit 0
           fi
-          
-          # Define branch name (daily branch to consolidate multiple merges)
-          BRANCH_NAME="dashboard-update-$(date +%Y%m%d)"
           
           # Check if branch already exists locally
           if git rev-parse --verify "$BRANCH_NAME" >/dev/null 2>&1; then
@@ -282,7 +284,6 @@ jobs:
           git push origin "$BRANCH_NAME" --force
           
           echo "✅ Changes pushed to branch: $BRANCH_NAME"
-          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           echo "PR_NUMBER=${{ github.event.number }}" >> $GITHUB_ENV
           echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
           echo "PR_AUTHOR=${{ github.event.pull_request.user.login }}" >> $GITHUB_ENV
@@ -296,6 +297,18 @@ jobs:
             const prTitle = process.env.PR_TITLE;
             const prAuthor = process.env.PR_AUTHOR;
             const { owner, repo } = context.repo;
+            
+            console.log('🔍 Environment check:');
+            console.log('  BRANCH_NAME:', branchName);
+            console.log('  PR_NUMBER:', prNumber);
+            console.log('  PR_TITLE:', prTitle);
+            console.log('  PR_AUTHOR:', prAuthor);
+            console.log('  owner:', owner);
+            console.log('  repo:', repo);
+            
+            if (!branchName || branchName.trim() === '') {
+              throw new Error('BRANCH_NAME environment variable is not set or empty! Cannot create PR without head branch.');
+            }
             
             // Check if PR already exists for this branch
             try {
@@ -372,13 +385,20 @@ jobs:
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           github-token: ${{ secrets.SHIFTAI_TOKEN }}
-          script: |
-            const branchName = process.env.BRANCH_NAME;
-            const { owner, repo } = context.repo;
-            
-            console.log('🤖 SHIFTAI_TOKEN detected - attempting auto-merge...');
-            
-            try {
+                     script: |
+             const branchName = process.env.BRANCH_NAME;
+             const { owner, repo } = context.repo;
+             
+             console.log('🤖 SHIFTAI_TOKEN detected - attempting auto-merge...');
+             console.log('🔍 Auto-merge environment check:');
+             console.log('  BRANCH_NAME:', branchName);
+             
+             if (!branchName || branchName.trim() === '') {
+               console.log('❌ BRANCH_NAME not set - cannot auto-merge');
+               return;
+             }
+             
+             try {
               // Find the dashboard PR
               const { data: existingPRs } = await github.rest.pulls.list({
                 owner,
