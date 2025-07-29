@@ -381,13 +381,20 @@ jobs:
             }
 
       - name: Auto-merge Dashboard PR
-        if: ${{ secrets.SHIFTAI_TOKEN != '' }}
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        env:
+          SHIFTAI_TOKEN: ${{ secrets.SHIFTAI_TOKEN }}
         with:
           github-token: ${{ secrets.SHIFTAI_TOKEN }}
           script: |
             const branchName = process.env.BRANCH_NAME;
+            const shiftaiToken = process.env.SHIFTAI_TOKEN;
             const { owner, repo } = context.repo;
+            
+            if (!shiftaiToken) {
+              console.log('SHIFTAI_TOKEN not available - skipping auto-merge');
+              return;
+            }
             
             console.log('SHIFTAI_TOKEN detected - attempting auto-merge...');
             console.log('Auto-merge environment check:');
