@@ -1,0 +1,330 @@
+name: AI Code Analysis
+
+on:
+  # Allow calling from other repositories
+  workflow_call:
+  
+  # Also allow direct usage in this repo
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  analyze-ai-code:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.4
+        with:
+          node-version: '18'
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          # Get list of changed files in this PR
+          git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD > changed_files.txt
+          echo "Changed files:"
+          cat changed_files.txt
+
+      - name: Analyze AI code
+        id: analyze
+        run: |
+          cat > analyze_script.js << 'EOF'
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Universal AI Block Detection - detects [AI] regardless of comment syntax
+          const AI_BLOCK_REGEXES = [
+            {
+              name: 'universal',
+              regex: /(\b\[AI\])([\s\S]*?)(\[\/AI\]\b)/g,
+              description: 'Universal [AI] [/AI] detection regardless of comment style'
+            }
+          ];
+          
+          function getRegexesForFile(filename) {
+            // Universal detection - same regex for all file types
+            return AI_BLOCK_REGEXES;
+          }
+          
+          function analyzeFile(filePath) {
+            try {
+              if (!fs.existsSync(filePath)) return null;
+          
+              const content = fs.readFileSync(filePath, 'utf8');
+              const regexes = getRegexesForFile(filePath);
+              
+              let aiCharacters = 0;
+              const totalCharacters = content.length;
+              
+              for (const regexDef of regexes) {
+                const regex = new RegExp(regexDef.regex.source, regexDef.regex.flags);
+                let match;
+                
+                while ((match = regex.exec(content)) !== null) {
+                  const codeContent = match[2] || match[1] || '';
+                  aiCharacters += codeContent.length;
+                  
+                  if (!regexDef.regex.global) break;
+                }
+              }
+              
+              return {
+                name: filePath,
+                totalCharacters,
+                aiCharacters,
+                percentage: totalCharacters > 0 ? Math.round((aiCharacters / totalCharacters) * 100) : 0
+              };
+              
+            } catch (error) {
+              console.error('Error analyzing file ' + filePath + ':', error.message);
+              return null;
+            }
+          }
+          
+          // Read changed files
+          const changedFilesContent = fs.readFileSync('changed_files.txt', 'utf8');
+          const changedFiles = changedFilesContent
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => line.length > 0)
+            .filter(file => {
+              const ext = path.extname(file).toLowerCase();
+              const codeExtensions = [
+                '.js', '.ts', '.jsx', '.tsx', '.java', '.c', '.cpp', '.go', '.cs', 
+                '.swift', '.scala', '.dart', '.kt', '.rs', '.py', '.sh', '.rb', 
+                '.pl', '.yml', '.yaml', '.toml', '.env', '.ini', '.cfg', '.conf', 
+                '.R', '.groovy', '.html', '.xml', '.md', '.markdown', '.vue', 
+                '.svelte', '.xhtml', '.svg', '.css', '.scss', '.sass', '.less'
+              ];
+              return codeExtensions.includes(ext);
+            });
+
+          console.log('Analyzing ' + changedFiles.length + ' code files...');
+
+          const results = {
+            files: [],
+            summary: {
+              totalCharacters: 0,
+              aiCharacters: 0,
+              percentage: 0
+            }
+          };
+
+          for (const file of changedFiles) {
+            const analysis = analyzeFile(file);
+            if (analysis) {
+              results.files.push(analysis);
+              results.summary.totalCharacters += analysis.totalCharacters;
+              results.summary.aiCharacters += analysis.aiCharacters;
+              
+              console.log(file + ': ' + analysis.aiCharacters + '/' + analysis.totalCharacters + ' chars (' + analysis.percentage + '%) AI');
+            }
+          }
+
+          if (results.summary.totalCharacters > 0) {
+            results.summary.percentage = Math.round(
+              (results.summary.aiCharacters / results.summary.totalCharacters) * 100
+            );
+          }
+
+          fs.writeFileSync('ai_analysis_results.json', JSON.stringify(results, null, 2));
+
+          console.log('\n=== SUMMARY ===');
+          console.log('Total files analyzed: ' + results.files.length);
+          console.log('Total characters: ' + results.summary.totalCharacters);
+          console.log('AI characters: ' + results.summary.aiCharacters);
+          console.log('Overall AI percentage: ' + results.summary.percentage + '%');
+          EOF
+          
+          node analyze_script.js
+
+      - name: Post AI Code Analysis Report
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            // [AI]
+            const fs = require('fs');
+            
+            // Read analysis results
+            const results = JSON.parse(fs.readFileSync('ai_analysis_results.json', 'utf8'));
+            
+            // Helper functions for visual elements
+            function createProgressBar(percentage, width = 20) {
+              const filled = Math.round((percentage / 100) * width);
+              const empty = width - filled;
+              const bar = '█'.repeat(filled) + '░'.repeat(empty);
+              
+              let color = '📝'; // Manual Coding
+              if (percentage > 50) color = '⚡'; // Peak AI Efficiency
+              else if (percentage > 20) color = '🚀'; // Strong AI Productivity  
+              else if (percentage > 0) color = '🌱'; // AI-Assisted Development
+              
+              return `${color} ${bar} ${percentage}%`;
+            }
+            
+            function createMiniChart(files) {
+              if (files.length === 0) return '';
+              
+              const maxFiles = 10;
+              const displayFiles = files.slice(0, maxFiles);
+              
+              let chart = '```\n';
+              chart += 'AI Percentage by File:\n';
+              chart += '└─────────────────────────────────────────────────────────────┐\n';
+              
+              displayFiles.forEach((file, index) => {
+                const name = file.name.length > 25 ? '...' + file.name.slice(-22) : file.name;
+                const padding = ' '.repeat(Math.max(0, 25 - name.length));
+                const barLength = 30;
+                const filled = Math.round((file.percentage / 100) * barLength);
+                const bar = '█'.repeat(filled) + '░'.repeat(barLength - filled);
+                
+                chart += `  ${name}${padding} │${bar}│ ${file.percentage}%\n`;
+              });
+              
+              if (files.length > maxFiles) {
+                chart += `  ... and ${files.length - maxFiles} more files\n`;
+              }
+              
+              chart += '└─────────────────────────────────────────────────────────────┘\n';
+              chart += '```';
+              
+              return chart;
+            }
+            
+            function getAILevelInfo(percentage) {
+              if (percentage === 0) {
+                return {
+                  emoji: '📝',
+                  level: 'Manual Coding',
+                  description: 'This PR contains traditional hand-written code.',
+                  color: '#6c757d'
+                };
+              } else if (percentage <= 20) {
+                return {
+                  emoji: '🌱',
+                  level: 'AI-Assisted Development',
+                  description: `Great! ${percentage}% AI-generated code shows productive AI assistance.`,
+                  color: '#28a745'
+                };
+              } else if (percentage <= 50) {
+                return {
+                  emoji: '🚀',
+                  level: 'Strong AI Productivity', 
+                  description: `Excellent! ${percentage}% AI-generated code demonstrates high AI adoption.`,
+                  color: '#17a2b8'
+                };
+              } else {
+                return {
+                  emoji: '⚡',
+                  level: 'Peak AI Efficiency',
+                  description: `Outstanding! ${percentage}% AI-generated code shows maximum productivity gains.`,
+                  color: '#007bff'
+                };
+              }
+            }
+            
+            // Create the beautiful comment
+            let comment = '';
+            
+            if (results.files.length === 0) {
+              comment = `## 🤖 AI Code Analysis
+            
+            <div align="center">
+            
+            ### 📄 No Code Files Found
+            
+            No supported code files were detected in this PR for AI analysis.
+            
+            </div>
+            
+            ---
+            <sub>🚀 Analysis powered by **ShiftAI** • [View Workflow](https://github.com/${{ github.repository }}/actions)</sub>`;
+            } else {
+              const aiInfo = getAILevelInfo(results.summary.percentage);
+              
+              comment = `## 🤖 AI Code Analysis Results
+            
+            <div align="center">
+            
+            ### ${aiInfo.emoji} ${aiInfo.level}
+            
+            </div>
+            
+            ${createProgressBar(results.summary.percentage, 25)}
+            
+            **${results.summary.aiCharacters.toLocaleString()}** of **${results.summary.totalCharacters.toLocaleString()}** characters (${results.summary.percentage}%) are AI-generated
+            
+            ---
+            
+            ### 📊 Analysis Summary
+            
+            | Metric | Value |
+            |--------|-------|
+            | 📁 **Files Analyzed** | ${results.files.length} |
+            | 📝 **Total Characters** | ${results.summary.totalCharacters.toLocaleString()} |
+            | 🤖 **AI Characters** | ${results.summary.aiCharacters.toLocaleString()} |
+            | 📈 **AI Percentage** | **${results.summary.percentage}%** |
+            
+            ---
+            
+            ### 📋 Per-File Breakdown
+            
+            | File | Size | AI Content | Percentage |
+            |------|------|------------|------------|`;
+            
+              // Add file details
+              results.files
+                .sort((a, b) => b.percentage - a.percentage)
+                .forEach(file => {
+                  const fileName = file.name.length > 40 ? '...' + file.name.slice(-37) : file.name;
+                  const progressBar = createProgressBar(file.percentage, 12);
+                  
+                  comment += `\n| \`${fileName}\` | ${file.totalCharacters} chars | ${file.aiCharacters} chars | ${progressBar} |`;
+                });
+            
+              // Add visual chart
+              if (results.files.length > 0) {
+                comment += `\n\n### 📊 Visual Breakdown\n\n`;
+                comment += createMiniChart(results.files);
+              }
+              
+              comment += `\n\n---\n\n`;
+              comment += `<div align="center">\n\n`;
+              comment += `${aiInfo.emoji} **${aiInfo.description}**\n\n`;
+              comment += `</div>\n\n`;
+              
+              // Add structured data for dashboard
+              comment += `<details>\n<summary>📊 Raw Data (for dashboard)</summary>\n\n\`\`\`json\n`;
+              comment += JSON.stringify({
+                timestamp: new Date().toISOString(),
+                repository: context.repo.full_name,
+                pullRequest: context.issue.number,
+                branch: context.payload.pull_request.head.ref,
+                author: context.payload.pull_request.user.login,
+                ...results
+              }, null, 2);
+              comment += `\n\`\`\`\n\n</details>\n\n`;
+              
+              comment += `---\n<sub>🚀 Analysis powered by **ShiftAI** • [View Workflow](https://github.com/${{ github.repository }}/actions) • Tracking AI code transparency</sub>`;
+            }
+            
+            // Post the comment
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+            // [/AI]
