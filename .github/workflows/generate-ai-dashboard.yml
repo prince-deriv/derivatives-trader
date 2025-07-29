@@ -173,19 +173,19 @@ jobs:
         with:
           github-token: ${{ secrets.SHIFTAI_TOKEN }}
           script: |
-             const branchName = process.env.BRANCH_NAME;
-             const { owner, repo } = context.repo;
-             
-             console.log('🤖 SHIFTAI_TOKEN detected - attempting auto-merge...');
-             console.log('🔍 Auto-merge environment check:');
-             console.log('  BRANCH_NAME:', branchName);
-             
-             if (!branchName || branchName.trim() === '') {
-               console.log('❌ BRANCH_NAME not set - cannot auto-merge');
-               return;
-             }
-             
-             try {
+            const branchName = process.env.BRANCH_NAME;
+            const { owner, repo } = context.repo;
+            
+            console.log('🤖 SHIFTAI_TOKEN detected - attempting auto-merge...');
+            console.log('🔍 Auto-merge environment check:');
+            console.log('  BRANCH_NAME:', branchName);
+            
+            if (!branchName || branchName.trim() === '') {
+              console.log('❌ BRANCH_NAME not set - cannot auto-merge');
+              return;
+            }
+            
+            try {
               // Find the dashboard PR
               const { data: existingPRs } = await github.rest.pulls.list({
                 owner,
