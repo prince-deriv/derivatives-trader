@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { useIsTNCNeeded } from '@deriv/hooks';
+import { useIsTNCNeeded } from '@deriv/api';
 import { ContentFlag, moduleLoader, SessionStore } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 

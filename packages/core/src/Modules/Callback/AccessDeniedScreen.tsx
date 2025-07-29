@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 import { Icon, Loading } from '@deriv/components';
-import { useIsHubRedirectionEnabled, useOauth2 } from '@deriv/hooks';
+import { useIsHubRedirectionEnabled, useOauth2 } from '@deriv/api';
 import { BrandBrandLightDerivWordmarkHorizontal25YearsEnglishIcon as DerivLogo } from '@deriv/quill-icons';
 import { getDomainUrl, routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';

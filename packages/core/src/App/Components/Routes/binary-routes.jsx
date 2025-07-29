@@ -5,7 +5,7 @@ import getRoutesConfig from 'App/Constants/routes-config';
 import RouteWithSubRoutes from './route-with-sub-routes.jsx';
 import { observer, useStore } from '@deriv/stores';
 import { getPositionsV2TabIndexFromURL, routes } from '@deriv/shared';
-import { useDtraderV2Flag } from '@deriv/hooks';
+import { useDtraderV2Flag } from '@deriv/api';
 
 // List of route patterns that have been removed
 const REMOVED_ROUTE_PATTERNS = [

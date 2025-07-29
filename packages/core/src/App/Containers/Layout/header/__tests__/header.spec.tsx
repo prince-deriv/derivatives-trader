@@ -2,8 +2,8 @@ import { StoreProvider, mockStore } from '@deriv/stores';
 import { render, screen } from '@testing-library/react';
 import Header from '../header';
 
-jest.mock('@deriv/hooks', () => ({
-    ...jest.requireActual('@deriv/hooks'),
+jest.mock('@deriv/api', () => ({
+    ...jest.requireActual('@deriv/api'),
     useStoreWalletAccountsList: jest.fn(() => ({ data: [], has_wallet: false })),
     useFeatureFlags: jest.fn(() => ({})),
 }));

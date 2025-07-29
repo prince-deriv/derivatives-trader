@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 
 import { Loading } from '@deriv/components';
-import { useLocalStorageData } from '@deriv/hooks';
+import { useLocalStorageData } from '@deriv/api';
 import { getSymbolDisplayName } from '@deriv/shared';
 import { useStore } from '@deriv/stores';
 

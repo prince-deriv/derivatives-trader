@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon, Popover } from '@deriv/components';
-import { useAccountSettingsRedirect } from '@deriv/hooks';
+import { useAccountSettingsRedirect } from '@deriv/api';
 import { localize } from '@deriv/translations';
 import { observer } from '@deriv/stores';
 

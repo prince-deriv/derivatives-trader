@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Loading } from '@deriv/components';
-import { useDtraderV2Flag } from '@deriv/hooks';
+import { useDtraderV2Flag } from '@deriv/api';
 import { getPositionsV2TabIndexFromURL, makeLazyLoader, moduleLoader, routes } from '@deriv/shared';
 import { TCoreStores } from '@deriv/stores/types';
 

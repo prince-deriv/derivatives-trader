@@ -4,7 +4,7 @@ import { Button, Icon, MobileDialog, Text } from '@deriv/components';
 import { getDomainUrl, platforms, routes } from '@deriv/shared';
 import { Localize } from '@deriv/translations';
 import { AccountSwitcherWalletList } from './account-switcher-wallet-list';
-import { useIsHubRedirectionEnabled, useIsRtl, useStoreWalletAccountsList } from '@deriv/hooks';
+import { useIsHubRedirectionEnabled, useIsRtl, useStoreWalletAccountsList } from '@deriv/api';
 import { observer } from '@deriv/stores';
 import './account-switcher-wallet-mobile.scss';
 
@@ -42,22 +42,23 @@ export const AccountSwitcherWalletMobile = observer(({ is_visible, toggle, login
 
     const handleManageFundsRedirect = () => {
         closeAccountsDialog();
-        if (isHubRedirectionEnabled) {
-            const PRODUCTION_REDIRECT_URL = `https://hub.${getDomainUrl()}/tradershub`;
-            const STAGING_REDIRECT_URL = `https://staging-hub.${getDomainUrl()}/tradershub`;
-            const redirectUrl = process.env.NODE_ENV === 'production' ? PRODUCTION_REDIRECT_URL : STAGING_REDIRECT_URL;
+        // TODO: Uncomment when the hub redirection is implemented
+        // if (isHubRedirectionEnabled) {
+        //     const PRODUCTION_REDIRECT_URL = `https://hub.${getDomainUrl()}/tradershub`;
+        //     const STAGING_REDIRECT_URL = `https://staging-hub.${getDomainUrl()}/tradershub`;
+        //     const redirectUrl = process.env.NODE_ENV === 'production' ? PRODUCTION_REDIRECT_URL : STAGING_REDIRECT_URL;
 
-            const url_query_string = window.location.search;
-            const url_params = new URLSearchParams(url_query_string);
-            const account_currency = window.sessionStorage.getItem('account') || url_params.get('account');
+        //     const url_query_string = window.location.search;
+        //     const url_params = new URLSearchParams(url_query_string);
+        //     const account_currency = window.sessionStorage.getItem('account') || url_params.get('account');
 
-            window.location.href = `${redirectUrl}/redirect?action=redirect_to&redirect_to=wallet${account_currency ? `&account=${account_currency}` : ''}`;
-        } else {
-            history.push(routes.wallets_transfer, {
-                toAccountLoginId: loginid,
-                is_from_dtrader: window.location.pathname?.includes('dtrader'),
-            });
-        }
+        //     window.location.href = `${redirectUrl}/redirect?action=redirect_to&redirect_to=wallet${account_currency ? `&account=${account_currency}` : ''}`;
+        // } else {
+        //     history.push(routes.wallets_transfer, {
+        //         toAccountLoginId: loginid,
+        //         is_from_dtrader: window.location.pathname?.includes('dtrader'),
+        //     });
+        // }
     };
 
     const footer = (

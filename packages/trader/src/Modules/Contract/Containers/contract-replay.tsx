@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { Div100vhContainer, FadeWrapper, PageOverlay, SwipeableWrapper } from '@deriv/components';
-import { useFeatureFlags } from '@deriv/hooks';
+import { useFeatureFlags } from '@deriv/api';
 import {
     getContractTypeFeatureFlag,
     isAccumulatorContract,

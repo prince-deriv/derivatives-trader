@@ -39,3 +39,20 @@ const mock_onfido = {
 };
 
 window.Onfido = mock_onfido;
+
+// Mock fetch for tests
+global.fetch = jest.fn(() =>
+    Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({}),
+    })
+);
+
+// Mock TextEncoder for tests
+global.TextEncoder = jest.fn().mockImplementation(() => ({
+    encode: jest.fn(),
+}));
+
+global.TextDecoder = jest.fn().mockImplementation(() => ({
+    decode: jest.fn(),
+}));

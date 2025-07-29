@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Stream, StreamPlayerApi } from '@cloudflare/stream-react';
-import { useIsRtl } from '@deriv/hooks';
+import { useIsRtl } from '@deriv/api';
 import { isSafariBrowser, mobileOSDetect } from '@deriv/shared';
 import throttle from 'lodash.throttle';
 import { useDebounceCallback } from 'usehooks-ts';
