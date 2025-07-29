@@ -360,14 +360,29 @@ export default class PortfolioStore extends BaseStore {
         const { bid_price } = this.positions[i].contract_info;
         this.positions[i].is_sell_requested = true;
 
-        // Convert bid_price to number (API returns string values)
-        const numericBidPrice = +bid_price;
+        // Validate original bid_price before conversion (follows contract-replay-store.js pattern)
+        if (contract_id && (bid_price || bid_price === 0)) {
+            // Convert bid_price to number (API returns string values)
+            const numericBidPrice = +bid_price;
 
-        if (contract_id && !isNaN(numericBidPrice) && numericBidPrice !== null) {
-            WS.sell(contract_id, numericBidPrice).then(this.handleSell);
+            if (!isNaN(numericBidPrice)) {
+                WS.sell(contract_id, numericBidPrice).then(this.handleSell);
+            } else {
+                //eslint-disable-next-line no-console
+                console.error('Portfolio Store: Invalid numeric conversion for bid_price:', {
+                    contract_id,
+                    bid_price,
+                    numericBidPrice,
+                });
+                // Reset sell requested state on error
+                this.positions[i].is_sell_requested = false;
+            }
         } else {
             //eslint-disable-next-line no-console
-            console.error('Portfolio Store: Invalid sell parameters:', { contract_id, bid_price, numericBidPrice });
+            console.error('Portfolio Store: Invalid sell parameters - bid_price is null/undefined/empty:', {
+                contract_id,
+                bid_price,
+            });
             // Reset sell requested state on error
             this.positions[i].is_sell_requested = false;
         }
