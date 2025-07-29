@@ -1,0 +1,98 @@
+name: Generate AI Code Dashboard
+
+on:
+  # Allow calling from other repositories
+  workflow_call:
+  
+  # Run weekly on Sundays at 6 AM UTC
+  schedule:
+    - cron: '0 6 * * 0'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+  
+  # Run when track-merged-prs workflow completes
+  workflow_run:
+    workflows: ["Track Merged PRs with AI Analysis"]
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  generate-dashboard:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.4
+        with:
+          node-version: '18'
+
+      - name: Prepare scripts directory
+        run: |
+          mkdir -p .github/scripts
+          
+      - name: Copy dashboard generation script
+        run: |
+          # If the script doesn't exist locally, copy from the workflow repo
+          if [ ! -f ".github/scripts/generate-dashboard.js" ]; then
+            echo "Copying dashboard script from workflow repository..."
+            # Try to determine the source repository (could be customized)
+            WORKFLOW_REPO="${{ github.repository }}"
+            if [[ "$WORKFLOW_REPO" != *"shift-ai"* ]]; then
+              # This is a consumer repo, find the source
+              WORKFLOW_REPO="${{ github.repository_owner }}/shift-ai"
+            fi
+            curl -sL "https://raw.githubusercontent.com/${WORKFLOW_REPO}/main/.github/scripts/generate-dashboard.js" > .github/scripts/generate-dashboard.js
+            chmod +x .github/scripts/generate-dashboard.js
+          fi
+
+      - name: Generate AI Analysis Dashboard
+        run: |
+          node .github/scripts/generate-dashboard.js
+
+      - name: Commit dashboard
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Check if dashboard file was created and has content
+          if [ -f "AI-DASHBOARD.md" ] && [ -s "AI-DASHBOARD.md" ]; then
+            git add AI-DASHBOARD.md
+            
+            # Only commit if there are changes
+            if ! git diff --staged --quiet; then
+              git commit -m "📊 Update AI Code Analysis Dashboard
+              
+              - Updated: $(date -u +"%Y-%m-%d %H:%M UTC")
+              - Workflow: ${{ github.workflow }}
+              - Trigger: ${{ github.event_name }}"
+              
+              git push
+              echo "✅ Dashboard updated and committed"
+            else
+              echo "ℹ️  No changes to dashboard"
+            fi
+          else
+            echo "❌ Dashboard file not generated or empty"
+            exit 1
+          fi
+
+      - name: Output dashboard info
+        run: |
+          echo "📊 AI Code Analysis Dashboard generated!"
+          echo ""
+          echo "🔗 View your dashboard:"
+          echo "   • Direct link: https://github.com/${{ github.repository }}/blob/main/AI-DASHBOARD.md"
+          echo "   • Mobile friendly: Open AI-DASHBOARD.md in GitHub mobile app"
+          echo ""
+          echo "✨ The dashboard is now a beautiful Markdown file that GitHub renders natively!" 
