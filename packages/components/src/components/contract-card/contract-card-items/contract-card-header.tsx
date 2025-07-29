@@ -64,6 +64,25 @@ const ContractCardHeader = ({
         tick_count,
         tick_passed,
     } = contract_info;
+
+    // Compute effective underlying with fallback extraction from shortcode
+    const getEffectiveUnderlying = () => {
+        if (underlying) {
+            return underlying;
+        }
+
+        // Fallback: Extract underlying from shortcode if missing
+        if (shortcode) {
+            const parts = shortcode.split('_');
+            if (parts.length >= 2) {
+                return parts[1];
+            }
+        }
+
+        return null;
+    };
+
+    const effective_underlying = getEffectiveUnderlying();
     const is_bot = isBot();
     const is_sold = !!contract_info.is_sold || is_contract_sold;
     const is_accumulator = isAccumulatorContract(contract_type);
@@ -116,7 +135,7 @@ const ContractCardHeader = ({
                     })}
                 >
                     <Icon
-                        icon={underlying ? `IcUnderlying${underlying}` : 'IcUnknown'}
+                        icon={effective_underlying ? `IcUnderlying${effective_underlying}` : 'IcUnknown'}
                         width={is_accumulator ? 46 : 40}
                         size={32}
                     />
