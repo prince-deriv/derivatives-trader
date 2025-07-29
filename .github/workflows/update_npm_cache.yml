@@ -8,7 +8,6 @@ on:
 jobs:
   build_cache:
     name: Build cache
-    runs-on: Runner_16cores_Deriv-app
     timeout-minutes: 30
     permissions:
       contents: read
