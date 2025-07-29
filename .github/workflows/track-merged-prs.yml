@@ -1,0 +1,339 @@
+name: AI Analysis History Tracker
+
+on:
+  # Allow calling from other repositories
+  workflow_call:
+  
+  # Use pull_request_target to allow file commits even from forks
+  pull_request_target:
+    types: [closed]
+    branches: [main, master]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-ai-history:
+    # Only run if PR was actually merged
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # For pull_request_target, ensure we have the main branch for dashboard updates
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.4
+        with:
+          node-version: '18'
+
+      - name: Extract AI analysis from PR
+        id: extract-analysis
+        run: |
+          node -e "
+          const https = require('https');
+          const fs = require('fs');
+          
+          const TOKEN = '${{ secrets.GITHUB_TOKEN }}';
+          const REPO = '${{ github.repository }}';
+          const PR_NUMBER = ${{ github.event.number }};
+          
+          function makeRequest(path) {
+            return new Promise((resolve, reject) => {
+              const options = {
+                hostname: 'api.github.com',
+                path: path,
+                headers: {
+                  'Authorization': 'token ' + TOKEN,
+                  'User-Agent': 'Merged-PR-Tracker',
+                  'Accept': 'application/vnd.github.v3+json'
+                }
+              };
+              
+              const req = https.request(options, (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => resolve(JSON.parse(data)));
+              });
+              req.on('error', reject);
+              req.end();
+            });
+          }
+          
+          function extractAIAnalysis(comment) {
+            if (!comment.body.includes('🤖 AI Code Analysis')) return null;
+            
+            const jsonMatch = comment.body.match(/\`\`\`json\\n([\\s\\S]*?)\\n\`\`\`/);
+            if (!jsonMatch) return null;
+            
+            try {
+              const data = JSON.parse(jsonMatch[1]);
+              if (data.summary && data.files && data.timestamp) return data;
+            } catch (e) {}
+            
+            return null;
+          }
+          
+          async function main() {
+            console.log('📊 Extracting AI analysis for merged PR #' + PR_NUMBER);
+            
+            // Get comments for this PR
+            const comments = await makeRequest('/repos/' + REPO + '/issues/' + PR_NUMBER + '/comments');
+            
+            // Find AI analysis comments (get the latest one)
+            const aiComments = comments
+              .filter(c => c.body.includes('🤖 AI Code Analysis'))
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
+            if (aiComments.length === 0) {
+              console.log('❌ No AI analysis found for PR #' + PR_NUMBER);
+              
+              // Create a basic entry even without analysis
+              const basicEntry = {
+                timestamp: new Date().toISOString(),
+                repository: REPO,
+                pullRequest: PR_NUMBER,
+                branch: '${{ github.event.pull_request.head.ref }}',
+                author: '${{ github.event.pull_request.user.login }}',
+                prTitle: '${{ github.event.pull_request.title }}',
+                prUrl: '${{ github.event.pull_request.html_url }}',
+                mergedAt: '${{ github.event.pull_request.merged_at }}',
+                summary: {
+                  totalCharacters: 0,
+                  aiCharacters: 0,
+                  percentage: 0
+                },
+                files: [],
+                hasAnalysis: false
+              };
+              
+              fs.writeFileSync('merged_pr_data.json', JSON.stringify(basicEntry, null, 2));
+              return;
+            }
+            
+            console.log('✅ Found AI analysis for PR #' + PR_NUMBER);
+            
+            const analysis = extractAIAnalysis(aiComments[0]);
+            if (!analysis) {
+              console.log('❌ Could not parse AI analysis data');
+              return;
+            }
+            
+            // Enhance analysis with PR metadata
+            analysis.prTitle = '${{ github.event.pull_request.title }}';
+            analysis.prUrl = '${{ github.event.pull_request.html_url }}';
+            analysis.mergedAt = '${{ github.event.pull_request.merged_at }}';
+            analysis.hasAnalysis = true;
+            
+            console.log('📈 PR #' + PR_NUMBER + ': ' + analysis.summary.percentage + '% AI (' + analysis.files.length + ' files)');
+            
+            fs.writeFileSync('merged_pr_data.json', JSON.stringify(analysis, null, 2));
+          }
+          
+          main().catch(console.error);
+          "
+
+      - name: Update historical data
+        run: |
+          # Create data directory if it doesn't exist
+          mkdir -p .github/data
+          
+          # Initialize history file if it doesn't exist
+          if [ ! -f ".github/data/ai-analysis-history.json" ]; then
+            echo '{"lastUpdated": "", "totalMergedPRs": 0, "analyses": []}' > .github/data/ai-analysis-history.json
+          fi
+          
+          # Add new entry to history
+          node -e "
+          const fs = require('fs');
+          
+          // Read existing history
+          const history = JSON.parse(fs.readFileSync('.github/data/ai-analysis-history.json', 'utf8'));
+          
+          // Read new PR data
+          if (fs.existsSync('merged_pr_data.json')) {
+            const newEntry = JSON.parse(fs.readFileSync('merged_pr_data.json', 'utf8'));
+            
+            // Check if this PR is already in history (avoid duplicates)
+            const existingIndex = history.analyses.findIndex(
+              a => a.repository === newEntry.repository && a.pullRequest === newEntry.pullRequest
+            );
+            
+            if (existingIndex >= 0) {
+              // Update existing entry
+              history.analyses[existingIndex] = newEntry;
+              console.log('📝 Updated existing entry for PR #' + newEntry.pullRequest);
+            } else {
+              // Add new entry
+              history.analyses.push(newEntry);
+              console.log('➕ Added new entry for PR #' + newEntry.pullRequest);
+            }
+            
+            // Sort by merged date (newest first)
+            history.analyses.sort((a, b) => new Date(b.mergedAt || b.timestamp) - new Date(a.mergedAt || a.timestamp));
+            
+            // Update metadata
+            history.lastUpdated = new Date().toISOString();
+            history.totalMergedPRs = history.analyses.length;
+            
+            // Save updated history
+            fs.writeFileSync('.github/data/ai-analysis-history.json', JSON.stringify(history, null, 2));
+            
+            console.log('📊 History updated: ' + history.totalMergedPRs + ' total merged PRs tracked');
+          }
+          "
+
+      - name: Generate updated dashboard
+        run: |
+          node .github/scripts/generate-dashboard.js
+
+      - name: Create/Update Dashboard PR  
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Add all changes
+          git add .github/data/ai-analysis-history.json AI-DASHBOARD.md
+          
+          # Only proceed if there are changes
+          if git diff --staged --quiet; then
+            echo "ℹ️  No changes to commit"
+            exit 0
+          fi
+          
+          # Define branch name (daily branch to consolidate multiple merges)
+          BRANCH_NAME="dashboard-update-$(date +%Y%m%d)"
+          
+          # Check if branch already exists locally
+          if git rev-parse --verify "$BRANCH_NAME" >/dev/null 2>&1; then
+            echo "📝 Switching to existing branch: $BRANCH_NAME"
+            git checkout "$BRANCH_NAME"
+            # Get latest changes from master
+            git merge origin/master --no-edit
+          else
+            echo "🌿 Creating new branch: $BRANCH_NAME"
+            git checkout -b "$BRANCH_NAME"
+          fi
+          
+          # Re-add changes (in case of merge conflicts)
+          git add .github/data/ai-analysis-history.json AI-DASHBOARD.md
+          
+          # Commit changes
+          git commit -m "📊 Track merged PR #${{ github.event.number }}: ${{ github.event.pull_request.title }}
+          
+          - Merged: ${{ github.event.pull_request.merged_at }}
+          - Author: ${{ github.event.pull_request.user.login }}
+          - Updated dashboard with historical data"
+          
+          # Push to remote (force to handle multiple updates to same branch)
+          git push origin "$BRANCH_NAME" --force
+          
+          echo "✅ Changes pushed to branch: $BRANCH_NAME"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "PR_NUMBER=${{ github.event.number }}" >> $GITHUB_ENV
+          echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+          echo "PR_AUTHOR=${{ github.event.pull_request.user.login }}" >> $GITHUB_ENV
+
+      - name: Create or Update Pull Request
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const branchName = process.env.BRANCH_NAME;
+            const prNumber = process.env.PR_NUMBER;
+            const prTitle = process.env.PR_TITLE;
+            const prAuthor = process.env.PR_AUTHOR;
+            const { owner, repo } = context.repo;
+            
+            // Check if PR already exists for this branch
+            try {
+              const { data: existingPRs } = await github.rest.pulls.list({
+                owner,
+                repo,
+                head: `${owner}:${branchName}`,
+                state: 'open'
+              });
+              
+              const prBody = `## 📊 AI Dashboard Update - Merged PRs Tracking
+
+🤖 This PR automatically tracks merged PRs and updates the AI Code Analysis Dashboard.
+
+### 🎯 Latest Merged PR:
+- **PR #${prNumber}**: ${prTitle}
+- **Author**: @${prAuthor}
+- **Merged**: ${new Date().toISOString()}
+
+### 📈 What's Updated:
+- \``.github/data/ai-analysis-history.json\`` - Historical tracking data
+- \`AI-DASHBOARD.md\` - Updated dashboard with latest statistics
+
+### 🔄 Auto-Update Details:
+- **Trigger**: PR merge event
+- **Branch**: Daily consolidation (${branchName})
+- **Multiple merges**: Updates accumulate in this single PR
+
+### 🎯 Next Steps:
+- Review the updated dashboard and historical data
+- Merge when ready to publish the latest AI analysis statistics
+
+---
+*🤖 This PR consolidates multiple merged PR updates into a single daily update. New merges will update this same PR until it's merged.*`;
+
+              if (existingPRs.length > 0) {
+                // Update existing PR
+                const pr = existingPRs[0];
+                await github.rest.pulls.update({
+                  owner,
+                  repo,
+                  pull_number: pr.number,
+                  body: prBody
+                });
+                
+                console.log(\`✅ Updated existing dashboard PR #\${pr.number}: \${pr.html_url}\`);
+                console.log(\`📊 Added data for merged PR #\${prNumber}\`);
+                
+              } else {
+                // Create new PR
+                const { data: newPR } = await github.rest.pulls.create({
+                  owner,
+                  repo,
+                  title: \`📊 Dashboard Update - \${new Date().toISOString().split('T')[0]}\`,
+                  head: branchName,
+                  base: 'master',
+                  body: prBody,
+                  draft: false
+                });
+                
+                console.log(\`✅ Created new dashboard PR #\${newPR.number}: \${newPR.html_url}\`);
+                console.log(\`📊 Tracking merged PR #\${prNumber}\`);
+              }
+              
+            } catch (error) {
+              console.error('Error managing dashboard PR:', error);
+              throw error;
+            }
+
+      - name: Output summary
+        run: |
+          echo "📊 Merged PR Tracking Complete!"
+          echo ""
+          echo "✅ Tracked PR #${{ github.event.number }}: ${{ github.event.pull_request.title }}"
+          echo "👤 Author: ${{ github.event.pull_request.user.login }}"
+          echo "🕐 Merged: ${{ github.event.pull_request.merged_at }}"
+          echo ""
+          echo "🔄 Update process:"
+          echo "   • ✅ Added to historical tracking data"
+          echo "   • ✅ Generated updated dashboard"
+          echo "   • ✅ Created/updated dashboard PR"
+          echo "   • ⏳ Waiting for PR review and merge"
+          echo ""
+          echo "🔗 Once dashboard PR is merged, view:"
+          echo "   • Dashboard: https://github.com/${{ github.repository }}/blob/main/AI-DASHBOARD.md"
+          echo "   • Historical data: https://github.com/${{ github.repository }}/blob/main/.github/data/ai-analysis-history.json"
+          echo ""
+          echo "🎯 Multiple merges today will update the same PR until it's merged!" 
