@@ -1,10 +1,7 @@
 # 🤖 AI Code Analysis Dashboard
 
 <div align="center">
-
-**deriv-com/derivatives-trader**  
 📅 Last updated: 2025-07-29 • 🔄 Tracking merged PRs to main/master
-
 </div>
 
 ---
