@@ -13,6 +13,7 @@ import {
     isMultiplierContract,
     getLocalizedTurbosSubtype,
 } from '@deriv/shared';
+import { getUnderlyingFromShortcode } from '../../../utils/contract-helpers';
 import ContractTypeCell from './contract-type-cell';
 import Button from '../../button';
 import Icon from '../../icon';
@@ -65,24 +66,7 @@ const ContractCardHeader = ({
         tick_passed,
     } = contract_info;
 
-    // Compute effective underlying with fallback extraction from shortcode
-    const getEffectiveUnderlying = () => {
-        if (underlying) {
-            return underlying;
-        }
-
-        // Fallback: Extract underlying from shortcode if missing
-        if (shortcode) {
-            const parts = shortcode.split('_');
-            if (parts.length >= 2) {
-                return parts[1];
-            }
-        }
-
-        return null;
-    };
-
-    const effective_underlying = getEffectiveUnderlying();
+    const effective_underlying = underlying || getUnderlyingFromShortcode(shortcode);
     const is_bot = isBot();
     const is_sold = !!contract_info.is_sold || is_contract_sold;
     const is_accumulator = isAccumulatorContract(contract_type);
