@@ -15,6 +15,7 @@ import {
     isVanillaContract,
 } from '@deriv/shared';
 import { TContractInfo, TContractStore } from '@deriv/shared/src/utils/contract/contract-types';
+import { getUnderlyingFromShortcode } from '../../utils/contract-helpers';
 import { TToastConfig } from '../types/contract.types';
 
 type TPositionsDrawerCardProps = {
@@ -153,8 +154,10 @@ const PositionsDrawerCard = ({
         </React.Fragment>
     );
 
+    const effective_underlying = contract_info?.underlying || getUnderlyingFromShortcode(contract_info?.shortcode);
+
     const contract_card_body = is_link_disabled ? (
-        <div className={contract_card_classname}>{contract_info?.underlying ? contract_el : loader_el}</div>
+        <div className={contract_card_classname}>{effective_underlying ? contract_el : loader_el}</div>
     ) : (
         <NavLink
             className={contract_card_classname}
@@ -162,7 +165,7 @@ const PositionsDrawerCard = ({
                 pathname: `/contract/${contract_info?.contract_id}`,
             }}
         >
-            {contract_info?.underlying ? contract_el : loader_el}
+            {effective_underlying ? contract_el : loader_el}
         </NavLink>
     );
 

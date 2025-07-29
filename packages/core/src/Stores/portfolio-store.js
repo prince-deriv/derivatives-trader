@@ -160,10 +160,22 @@ export default class PortfolioStore extends BaseStore {
     }
 
     onBuyResponse({ contract_id, longcode, contract_type }) {
+        // Extract underlying from shortcode if available
+        let underlying;
+        if (longcode) {
+            // Shortcode format: "CALL_1HZ100V_19.79_1753695396_1753373396_S0P0"
+            // Extract the second part which is the underlying symbol
+            const parts = longcode.split('_');
+            if (parts.length >= 2) {
+                underlying = parts[1];
+            }
+        }
+
         const new_pos = {
             contract_id,
             longcode,
             contract_type,
+            underlying, // Add the extracted underlying
         };
         this.pushNewPosition(new_pos);
     }
@@ -335,12 +347,44 @@ export default class PortfolioStore extends BaseStore {
 
     onClickSell(contract_id) {
         const i = this.getPositionIndexById(contract_id);
+
+        // Add safety check for position not found
+        if (i === -1) {
+            //eslint-disable-next-line no-console
+            console.error('Portfolio Store: Position not found for contract_id:', contract_id);
+            return;
+        }
+
         if (this.positions[i].is_sell_requested) return;
 
         const { bid_price } = this.positions[i].contract_info;
         this.positions[i].is_sell_requested = true;
-        if (contract_id && typeof bid_price === 'number') {
-            WS.sell(contract_id, bid_price).then(this.handleSell);
+
+        // Validate original bid_price before conversion (follows contract-replay-store.js pattern)
+        if (contract_id && (bid_price || bid_price === 0)) {
+            // Convert bid_price to number (API returns string values)
+            const numericBidPrice = +bid_price;
+
+            if (!isNaN(numericBidPrice)) {
+                WS.sell(contract_id, numericBidPrice).then(this.handleSell);
+            } else {
+                //eslint-disable-next-line no-console
+                console.error('Portfolio Store: Invalid numeric conversion for bid_price:', {
+                    contract_id,
+                    bid_price,
+                    numericBidPrice,
+                });
+                // Reset sell requested state on error
+                this.positions[i].is_sell_requested = false;
+            }
+        } else {
+            //eslint-disable-next-line no-console
+            console.error('Portfolio Store: Invalid sell parameters - bid_price is null/undefined/empty:', {
+                contract_id,
+                bid_price,
+            });
+            // Reset sell requested state on error
+            this.positions[i].is_sell_requested = false;
         }
     }
 
@@ -478,6 +522,7 @@ export default class PortfolioStore extends BaseStore {
 
     pushNewPosition(new_pos) {
         const position = formatPortfolioPosition(new_pos, this.root_store.active_symbols.active_symbols);
+
         if (this.positions_map[position.id]) return;
 
         this.positions.unshift(position);
@@ -559,7 +604,7 @@ export default class PortfolioStore extends BaseStore {
     }
 
     getPositionIndexById(contract_id) {
-        return this.positions.findIndex(pos => +pos.id === +contract_id);
+        return this.positions.findIndex(pos => +pos.contract_info.contract_id === +contract_id);
     }
 
     get totals() {

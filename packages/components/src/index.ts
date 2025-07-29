@@ -130,3 +130,4 @@ export * from './components/wallet-icon';
 export * from './components/app-linked-with-wallet-icon';
 export * from './hooks';
 export * from './components/types';
+export * from './utils/contract-helpers';
