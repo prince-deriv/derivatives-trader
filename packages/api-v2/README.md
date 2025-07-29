@@ -110,11 +110,8 @@ The package integrates with TanStack Query (React Query) to provide:
 
 The package provides numerous domain-specific hooks for common API operations:
 
-- Account management (e.g., `useAccountStatus`, `useActiveAccount`)
-- Authentication (e.g., `useAuthentication`, `useAuthorize`)
-- Financial operations (e.g., `useBalance`, `useTransactions`)
-- Trading platforms (e.g., `useMT5AccountsList`, `useCreateMT5Account`)
-- Compliance (e.g., `useOnfido`, `usePOI`)
+- Authentication (e.g., `useAuthorize`)
+- Financial operations (e.g., `useBalance`)
 - Configuration (e.g., `useRemoteConfig`, `useWebsiteStatus`)
 
 ## Usage Examples
@@ -156,12 +153,10 @@ const Component = () => {
 import { useBalance, useActiveAccount } from '@deriv/api-v2';
 
 const BalanceDisplay = () => {
-    const { data: activeAccount } = useActiveAccount();
     const { data: balance } = useBalance();
 
     return (
         <div>
-            <h2>Account: {activeAccount?.loginid}</h2>
             <p>Balance: {balance?.balance}</p>
         </div>
     );
