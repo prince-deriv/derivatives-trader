@@ -141,7 +141,10 @@ const PositionsDrawer = observer(({ ...props }) => {
 
     const getTotalProfit = (active_positions: TPortfolioPosition[]) => {
         return active_positions.reduce((total: number, position: TPortfolioPosition) => {
-            return total + (position.contract_info.profit || 0);
+            // Use profit_loss property to match individual position display
+            const profitValue = Number(position.profit_loss) || 0;
+
+            return total + profitValue;
         }, 0);
     };
 
