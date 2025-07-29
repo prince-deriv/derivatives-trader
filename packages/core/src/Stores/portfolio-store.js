@@ -347,12 +347,29 @@ export default class PortfolioStore extends BaseStore {
 
     onClickSell(contract_id) {
         const i = this.getPositionIndexById(contract_id);
+
+        // Add safety check for position not found
+        if (i === -1) {
+            //eslint-disable-next-line no-console
+            console.error('Portfolio Store: Position not found for contract_id:', contract_id);
+            return;
+        }
+
         if (this.positions[i].is_sell_requested) return;
 
         const { bid_price } = this.positions[i].contract_info;
         this.positions[i].is_sell_requested = true;
-        if (contract_id && typeof bid_price === 'number') {
-            WS.sell(contract_id, bid_price).then(this.handleSell);
+
+        // Convert bid_price to number (API returns string values)
+        const numericBidPrice = +bid_price;
+
+        if (contract_id && !isNaN(numericBidPrice) && numericBidPrice !== null) {
+            WS.sell(contract_id, numericBidPrice).then(this.handleSell);
+        } else {
+            //eslint-disable-next-line no-console
+            console.error('Portfolio Store: Invalid sell parameters:', { contract_id, bid_price, numericBidPrice });
+            // Reset sell requested state on error
+            this.positions[i].is_sell_requested = false;
         }
     }
 
@@ -572,7 +589,7 @@ export default class PortfolioStore extends BaseStore {
     }
 
     getPositionIndexById(contract_id) {
-        return this.positions.findIndex(pos => +pos.id === +contract_id);
+        return this.positions.findIndex(pos => +pos.contract_info.contract_id === +contract_id);
     }
 
     get totals() {
