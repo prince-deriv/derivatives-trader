@@ -1,7 +1,30 @@
 {
-  "lastUpdated": "2025-07-29T13:10:14.091Z",
-  "totalMergedPRs": 1,
+  "lastUpdated": "2025-07-29T13:27:49.716Z",
+  "totalMergedPRs": 2,
   "analyses": [
+    {
+      "timestamp": "2025-07-29T13:26:43.510Z",
+      "pullRequest": 13,
+      "branch": "test",
+      "author": "prince-deriv",
+      "files": [
+        {
+          "name": "fibonacci.js",
+          "totalCharacters": 3602,
+          "aiCharacters": 3446,
+          "percentage": 96
+        }
+      ],
+      "summary": {
+        "totalCharacters": 3602,
+        "aiCharacters": 3446,
+        "percentage": 96
+      },
+      "prTitle": "Test",
+      "prUrl": "https://github.com/prince-deriv/derivatives-trader/pull/13",
+      "mergedAt": "2025-07-29T13:27:08Z",
+      "hasAnalysis": true
+    },
     {
       "timestamp": "2025-07-29T13:06:59.109Z",
       "pullRequest": 11,

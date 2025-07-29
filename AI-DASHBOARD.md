@@ -13,19 +13,20 @@
 
 | Metric | Value | Metric | Value |
 |--------|-------|--------|-------|
-| **📁 Total Merged PRs** | 1 | **📈 Average AI Code** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
-| **🤖 PRs with AI Analysis** | 1 | **🎯 Overall AI Percentage** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
-| **📄 Files Analyzed** | 2 | **⚡ Total AI Characters** | 0 |
+| **📁 Total Merged PRs** | 2 | **📈 Average AI Code** | 🟧🟧🟧🟧🟧⬜⬜⬜⬜⬜ 48% |
+| **🤖 PRs with AI Analysis** | 2 | **🎯 Overall AI Percentage** | 🟥⬜⬜⬜⬜⬜⬜⬜⬜⬜ 10% |
+| **📄 Files Analyzed** | 3 | **⚡ Total AI Characters** | 3,446 |
 
 ---
 
 
 ## 🚀 Recent Merged Pull Requests
 
-> 📊 Showing the 10 most recent merged PRs (stats above include all 1 PRs)
+> 📊 Showing the 10 most recent merged PRs (stats above include all 2 PRs)
 
 | PR | Author | Date | Files | AI Content | Percentage |
 |----|--------|------|-------|------------|------------|
+| [#13](https://github.com/prince-deriv/derivatives-trader/pull/13) **Test** | [@prince-deriv](https://github.com/prince-deriv) | 7/29/2025 | 1 | 3,446 / 3,602 chars | 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜  96% |
 | [#11](https://github.com/prince-deriv/derivatives-trader/pull/11) **fix: workflow syntax error** | [@prince-deriv](https://github.com/prince-deriv) | 7/29/2025 | 2 | 0 / 30,442 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 
 
@@ -39,17 +40,18 @@
 
 ```
 AI Percentage Distribution:
+PR #13 Test                           │██████████████████████████████████████░░│ 96%
 PR #11 fix: workflow syntax error     │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ 0%
 ```
 
 ### 🎯 Summary Statistics
 
 ```
-Total Characters:     30,442
-AI Characters:        0
-Human Characters:     30,442
+Total Characters:     34,044
+AI Characters:        3,446
+Human Characters:     30,598
 
-AI vs Human Ratio:    0% : 100%
+AI vs Human Ratio:    10% : 90%
 ```
 
 </details>
