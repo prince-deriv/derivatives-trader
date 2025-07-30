@@ -16,13 +16,25 @@ permissions:
 jobs:
   analyze-ai-code:
     runs-on: ubuntu-latest
+    env:
+      # Security: Move GitHub context to environment variables to prevent injection
+      PR_USER_LOGIN: ${{ github.event.pull_request.user.login }}
+      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
     
     steps:
+      - name: Verify user
+        uses: 'deriv-com/shared-actions/.github/actions/verify_user_in_organization@v1'
+        with:
+          username: ${{ env.PR_USER_LOGIN }}
+          # Security: Use dedicated PAT for user verification (should have minimal org:read scope)
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           # For pull_request_target, checkout the PR head to analyze the actual changes
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ env.PR_HEAD_SHA }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -30,51 +42,90 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Get changed files
+      - name: Get changed files and their diffs
         id: changed-files
         run: |
-          # Get list of changed files in this PR
-          git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD > changed_files.txt
+          # Security: Use validated environment variables instead of direct GitHub context
+          echo "🔍 Getting changed files for PR..."
+          git diff --name-only "origin/$PR_BASE_REF...HEAD" > changed_files.txt
           echo "Changed files:"
           cat changed_files.txt
 
-      - name: Analyze AI code
+      - name: Analyze AI code in PR changes only
         id: analyze
         run: |
           cat > analyze_script.js << 'EOF'
           const fs = require('fs');
-          const path = require('path');
+          const { execSync } = require('child_process');
           
-          // Universal AI Block Detection - detects [AI] regardless of comment syntax
+          // Universal AI Block Detection - detects AI blocks regardless of comment syntax
           const AI_BLOCK_REGEXES = [
             {
               name: 'universal',
-              regex: /(\[AI\])([\s\S]*?)(\[\/AI\])/g,
-              description: 'Universal [AI] [/AI] detection regardless of comment style'
+              regex: /\[AI\]([\s\S]*?)\[\/AI\]/g,
+              description: 'Universal AI block detection regardless of comment style'
             }
           ];
           
-          function getRegexesForFile(filename) {
-            // Universal detection - same regex for all file types
-            return AI_BLOCK_REGEXES;
+          function getChangedContent(filePath) {
+            try {
+              // Security: Use environment variable instead of GitHub context to prevent injection
+              const baseRef = process.env.PR_BASE_REF;
+              if (!baseRef) {
+                throw new Error('PR_BASE_REF environment variable not set');
+              }
+              
+              // Security: Validate file path to prevent path traversal
+              if (filePath.includes('..') || filePath.startsWith('/')) {
+                throw new Error(`Invalid file path: ${filePath}`);
+              }
+              
+              // Get the diff for this specific file, showing only added lines
+              // Note: Using path.normalize() would require additional import, 
+              // but git itself provides good protection against path traversal
+              const diffCommand = `git diff origin/${baseRef}...HEAD -- "${filePath}"`;
+              const diffOutput = execSync(diffCommand, { encoding: 'utf8' });
+              
+              // Extract only the added lines (lines starting with +, but not +++)
+              const addedLines = diffOutput
+                .split('\n')
+                .filter(line => line.startsWith('+') && !line.startsWith('+++'))
+                .map(line => line.substring(1)) // Remove the + prefix
+                .join('\n');
+              
+              return addedLines;
+            } catch (error) {
+              console.error(`Error getting diff for ${filePath}:`, error.message);
+              return '';
+            }
           }
           
           function analyzeFile(filePath) {
             try {
               if (!fs.existsSync(filePath)) return null;
           
-              const content = fs.readFileSync(filePath, 'utf8');
-              const regexes = getRegexesForFile(filePath);
+              // Only analyze the added content in the PR, not the entire file
+              const addedContent = getChangedContent(filePath);
+              
+              if (!addedContent || addedContent.trim() === '') {
+                return {
+                  name: filePath,
+                  totalCharacters: 0,
+                  aiCharacters: 0,
+                  percentage: 0,
+                  note: 'No added content in this PR'
+                };
+              }
               
               let aiCharacters = 0;
-              const totalCharacters = content.length;
+              const totalCharacters = addedContent.length;
               
-              for (const regexDef of regexes) {
+              for (const regexDef of AI_BLOCK_REGEXES) {
                 const regex = new RegExp(regexDef.regex.source, regexDef.regex.flags);
                 let match;
                 
-                while ((match = regex.exec(content)) !== null) {
-                  const codeContent = match[2] || match[1] || '';
+                while ((match = regex.exec(addedContent)) !== null) {
+                  const codeContent = match[1] || '';
                   aiCharacters += codeContent.length;
                   
                   if (!regexDef.regex.global) break;
@@ -85,7 +136,8 @@ jobs:
                 name: filePath,
                 totalCharacters,
                 aiCharacters,
-                percentage: totalCharacters > 0 ? Math.round((aiCharacters / totalCharacters) * 100) : 0
+                percentage: totalCharacters > 0 ? Math.round((aiCharacters / totalCharacters) * 100) : 0,
+                addedContent: addedContent.substring(0, 200) + (addedContent.length > 200 ? '...' : '') // Preview
               };
               
             } catch (error) {
@@ -154,8 +206,9 @@ jobs:
       - name: Post AI Code Analysis Report
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
+          # Security: Uses GITHUB_TOKEN (read-only for this operation) with minimal required permissions
+          # Permissions needed: issues:write, pull-requests:write (defined at job level)
           script: |
-            // [AI]
             const fs = require('fs');
             
             // Read analysis results
@@ -231,14 +284,14 @@ jobs:
             
             <div align="center">
             
-            ### 📄 No Code Files Found
+            ### 📄 No Changes Found
             
-            No supported code files were detected in this PR for AI analysis.
+            No AI-generated code detected in the newly added lines of this PR.
             
             </div>
             
             ---
-            <sub>🚀 Analysis powered by **ShiftAI**</sub>`;
+            <sub>🚀 Analysis powered by **ShiftAI** • Analyzes only PR changes, not entire files</sub>`;
             } else {
               const aiInfo = getAILevelInfo(results.summary.percentage);
               
@@ -250,7 +303,7 @@ jobs:
             
             ${createProgressBar(results.summary.percentage, 25)}
             
-            **${results.summary.aiCharacters.toLocaleString()}** of **${results.summary.totalCharacters.toLocaleString()}** characters (${results.summary.percentage}%) are AI-generated
+            **${results.summary.aiCharacters.toLocaleString()}** of **${results.summary.totalCharacters.toLocaleString()}** characters (${results.summary.percentage}%) in **newly added lines** are AI-generated
             
             </div>
             
@@ -260,17 +313,17 @@ jobs:
             
             | Metric | Value |
             |--------|-------|
-            | 📁 **Files Analyzed** | ${results.files.length} |
-            | 📝 **Total Characters** | ${results.summary.totalCharacters.toLocaleString()} |
+            | 📁 **Files Changed** | ${results.files.length} |
+            | ➕ **New Lines Added** | ${results.summary.totalCharacters.toLocaleString()} chars |
             | 🤖 **AI Characters** | ${results.summary.aiCharacters.toLocaleString()} |
             | 📈 **AI Percentage** | **${results.summary.percentage}%** |
             
             ---
             
-            ### 📋 Per-File Breakdown
+            ### 📋 Per-File Breakdown (New Lines Only)
             
-            | File | Size | AI Content | Percentage |
-            |------|------|------------|------------|`;
+            | File | Lines Added | AI Content | Percentage |
+            |------|-------------|------------|------------|`;
             
               // Add file details
               results.files
@@ -299,7 +352,7 @@ jobs:
               }, null, 2);
               comment += `\n\`\`\`\n\n</details>\n\n`;
               
-              comment += `---\n<sub>🚀 Analysis powered by **ShiftAI**</sub>`;
+              comment += `---\n<sub>🚀 Analysis powered by **ShiftAI** • Analyzes only PR changes, not entire files</sub>`;
             }
             
             // Check for existing AI analysis comment
@@ -334,4 +387,3 @@ jobs:
               });
               console.log('✅ Created new AI analysis comment');
             }
-            // [/AI]
