@@ -18,7 +18,7 @@ import {
 import { observer, useStore } from '@deriv/stores';
 import { routes, formatMoney } from '@deriv/shared';
 import { localize, Localize } from '@deriv/translations';
-import { useHasSetCurrency } from '@deriv/hooks';
+import { useHasSetCurrency } from '@deriv/api';
 import { BinaryLink } from 'App/Components/Routes';
 import AccountList from './account-switcher-account-list.jsx';
 import AccountWrapper from './account-switcher-account-wrapper.jsx';

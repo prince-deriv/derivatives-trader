@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
-import { useLocalStorageData } from '@deriv/hooks';
+import { useLocalStorageData } from '@deriv/api';
 import { getPositionsV2TabIndexFromURL } from '@deriv/shared';
 import { useStore } from '@deriv/stores';
 import { Localize } from '@deriv/translations';

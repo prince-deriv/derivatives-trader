@@ -2,9 +2,8 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 
-import { useRemoteConfig } from '@deriv/api';
+import { useRemoteConfig, useAccountSettingsRedirect, useIsHubRedirectionEnabled, useOauth2 } from '@deriv/api';
 import { Div100vhContainer, Icon, MobileDrawer, ToggleSwitch } from '@deriv/components';
-import { useAccountSettingsRedirect, useIsHubRedirectionEnabled, useOauth2 } from '@deriv/hooks';
 import { getDomainUrl, getOSNameWithUAParser, getStaticUrl, routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { localize } from '@deriv/translations';
@@ -63,7 +62,7 @@ const ToggleMenuDrawer = observer(() => {
     const [is_open, setIsOpen] = React.useState(false);
     const [transitionExit, setTransitionExit] = React.useState(false);
     const [primary_routes_config, setPrimaryRoutesConfig] = React.useState([]);
-    const [expandSubMenu] = React.useState(false);
+    const [, expandSubMenu] = React.useState(false);
 
     const timeout = React.useRef();
     const history = useHistory();

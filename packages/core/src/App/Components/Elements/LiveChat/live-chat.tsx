@@ -1,5 +1,5 @@
 import { Icon, Popover, Text } from '@deriv/components';
-import { useIsIntercomAvailable, useIsLiveChatWidgetAvailable } from '@deriv/hooks';
+import { useIsIntercomAvailable, useIsLiveChatWidgetAvailable } from '@deriv/api';
 import { observer } from '@deriv/stores';
 import { Localize } from '@deriv/translations';
 import { Chat } from '@deriv/utils';

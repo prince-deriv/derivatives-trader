@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 import { ThemedScrollbars } from '@deriv/components';
-import { useGrowthbookGetFeatureValue } from '@deriv/hooks';
+import { useGrowthbookGetFeatureValue } from '@deriv/api';
 import { CookieStorage, platforms, redirectToLogin, routes, TRACKING_STATUS_KEY, WS } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { getLanguage } from '@deriv/translations';
