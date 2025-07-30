@@ -1,96 +1,83 @@
-name: AI Analysis History Tracker
+name: AI Dashboard - Unified Tracker
 
 on:
-  # Allow calling from other repositories
-  workflow_call:
-  
-  # Use pull_request_target to allow file commits even from forks
+  # Trigger when PRs are merged
   pull_request_target:
     types: [closed]
     branches: [main, master]
+  
+  # Allow manual trigger
+  workflow_dispatch:
+  
+  # Weekly refresh
+  schedule:
+    - cron: '0 6 * * 0'
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  check-if-dashboard-pr:
-    # Run this job to check if we should skip due to dashboard PR loop prevention
-    if: github.event.pull_request.merged == true
+  ai-dashboard-update:
+    # Only run if PR was actually merged (or manual/schedule trigger)
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
     runs-on: ubuntu-latest
     env:
-      PR_TITLE: ${{ github.event.pull_request.title }}
-      PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
-      PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-    outputs:
-      should-skip: ${{ steps.check.outputs.should-skip }}
-      skip-reason: ${{ steps.check.outputs.skip-reason }}
+      PR_TITLE: ${{ github.event.pull_request.title || 'Manual/Scheduled Run' }}
+      PR_HEAD_REF: ${{ github.event.pull_request.head.ref || 'manual' }}
+      PR_AUTHOR: ${{ github.event.pull_request.user.login || 'system' }}
+      PR_NUMBER: ${{ github.event.number || 'manual' }}
+      REPO_NAME: ${{ github.repository }}
+    
     steps:
-      - name: Check if this is a dashboard update PR
-        id: check
+      - name: Check if this is a dashboard update PR (prevent loops)
+        id: check-skip
         run: |
-          echo "🔍 Checking if this PR should trigger dashboard update..."
-          echo ""
-          echo "PR Details:"
-          echo "  Title: $PR_TITLE"
-          echo "  Branch: $PR_HEAD_REF"
-          echo "  Author: $PR_AUTHOR"
-          echo ""
+          echo "🔍 Checking if this should trigger dashboard update..."
           
           SHOULD_SKIP="false"
           SKIP_REASON=""
           
+          # Skip dashboard update PRs to prevent infinite loops
           if [[ "$PR_TITLE" == *"📊 Dashboard Update"* ]]; then
             SHOULD_SKIP="true"
-            SKIP_REASON="PR title contains '📊 Dashboard Update'"
+            SKIP_REASON="Dashboard update PR"
           elif [[ "$PR_TITLE" == *"📊 Update AI Code Analysis Dashboard"* ]]; then
             SHOULD_SKIP="true"
-            SKIP_REASON="PR title contains '📊 Update AI Code Analysis Dashboard'"
+            SKIP_REASON="Dashboard update PR"
           elif [[ "$PR_HEAD_REF" == dashboard-update-* ]]; then
             SHOULD_SKIP="true"
-            SKIP_REASON="PR branch starts with 'dashboard-update-'"
+            SKIP_REASON="Dashboard update branch"
           elif [[ "$PR_AUTHOR" == "github-actions[bot]" ]]; then
             SHOULD_SKIP="true"
-            SKIP_REASON="PR author is github-actions[bot]"
+            SKIP_REASON="GitHub Actions bot"
           fi
           
           if [[ "$SHOULD_SKIP" == "true" ]]; then
-            echo "🔄 ✅ SKIPPING: $SKIP_REASON"
-            echo "💡 This prevents infinite loops of dashboard updates triggering more dashboard updates"
+            echo "🔄 SKIPPING: $SKIP_REASON (prevents infinite loops)"
           else
-            echo "✅ PROCEEDING: This PR should trigger dashboard update"
+            echo "✅ PROCEEDING: Will update dashboard"
           fi
           
           echo "should-skip=$SHOULD_SKIP" >> $GITHUB_OUTPUT
           echo "skip-reason=$SKIP_REASON" >> $GITHUB_OUTPUT
 
-  update-ai-history:
-    # Only run if PR was actually merged AND it's not a dashboard update PR (to prevent loops)
-    needs: check-if-dashboard-pr
-    if: needs.check-if-dashboard-pr.outputs.should-skip == 'false'
-    runs-on: ubuntu-latest
-    env:
-      PR_TITLE: ${{ github.event.pull_request.title }}
-      PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
-      PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-      PR_NUMBER: ${{ github.event.number }}
-      REPO_NAME: ${{ github.repository }}
-    
-    steps:
       - name: Checkout repository
+        if: steps.check-skip.outputs.should-skip == 'false'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          # For pull_request_target, ensure we have the main branch for dashboard updates
           ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
+        if: steps.check-skip.outputs.should-skip == 'false'
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.4
         with:
           node-version: '18'
 
-      - name: Extract AI analysis from PR
+      - name: Extract AI analysis from merged PR
+        if: steps.check-skip.outputs.should-skip == 'false' && github.event_name == 'pull_request_target'
         id: extract-analysis
         run: |
           node -e "
@@ -153,6 +140,11 @@ jobs:
           }
           
           async function main() {
+            if (PR_NUMBER === 'manual') {
+              console.log('Manual trigger - skipping PR analysis');
+              return;
+            }
+            
             console.log('Extracting AI analysis for merged PR #' + PR_NUMBER);
             
             // Get comments for this PR
@@ -164,7 +156,7 @@ jobs:
               .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             
             if (aiComments.length === 0) {
-              console.log('ERROR: No AI analysis found for PR #' + PR_NUMBER);
+              console.log('No AI analysis found for PR #' + PR_NUMBER + ' - creating basic entry');
               
               // Create a basic entry even without analysis
               const basicEntry = {
@@ -205,8 +197,6 @@ jobs:
             analysis.prTitle = process.env.PR_TITLE;
             analysis.hasAnalysis = true;
             
-            console.log('PR #' + PR_NUMBER + ': ' + analysis.percentage + '% AI (' + analysis.files.length + ' files)');
-            
             fs.writeFileSync('merged_pr_data.json', JSON.stringify(analysis, null, 2));
           }
           
@@ -214,6 +204,7 @@ jobs:
           "
 
       - name: Update historical data
+        if: steps.check-skip.outputs.should-skip == 'false'
         run: |
           # Create data directory if it doesn't exist
           mkdir -p .github/data
@@ -223,15 +214,15 @@ jobs:
             echo '{"lastUpdated": "", "totalMergedPRs": 0, "analyses": []}' > .github/data/ai-analysis-history.json
           fi
           
-          # Add new entry to history
-          node -e "
-          const fs = require('fs');
-          
-          // Read existing history
-          const history = JSON.parse(fs.readFileSync('.github/data/ai-analysis-history.json', 'utf8'));
-          
-          // Read new PR data
-          if (fs.existsSync('merged_pr_data.json')) {
+          # Add new entry to history (only if we have PR data)
+          if [ -f "merged_pr_data.json" ]; then
+            node -e "
+            const fs = require('fs');
+            
+            // Read existing history
+            const history = JSON.parse(fs.readFileSync('.github/data/ai-analysis-history.json', 'utf8'));
+            
+            // Read new PR data
             const newEntry = JSON.parse(fs.readFileSync('merged_pr_data.json', 'utf8'));
             
             // Check if this PR is already in history (avoid duplicates)
@@ -260,14 +251,34 @@ jobs:
             fs.writeFileSync('.github/data/ai-analysis-history.json', JSON.stringify(history, null, 2));
             
             console.log('History updated: ' + history.totalMergedPRs + ' total merged PRs tracked');
-          }
-          "
+            "
+          else
+            echo "No PR data to add to history (manual/scheduled run)"
+          fi
+
+      - name: Prepare dashboard generation script
+        if: steps.check-skip.outputs.should-skip == 'false'
+        run: |
+          mkdir -p .github/scripts
+          
+          # If the script doesn't exist locally, copy from the workflow repo
+          if [ ! -f ".github/scripts/generate-dashboard.js" ]; then
+            echo "Copying dashboard script from workflow repository..."
+            WORKFLOW_REPO="${{ github.repository }}"
+            if [[ "$WORKFLOW_REPO" != *"shift-ai"* ]]; then
+              WORKFLOW_REPO="${{ github.repository_owner }}/shift-ai"
+            fi
+            curl -sL "https://raw.githubusercontent.com/${WORKFLOW_REPO}/main/.github/scripts/generate-dashboard.js" > .github/scripts/generate-dashboard.js
+            chmod +x .github/scripts/generate-dashboard.js
+          fi
 
       - name: Generate updated dashboard
+        if: steps.check-skip.outputs.should-skip == 'false'
         run: |
           node .github/scripts/generate-dashboard.js
 
       - name: Create/Update Dashboard PR  
+        if: steps.check-skip.outputs.should-skip == 'false'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
@@ -290,7 +301,6 @@ jobs:
           if git rev-parse --verify "$BRANCH_NAME" >/dev/null 2>&1; then
             echo "📝 Switching to existing branch: $BRANCH_NAME"
             git checkout "$BRANCH_NAME"
-            # Get latest changes from master
             git merge origin/master --no-edit
           else
             echo "🌿 Creating new branch: $BRANCH_NAME"
@@ -301,21 +311,29 @@ jobs:
           git add .github/data/ai-analysis-history.json AI-DASHBOARD.md
           
           # Commit changes
-          git commit -m "📊 Track merged PR #$PR_NUMBER: $PR_TITLE
+          if [[ "$PR_NUMBER" == "manual" ]]; then
+            COMMIT_MSG="📊 Manual Dashboard Update
+            
+            - Updated: $(date -u +"%Y-%m-%d %H:%M UTC")
+            - Trigger: ${{ github.event_name }}
+            - Manual dashboard refresh"
+          else
+            COMMIT_MSG="📊 Track merged PR #$PR_NUMBER: $PR_TITLE
+            
+            - Merged: ${{ github.event.pull_request.merged_at }}
+            - Author: $PR_AUTHOR
+            - Updated dashboard with historical data"
+          fi
           
-          - Merged: ${{ github.event.pull_request.merged_at }}
-          - Author: $PR_AUTHOR
-          - Updated dashboard with historical data"
+          git commit -m "$COMMIT_MSG"
           
           # Push to remote (force to handle multiple updates to same branch)
           git push origin "$BRANCH_NAME" --force
           
           echo "✅ Changes pushed to branch: $BRANCH_NAME"
-          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
-          echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
-          echo "PR_AUTHOR=$PR_AUTHOR" >> $GITHUB_ENV
 
       - name: Create or Update Pull Request
+        if: steps.check-skip.outputs.should-skip == 'false'
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -329,13 +347,11 @@ jobs:
             console.log('Environment check:');
             console.log('  BRANCH_NAME:', branchName);
             console.log('  PR_NUMBER:', prNumber);
-            console.log('  PR_TITLE:', prTitle);
-            console.log('  PR_AUTHOR:', prAuthor);
             console.log('  owner:', owner);
             console.log('  repo:', repo);
             
             if (!branchName || branchName.trim() === '') {
-              throw new Error('BRANCH_NAME environment variable is not set or empty! Cannot create PR without head branch.');
+              throw new Error('BRANCH_NAME environment variable is not set or empty!');
             }
             
             // Check if PR already exists for this branch
@@ -347,32 +363,47 @@ jobs:
                 state: 'open'
               });
               
-              const prBody = [
-                '## 📊 AI Dashboard Update - Merged PRs Tracking',
-                '',
-                '🤖 This PR automatically tracks merged PRs and updates the AI Code Analysis Dashboard.',
-                '',
-                '### 🎯 Latest Merged PR:',
-                '- **PR #' + prNumber + '**: ' + prTitle,
-                '- **Author**: @' + prAuthor,
-                '- **Merged**: ' + new Date().toISOString(),
-                '',
-                '### 📈 What\'s Updated:',
-                '- `.github/data/ai-analysis-history.json` - Historical tracking data',
-                '- `AI-DASHBOARD.md` - Updated dashboard with latest statistics',
-                '',
-                '### 🔄 Auto-Update Details:',
-                '- **Trigger**: PR merge event',
-                '- **Branch**: Daily consolidation (' + branchName + ')',
-                '- **Multiple merges**: Updates accumulate in this single PR',
-                '',
-                '### 🎯 Next Steps:',
-                '- Review the updated dashboard and historical data',
-                '- Merge when ready to publish the latest AI analysis statistics',
-                '',
-                '---',
-                '*🤖 This PR consolidates multiple merged PR updates into a single daily update. New merges will update this same PR until it\'s merged.*'
-              ].join('\n');
+              let prBody;
+              if (prNumber === 'manual') {
+                prBody = [
+                  '## 📊 AI Dashboard Update - Manual/Scheduled Refresh',
+                  '',
+                  '🤖 This PR contains a manual or scheduled refresh of the AI Code Analysis Dashboard.',
+                  '',
+                  '### 📈 What\'s Updated:',
+                  '- `AI-DASHBOARD.md` - Refreshed dashboard with latest statistics',
+                  '- Historical data file (if any new data available)',
+                  '',
+                  '### 🔄 Update Details:',
+                  '- **Trigger**: ' + context.eventName,
+                  '- **Updated**: ' + new Date().toISOString(),
+                  '',
+                  '---',
+                  '*🤖 This PR was generated by the unified AI Dashboard workflow.*'
+                ].join('\n');
+              } else {
+                prBody = [
+                  '## 📊 AI Dashboard Update - Merged PR Tracking',
+                  '',
+                  '🤖 This PR automatically tracks merged PRs and updates the AI Code Analysis Dashboard.',
+                  '',
+                  '### 🎯 Latest Merged PR:',
+                  '- **PR #' + prNumber + '**: ' + prTitle,
+                  '- **Author**: @' + prAuthor,
+                  '- **Merged**: ' + new Date().toISOString(),
+                  '',
+                  '### 📈 What\'s Updated:',
+                  '- `.github/data/ai-analysis-history.json` - Historical tracking data',
+                  '- `AI-DASHBOARD.md` - Updated dashboard with latest statistics',
+                  '',
+                  '### 🔄 Update Details:',
+                  '- **Trigger**: PR merge event',
+                  '- **Branch**: Daily consolidation (' + branchName + ')',
+                  '',
+                  '---',
+                  '*🤖 This PR was generated by the unified AI Dashboard workflow.*'
+                ].join('\n');
+              }
 
               if (existingPRs.length > 0) {
                 // Update existing PR
@@ -384,8 +415,7 @@ jobs:
                   body: prBody
                 });
                 
-                console.log('Updated existing dashboard PR #' + pr.number + ': ' + pr.html_url);
-                console.log('Added data for merged PR #' + prNumber);
+                console.log('✅ Updated existing dashboard PR #' + pr.number + ': ' + pr.html_url);
                 
               } else {
                 // Create new PR
@@ -399,8 +429,7 @@ jobs:
                   draft: false
                 });
                 
-                console.log('Created new dashboard PR #' + newPR.number + ': ' + newPR.html_url);
-                console.log('Tracking merged PR #' + prNumber);
+                console.log('✅ Created new dashboard PR #' + newPR.number + ': ' + newPR.html_url);
               }
               
             } catch (error) {
@@ -409,6 +438,7 @@ jobs:
             }
 
       - name: Auto-merge Dashboard PR
+        if: steps.check-skip.outputs.should-skip == 'false'
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         env:
           SHIFTAI_TOKEN: ${{ secrets.SHIFTAI_TOKEN }}
@@ -425,8 +455,6 @@ jobs:
             }
             
             console.log('SHIFTAI_TOKEN detected - attempting auto-merge...');
-            console.log('Auto-merge environment check:');
-            console.log('  BRANCH_NAME:', branchName);
             
             if (!branchName || branchName.trim() === '') {
               console.log('ERROR: BRANCH_NAME not set - cannot auto-merge');
@@ -455,44 +483,52 @@ jobs:
                   pull_number: pr.number,
                   merge_method: 'squash',
                   commit_title: '📊 Auto-merged: AI Dashboard Update',
-                  commit_message: 'Automatically merged dashboard update PR via SHIFTAI_TOKEN\n\n🤖 This PR was auto-merged using administrative privileges to maintain dashboard currency.'
+                  commit_message: 'Automatically merged dashboard update PR\n\n🤖 This PR was auto-merged using administrative privileges to maintain dashboard currency.'
                 });
                 
-                console.log('SUCCESS: Auto-merged dashboard PR #' + pr.number);
-                console.log('Dashboard is now live with latest data!');
+                console.log('✅ Auto-merged dashboard PR #' + pr.number);
+                console.log('🚀 Dashboard is now live with latest data!');
                 
               } else {
-                console.log('WARNING: No open dashboard PR found to auto-merge');
+                console.log('⚠️  No open dashboard PR found to auto-merge');
               }
               
             } catch (error) {
-              console.error('ERROR: Auto-merge failed:', error.message);
-              console.log('PR will remain open for manual review and merge');
+              console.error('❌ Auto-merge failed:', error.message);
+              console.log('💡 PR will remain open for manual review and merge');
               // Don't throw - let workflow continue
             }
 
       - name: Output summary
+        if: steps.check-skip.outputs.should-skip == 'false'
         env:
           SHIFTAI_TOKEN: ${{ secrets.SHIFTAI_TOKEN }}
         run: |
-          echo "📊 Merged PR Tracking Complete!"
+          echo "📊 AI Dashboard Update Complete!"
           echo ""
-          echo "✅ Tracked PR #$PR_NUMBER: $PR_TITLE"
-          echo "👤 Author: $PR_AUTHOR"
-          echo "🕐 Merged: ${{ github.event.pull_request.merged_at }}"
-          echo ""
-          echo "🔄 Update process:"
-          echo "   • ✅ Added to historical tracking data"
-          echo "   • ✅ Generated updated dashboard"
-          echo "   • Created/updated dashboard PR"
-          if [ -n "$SHIFTAI_TOKEN" ]; then
-            echo "   • 🤖 Auto-merge attempted (SHIFTAI_TOKEN detected)"
+          if [[ "$PR_NUMBER" != "manual" ]]; then
+            echo "✅ Tracked PR #$PR_NUMBER: $PR_TITLE"
+            echo "👤 Author: $PR_AUTHOR"
+            echo "🕐 Merged: ${{ github.event.pull_request.merged_at }}"
           else
-            echo "   • ⏳ Waiting for PR review and merge"
+            echo "🔄 Manual/scheduled dashboard refresh"
           fi
           echo ""
-          echo "🔗 Once dashboard PR is merged, view:"
-          echo "   • Dashboard: https://github.com/${{ github.repository }}/blob/main/AI-DASHBOARD.md"
-          echo "   • Historical data: https://github.com/${{ github.repository }}/blob/main/.github/data/ai-analysis-history.json"
+          echo "📝 Process completed:"
+          echo "   • ✅ Updated historical tracking data"
+          echo "   • ✅ Generated updated dashboard"
+          echo "   • ✅ Created/updated dashboard PR"
+          if [ -n "$SHIFTAI_TOKEN" ]; then
+            echo "   • 🤖 Auto-merge attempted"
+          else
+            echo "   • ⏳ Waiting for manual review and merge"
+          fi
           echo ""
-          echo "🎯 Multiple merges today will update the same PR until it's merged!" 
+          echo "🔗 View dashboard: https://github.com/${{ github.repository }}/blob/master/AI-DASHBOARD.md"
+
+      - name: Skip notification
+        if: steps.check-skip.outputs.should-skip == 'true'
+        run: |
+          echo "⏭️  Skipping dashboard update"
+          echo "📝 Reason: ${{ steps.check-skip.outputs.skip-reason }}"
+          echo "💡 This prevents infinite loops of dashboard updates triggering more updates" 
