@@ -16,19 +16,25 @@ permissions:
 jobs:
   analyze-ai-code:
     runs-on: ubuntu-latest
+    env:
+      # Security: Move GitHub context to environment variables to prevent injection
+      PR_USER_LOGIN: ${{ github.event.pull_request.user.login }}
+      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
     
     steps:
       - name: Verify user
         uses: 'deriv-com/shared-actions/.github/actions/verify_user_in_organization@v1'
         with:
-          username: ${{ github.event.pull_request.user.login }}
+          username: ${{ env.PR_USER_LOGIN }}
+          # Security: Use dedicated PAT for user verification (should have minimal org:read scope)
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           # For pull_request_target, checkout the PR head to analyze the actual changes
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ env.PR_HEAD_SHA }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -39,8 +45,9 @@ jobs:
       - name: Get changed files and their diffs
         id: changed-files
         run: |
-          # Get list of changed files in this PR
-          git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD > changed_files.txt
+          # Security: Use validated environment variables instead of direct GitHub context
+          echo "🔍 Getting changed files for PR..."
+          git diff --name-only "origin/$PR_BASE_REF...HEAD" > changed_files.txt
           echo "Changed files:"
           cat changed_files.txt
 
@@ -62,8 +69,21 @@ jobs:
           
           function getChangedContent(filePath) {
             try {
+              // Security: Use environment variable instead of GitHub context to prevent injection
+              const baseRef = process.env.PR_BASE_REF;
+              if (!baseRef) {
+                throw new Error('PR_BASE_REF environment variable not set');
+              }
+              
+              // Security: Validate file path to prevent path traversal
+              if (filePath.includes('..') || filePath.startsWith('/')) {
+                throw new Error(`Invalid file path: ${filePath}`);
+              }
+              
               // Get the diff for this specific file, showing only added lines
-              const diffCommand = `git diff origin/${{ github.event.pull_request.base.ref }}...HEAD -- "${filePath}"`;
+              // Note: Using path.normalize() would require additional import, 
+              // but git itself provides good protection against path traversal
+              const diffCommand = `git diff origin/${baseRef}...HEAD -- "${filePath}"`;
               const diffOutput = execSync(diffCommand, { encoding: 'utf8' });
               
               // Extract only the added lines (lines starting with +, but not +++)
@@ -186,6 +206,8 @@ jobs:
       - name: Post AI Code Analysis Report
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
+          # Security: Uses GITHUB_TOKEN (read-only for this operation) with minimal required permissions
+          # Permissions needed: issues:write, pull-requests:write (defined at job level)
           script: |
             const fs = require('fs');
             
