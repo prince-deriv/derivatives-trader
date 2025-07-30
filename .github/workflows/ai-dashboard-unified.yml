@@ -334,6 +334,7 @@ jobs:
 
       - name: Create or Update Pull Request
         if: steps.check-skip.outputs.should-skip == 'false'
+        id: create-pr
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -353,6 +354,8 @@ jobs:
             if (!branchName || branchName.trim() === '') {
               throw new Error('BRANCH_NAME environment variable is not set or empty!');
             }
+            
+            let dashboardPrNumber = null;
             
             // Check if PR already exists for this branch
             try {
@@ -415,6 +418,7 @@ jobs:
                   body: prBody
                 });
                 
+                dashboardPrNumber = pr.number;
                 console.log('✅ Updated existing dashboard PR #' + pr.number + ': ' + pr.html_url);
                 
               } else {
@@ -429,8 +433,13 @@ jobs:
                   draft: false
                 });
                 
+                dashboardPrNumber = newPR.number;
                 console.log('✅ Created new dashboard PR #' + newPR.number + ': ' + newPR.html_url);
               }
+              
+              // Set output for next step
+              core.setOutput('dashboard-pr-number', dashboardPrNumber);
+              console.log('🔗 Set dashboard-pr-number output:', dashboardPrNumber);
               
             } catch (error) {
               console.error('Error managing dashboard PR:', error);
@@ -438,14 +447,14 @@ jobs:
             }
 
       - name: Auto-merge Dashboard PR
-        if: steps.check-skip.outputs.should-skip == 'false'
+        if: steps.check-skip.outputs.should-skip == 'false' && steps.create-pr.outputs.dashboard-pr-number
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         env:
           SHIFTAI_TOKEN: ${{ secrets.SHIFTAI_TOKEN }}
         with:
           github-token: ${{ secrets.SHIFTAI_TOKEN }}
           script: |
-            const branchName = process.env.BRANCH_NAME;
+            const dashboardPrNumber = '${{ steps.create-pr.outputs.dashboard-pr-number }}';
             const shiftaiToken = process.env.SHIFTAI_TOKEN;
             const { owner, repo } = context.repo;
             
@@ -455,47 +464,33 @@ jobs:
             }
             
             console.log('SHIFTAI_TOKEN detected - attempting auto-merge...');
+            console.log('Dashboard PR number from previous step:', dashboardPrNumber);
             
-            if (!branchName || branchName.trim() === '') {
-              console.log('ERROR: BRANCH_NAME not set - cannot auto-merge');
+            if (!dashboardPrNumber || dashboardPrNumber === 'null') {
+              console.log('ERROR: No dashboard PR number available - cannot auto-merge');
               return;
             }
             
             try {
-              // Find the dashboard PR
-              const { data: existingPRs } = await github.rest.pulls.list({
+              // Wait a moment for any checks to start
+              await new Promise(resolve => setTimeout(resolve, 5000));
+              
+              // Auto-merge the specific PR
+              await github.rest.pulls.merge({
                 owner,
                 repo,
-                head: `${owner}:${branchName}`,
-                state: 'open'
+                pull_number: parseInt(dashboardPrNumber),
+                merge_method: 'squash',
+                commit_title: '📊 Auto-merged: AI Dashboard Update',
+                commit_message: 'Automatically merged dashboard update PR\n\n🤖 This PR was auto-merged using administrative privileges to maintain dashboard currency.'
               });
               
-              if (existingPRs.length > 0) {
-                const pr = existingPRs[0];
-                
-                // Wait a moment for any checks to start
-                await new Promise(resolve => setTimeout(resolve, 5000));
-                
-                // Auto-merge the PR
-                await github.rest.pulls.merge({
-                  owner,
-                  repo,
-                  pull_number: pr.number,
-                  merge_method: 'squash',
-                  commit_title: '📊 Auto-merged: AI Dashboard Update',
-                  commit_message: 'Automatically merged dashboard update PR\n\n🤖 This PR was auto-merged using administrative privileges to maintain dashboard currency.'
-                });
-                
-                console.log('✅ Auto-merged dashboard PR #' + pr.number);
-                console.log('🚀 Dashboard is now live with latest data!');
-                
-              } else {
-                console.log('⚠️  No open dashboard PR found to auto-merge');
-              }
+              console.log('✅ Auto-merged dashboard PR #' + dashboardPrNumber);
+              console.log('🚀 Dashboard is now live with latest data!');
               
             } catch (error) {
               console.error('❌ Auto-merge failed:', error.message);
-              console.log('💡 PR will remain open for manual review and merge');
+              console.log('💡 PR #' + dashboardPrNumber + ' will remain open for manual review and merge');
               // Don't throw - let workflow continue
             }
 
