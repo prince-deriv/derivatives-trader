@@ -10,7 +10,7 @@ import ResultOverlay from './result-overlay';
 import DesktopWrapper from '../desktop-wrapper';
 import { TContractInfo } from '@deriv/shared/src/utils/contract/contract-types';
 import { TGetCardLables, TGetContractPath } from '../types';
-import { getTotalProfit } from '@deriv/shared';
+import { getTotalProfit, isUserSold } from '@deriv/shared';
 
 type TContractCardProps = {
     contract_info: TContractInfo;
@@ -38,6 +38,9 @@ const ContractCard = ({
 }: React.PropsWithChildren<TContractCardProps>) => {
     const fallback_result = profit_loss >= 0 ? 'won' : 'lost';
     const payout_info = is_multiplier ? getTotalProfit(contract_info) : profit_loss;
+
+    const isOverlayVisible = isUserSold(contract_info);
+
     return (
         <React.Fragment>
             {should_show_result_overlay && (
@@ -48,7 +51,7 @@ const ContractCard = ({
                         getCardLabels={getCardLabels}
                         getContractPath={getContractPath}
                         is_multiplier={is_multiplier}
-                        is_visible={!!contract_info.is_sold}
+                        is_visible={isOverlayVisible}
                         onClickRemove={onClickRemove}
                         payout_info={payout_info}
                         result={result || fallback_result}

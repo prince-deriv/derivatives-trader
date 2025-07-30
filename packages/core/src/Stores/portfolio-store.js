@@ -625,7 +625,12 @@ export default class PortfolioStore extends BaseStore {
     }
 
     setActivePositions() {
-        this.active_positions = this.positions.filter(portfolio_pos => !getEndTime(portfolio_pos.contract_info));
+        this.active_positions = this.positions.filter(portfolio_pos => {
+            const contract_info = portfolio_pos.contract_info;
+            const end_time = getEndTime(contract_info);
+
+            return !end_time;
+        });
         this.all_positions = [...this.positions];
         this.open_accu_contract = this.active_positions.find(({ type }) => isAccumulatorContract(type));
     }

@@ -23,8 +23,15 @@ const getDateTimeFromEpoch = (epoch: number) => {
 };
 
 const EntryExitDetails = ({ contract_info }: { contract_info: TContractInfo }) => {
-    const { entry_tick_time, entry_spot_display_value, exit_tick_time, date_start, exit_tick_display_value } =
-        contract_info;
+    const {
+        entry_tick_time,
+        entry_spot_display_value,
+        entry_spot,
+        exit_tick_time,
+        date_start,
+        exit_tick_display_value,
+        exit_tick,
+    } = contract_info;
 
     const dateTimes = useMemo(
         () => ({
@@ -36,8 +43,16 @@ const EntryExitDetails = ({ contract_info }: { contract_info: TContractInfo }) =
         [contract_info]
     );
 
-    const entryValue = entry_spot_display_value ? addComma(entry_spot_display_value) : null;
-    const exitValue = exit_tick_display_value ? addComma(exit_tick_display_value) : null;
+    const entryValue = entry_spot_display_value
+        ? addComma(entry_spot_display_value)
+        : entry_spot
+          ? addComma(entry_spot.toString())
+          : null;
+    const exitValue = exit_tick_display_value
+        ? addComma(exit_tick_display_value)
+        : exit_tick
+          ? addComma(exit_tick.toString())
+          : null;
 
     return (
         <CardWrapper title={<Localize i18n_default_text='Entry & exit details' />} className='entry-exit-details'>
