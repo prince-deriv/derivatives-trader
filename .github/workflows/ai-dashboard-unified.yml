@@ -500,20 +500,118 @@ jobs:
                 return;
               }
               
-              // Wait a moment for any checks to start
-              console.log('⏳ Waiting 5 seconds for checks to initialize...');
-              await new Promise(resolve => setTimeout(resolve, 5000));
+              // Check for branch protection and status checks
+              try {
+                console.log('🔍 Checking branch protection rules and status checks...');
+                
+                // Get branch protection info
+                const { data: branchProtection } = await github.rest.repos.getBranchProtection({
+                  owner,
+                  repo,
+                  branch: prData.base.ref
+                }).catch(() => ({ data: null })); // Ignore 404 if no protection
+                
+                if (branchProtection) {
+                  console.log('Branch protection found:');
+                  console.log('  Required status checks:', branchProtection.required_status_checks?.contexts || 'None');
+                  console.log('  Required reviews:', branchProtection.required_pull_request_reviews?.required_approving_review_count || 'None');
+                  console.log('  Admin enforcement:', branchProtection.enforce_admins?.enabled || false);
+                }
+                
+                // Get status checks for the PR
+                const { data: statusChecks } = await github.rest.repos.getCombinedStatusForRef({
+                  owner,
+                  repo,
+                  ref: prData.head.sha
+                }).catch(() => ({ data: { statuses: [] } }));
+                
+                if (statusChecks.statuses.length > 0) {
+                  console.log('Status checks found:');
+                  statusChecks.statuses.forEach(check => {
+                    console.log(`  ${check.context}: ${check.state} (${check.description || 'No description'})`);
+                  });
+                  console.log('Overall status:', statusChecks.state);
+                } else {
+                  console.log('No status checks found');
+                }
+                
+                // Get check runs (GitHub Actions checks)
+                const { data: checkRuns } = await github.rest.checks.listForRef({
+                  owner,
+                  repo,
+                  ref: prData.head.sha
+                }).catch(() => ({ data: { check_runs: [] } }));
+                
+                if (checkRuns.check_runs.length > 0) {
+                  console.log('GitHub Actions checks:');
+                  checkRuns.check_runs.forEach(check => {
+                    console.log(`  ${check.name}: ${check.status} / ${check.conclusion}`);
+                  });
+                }
+                
+              } catch (protectionError) {
+                console.log('Could not check branch protection:', protectionError.message);
+              }
               
-              // Auto-merge the specific PR
+              // Check for blocking issues and wait longer if mergeable state is unknown
+              if (prData.mergeable_state === 'unknown') {
+                console.log('⏳ Mergeable state is unknown - waiting longer for GitHub to calculate...');
+                await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 more seconds
+                
+                // Re-check the PR status
+                const { data: updatedPrData } = await github.rest.pulls.get({
+                  owner,
+                  repo,
+                  pull_number: parseInt(dashboardPrNumber)
+                });
+                console.log('Updated mergeable state:', updatedPrData.mergeable_state);
+                console.log('Updated mergeable:', updatedPrData.mergeable);
+              } else {
+                console.log('⏳ Waiting 5 seconds for checks to initialize...');
+                await new Promise(resolve => setTimeout(resolve, 5000));
+              }
+              
+              // Auto-merge the specific PR with force options
               console.log('🚀 Attempting to merge PR #' + dashboardPrNumber + '...');
-              await github.rest.pulls.merge({
-                owner,
-                repo,
-                pull_number: parseInt(dashboardPrNumber),
-                merge_method: 'squash',
-                commit_title: '📊 Auto-merged: AI Dashboard Update',
-                commit_message: 'Automatically merged dashboard update PR\n\n🤖 This PR was auto-merged using administrative privileges to maintain dashboard currency.'
-              });
+              
+              // Try multiple merge strategies
+              const mergeOptions = [
+                { method: 'squash', title: '📊 Auto-merged: AI Dashboard Update' },
+                { method: 'merge', title: '📊 Auto-merged: AI Dashboard Update (merge)' },
+                { method: 'rebase', title: '📊 Auto-merged: AI Dashboard Update (rebase)' }
+              ];
+              
+              let mergeSuccessful = false;
+              
+              for (const option of mergeOptions) {
+                try {
+                  console.log(`Trying ${option.method} merge...`);
+                  
+                  await github.rest.pulls.merge({
+                    owner,
+                    repo,
+                    pull_number: parseInt(dashboardPrNumber),
+                    merge_method: option.method,
+                    commit_title: option.title,
+                    commit_message: 'Automatically merged dashboard update PR\n\n🤖 This PR was auto-merged using administrative privileges to maintain dashboard currency.'
+                  });
+                  
+                  console.log(`✅ Successfully merged using ${option.method} method!`);
+                  mergeSuccessful = true;
+                  break;
+                  
+                } catch (mergeError) {
+                  console.log(`❌ ${option.method} merge failed:`, mergeError.message);
+                  if (mergeError.status === 405 && mergeError.response?.data?.message) {
+                    console.log('Merge error details:', mergeError.response.data.message);
+                  }
+                  // Continue to next merge method
+                }
+              }
+              
+              if (!mergeSuccessful) {
+                throw new Error('All merge methods failed');
+              }
               
               console.log('✅ Auto-merged dashboard PR #' + dashboardPrNumber);
               console.log('🚀 Dashboard is now live with latest data!');
