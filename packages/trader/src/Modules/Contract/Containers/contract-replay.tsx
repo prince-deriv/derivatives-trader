@@ -55,7 +55,9 @@ const ContractReplay = observer(({ contract_id }: { contract_id: number }) => {
     React.useEffect(() => {
         const url_array = /[^/]*$/.exec(location.pathname);
         const url_contract_id = url_array ? +url_array[0] : undefined;
-        onMount(contract_id || url_contract_id);
+        const finalContractId = contract_id || url_contract_id;
+
+        onMount(finalContractId);
         setIsVisible(true);
 
         return () => {
@@ -82,8 +84,6 @@ const ContractReplay = observer(({ contract_id }: { contract_id: number }) => {
     const onChangeSwipeableIndex = (index: number) => {
         setSwipeIndex(index);
     };
-
-    if (!contract_info.underlying) return null;
 
     const is_accumulator = isAccumulatorContract(contract_info.contract_type);
     const is_multiplier = isMultiplierContract(contract_info.contract_type);

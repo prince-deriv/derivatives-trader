@@ -149,7 +149,9 @@ export default class ContractReplayStore extends BaseStore {
             this.is_chart_loading = false;
             return;
         }
-        if (+response.proposal_open_contract.contract_id !== this.contract_id) return;
+        if (+response.proposal_open_contract.contract_id !== this.contract_id) {
+            return;
+        }
 
         this.contract_info = response.proposal_open_contract;
         this.contract_update = response.proposal_open_contract.limit_order;
