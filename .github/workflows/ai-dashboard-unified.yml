@@ -472,10 +472,40 @@ jobs:
             }
             
             try {
+              // First, let's check the PR status before attempting merge
+              console.log('🔍 Checking PR #' + dashboardPrNumber + ' status before merge...');
+              
+              const { data: prData } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: parseInt(dashboardPrNumber)
+              });
+              
+              console.log('PR Status Details:');
+              console.log('  State:', prData.state);
+              console.log('  Mergeable:', prData.mergeable);
+              console.log('  Mergeable State:', prData.mergeable_state);
+              console.log('  Draft:', prData.draft);
+              console.log('  Head SHA:', prData.head.sha);
+              console.log('  Base:', prData.base.ref);
+              console.log('  URL:', prData.html_url);
+              
+              if (prData.state !== 'open') {
+                console.log('⚠️  PR is not open (state: ' + prData.state + ') - cannot merge');
+                return;
+              }
+              
+              if (prData.draft) {
+                console.log('⚠️  PR is in draft state - cannot merge');
+                return;
+              }
+              
               // Wait a moment for any checks to start
+              console.log('⏳ Waiting 5 seconds for checks to initialize...');
               await new Promise(resolve => setTimeout(resolve, 5000));
               
               // Auto-merge the specific PR
+              console.log('🚀 Attempting to merge PR #' + dashboardPrNumber + '...');
               await github.rest.pulls.merge({
                 owner,
                 repo,
@@ -490,6 +520,7 @@ jobs:
               
             } catch (error) {
               console.error('❌ Auto-merge failed:', error.message);
+              console.log('💡 Error details:', error.status, error.response?.data?.message || 'No additional details');
               console.log('💡 PR #' + dashboardPrNumber + ' will remain open for manual review and merge');
               // Don't throw - let workflow continue
             }
