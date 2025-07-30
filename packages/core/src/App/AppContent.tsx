@@ -9,7 +9,6 @@ import {
     useIsHubRedirectionEnabled,
     useLiveChat,
     useOauth2,
-    useSilentLoginAndLogout,
 } from '@deriv/api';
 import { observer, useStore } from '@deriv/stores';
 import { ThemeProvider } from '@deriv-com/quill-ui';
@@ -44,8 +43,6 @@ const AppContent: React.FC<{ passthrough: unknown }> = observer(({ passthrough }
         email,
         setIsPasskeySupported,
         account_settings,
-        setIsPhoneNumberVerificationEnabled,
-        setIsCountryCodeDropdownEnabled,
         accounts,
     } = store.client;
     const { current_language, changeSelectedLanguage } = store.common;
@@ -66,22 +63,11 @@ const AppContent: React.FC<{ passthrough: unknown }> = observer(({ passthrough }
     const is_app_id_set = localStorage.getItem('config.app_id');
     const is_change_login_app_id_set = localStorage.getItem('change_login_app_id');
 
-    useSilentLoginAndLogout({
-        is_client_store_initialized,
-        oAuthLogout,
-    });
-
     const [isWebPasskeysFFEnabled, isGBLoaded] = useGrowthbookIsOn({
         featureFlag: 'web_passkeys',
     });
     const [isServicePasskeysFFEnabled] = useGrowthbookIsOn({
         featureFlag: 'service_passkeys',
-    });
-    const [isPhoneNumberVerificationEnabled, isPhoneNumberVerificationGBLoaded] = useGrowthbookGetFeatureValue({
-        featureFlag: 'phone_number_verification',
-    });
-    const [isCountryCodeDropdownEnabled, isCountryCodeDropdownGBLoaded] = useGrowthbookGetFeatureValue({
-        featureFlag: 'enable_country_code_dropdown',
     });
     const [isDuplicateLoginEnabled] = useGrowthbookGetFeatureValue({
         featureFlag: 'duplicate-login',
@@ -120,18 +106,6 @@ const AppContent: React.FC<{ passthrough: unknown }> = observer(({ passthrough }
     React.useEffect(() => {
         switchLanguage(current_language);
     }, [current_language, switchLanguage]);
-
-    React.useEffect(() => {
-        if (isPhoneNumberVerificationGBLoaded) {
-            setIsPhoneNumberVerificationEnabled(!!isPhoneNumberVerificationEnabled);
-        }
-    }, [isPhoneNumberVerificationEnabled, setIsPhoneNumberVerificationEnabled, isPhoneNumberVerificationGBLoaded]);
-
-    React.useEffect(() => {
-        if (isCountryCodeDropdownGBLoaded) {
-            setIsCountryCodeDropdownEnabled(!!isCountryCodeDropdownEnabled);
-        }
-    }, [isCountryCodeDropdownEnabled, setIsCountryCodeDropdownEnabled, isCountryCodeDropdownGBLoaded]);
 
     React.useEffect(() => {
         if (isGBLoaded && isWebPasskeysFFEnabled && isServicePasskeysFFEnabled) {

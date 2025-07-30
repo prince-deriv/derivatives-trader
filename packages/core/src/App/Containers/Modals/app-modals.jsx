@@ -20,7 +20,7 @@ const RedirectToLoginModal = React.lazy(() =>
 
 const AppModals = observer(() => {
     const { client, ui, traders_hub } = useStore();
-    const { is_authorize, is_logged_in, fetchFinancialAssessment, setCFDScore } = client;
+    const { is_logged_in } = client;
     const { content_flag } = traders_hub;
     const {
         is_deriv_account_needed_modal_visible,
@@ -41,14 +41,6 @@ const AppModals = observer(() => {
             toggleTncUpdateModal(true);
         }
     }, [is_tnc_needed, toggleTncUpdateModal]);
-
-    React.useEffect(() => {
-        if (is_logged_in && is_authorize) {
-            fetchFinancialAssessment().then(response => {
-                setCFDScore(response?.cfd_score ?? 0);
-            });
-        }
-    }, [is_logged_in, is_authorize]);
 
     let ComponentToLoad = null;
     switch (url_action_param) {

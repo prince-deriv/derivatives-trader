@@ -288,9 +288,18 @@ const BinarySocketGeneral = (() => {
     };
 
     const subscribeBalances = () => {
-        WS.subscribeBalanceAll(ResponseHandlers.balanceOtherAccounts);
-        if (client_store.currency)
-            WS.subscribeBalanceActiveAccount(ResponseHandlers.balanceActiveAccount, client_store.loginid);
+        if (!client_store.isSimplifiedAuth || !client_store.isSimplifiedAuth()) {
+            WS.subscribeBalanceAll(ResponseHandlers.balanceOtherAccounts);
+        }
+
+        if (client_store.loginid) {
+            // For simplified auth, use alternative subscription method
+            if (client_store.isSimplifiedAuth && client_store.isSimplifiedAuth()) {
+                WS.get().subscribe({ balance: 1 }).subscribe(ResponseHandlers.balanceActiveAccount);
+            } else {
+                WS.subscribeBalanceActiveAccount(ResponseHandlers.balanceActiveAccount, client_store.loginid);
+            }
+        }
     };
 
     const authorizeAccount = response => {
@@ -359,7 +368,16 @@ const ResponseHandlers = (() => {
 
     const balanceActiveAccount = response => {
         if (!response.error) {
-            BinarySocketGeneral.setBalanceActiveAccount(response.balance);
+            // Optimal balance extraction - only check formats that actually exist
+            const balance = response.balance?.balance || response.balance;
+
+            // Only update if we have a valid balance
+            if (balance !== undefined && balance !== null && balance !== '') {
+                BinarySocketGeneral.setBalanceActiveAccount({
+                    balance,
+                    loginid: client_store?.loginid,
+                });
+            }
         }
     };
 
