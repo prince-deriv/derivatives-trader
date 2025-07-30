@@ -29,7 +29,7 @@ import AppModals from './Containers/Modals';
 import Routes from './Containers/Routes/routes.jsx';
 import Devtools from './Devtools';
 
-const AppContent: React.FC<{ passthrough: unknown }> = observer(({ passthrough }) => {
+const AppContent: React.FC<{ passthrough: any }> = observer(({ passthrough }) => {
     const store = useStore();
     const {
         has_wallet,
@@ -53,11 +53,6 @@ const AppContent: React.FC<{ passthrough: unknown }> = observer(({ passthrough }
     const location = useLocation();
     const has_access_denied_error = location.search.includes('access_denied');
 
-    const { oAuthLogout } = useOauth2({
-        handleLogout: async () => {
-            await logout();
-        },
-    });
     const { isChangingToHubAppId } = useIsHubRedirectionEnabled();
 
     const is_app_id_set = localStorage.getItem('config.app_id');
@@ -147,7 +142,7 @@ const AppContent: React.FC<{ passthrough: unknown }> = observer(({ passthrough }
             {!isCallBackPage && <Header />}
             <ErrorBoundary root_store={store}>
                 <AppContents>
-                    <Routes passthrough={passthrough} />
+                    <Routes {...({ passthrough } as any)} />
                 </AppContents>
             </ErrorBoundary>
             {!(isDuplicateLoginEnabled && has_access_denied_error) && <Footer />}

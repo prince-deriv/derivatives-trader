@@ -20,8 +20,6 @@ import {
     getTotalProfit,
     getTradeNotificationMessage,
     isAccumulatorContract,
-    isDtraderV2DesktopEnabled,
-    isDtraderV2MobileEnabled,
     isEmptyObject,
     isEnded,
     isMultiplierContract,
@@ -335,8 +333,7 @@ export default class PortfolioStore extends BaseStore {
                             ...response.error,
                         },
                         // Temporary switching off old snackbar for DTrader-V2
-                        isDtraderV2MobileEnabled(this.root_store.ui.is_mobile) ||
-                            isDtraderV2DesktopEnabled(this.root_store.ui.is_desktop)
+                        this.root_store.ui.is_mobile // V2 for mobile, V1 for desktop
                     );
                 } else if (window.location.pathname !== routes.trade || !this.root_store.ui.is_mobile) {
                     this.root_store.notifications.addNotificationMessage(contractCancelled());
@@ -402,8 +399,7 @@ export default class PortfolioStore extends BaseStore {
                         ...response.error,
                     },
                     // Temporary switching off old snackbar for dTrader-V2
-                    isDtraderV2MobileEnabled(this.root_store.ui.is_mobile) ||
-                        isDtraderV2DesktopEnabled(this.root_store.ui.is_desktop)
+                    this.root_store.ui.is_mobile // V2 for mobile, V1 for desktop
                 );
             }
         } else if (!response.error && response.sell) {
