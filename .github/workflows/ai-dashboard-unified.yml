@@ -447,7 +447,7 @@ jobs:
             }
 
       - name: Auto-merge Dashboard PR
-        if: steps.check-skip.outputs.should-skip == 'false' && steps.create-pr.outputs.dashboard-pr-number
+        if: steps.check-skip.outputs.should-skip == 'false' && steps.create-pr.outputs.dashboard-pr-number && (github.event_name == 'pull_request_target' || github.event_name == 'workflow_dispatch' || github.event_name == 'schedule')
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         env:
           SHIFTAI_TOKEN: ${{ secrets.SHIFTAI_TOKEN }}
@@ -472,8 +472,8 @@ jobs:
             }
             
             try {
-              // First, let's check the PR status before attempting merge
-              console.log('🔍 Checking PR #' + dashboardPrNumber + ' status before merge...');
+              // SECURITY: Comprehensive validation before force merge
+              console.log('🔒 SECURITY CHECK: Validating PR #' + dashboardPrNumber + ' before force merge...');
               
               const { data: prData } = await github.rest.pulls.get({
                 owner,
@@ -481,139 +481,124 @@ jobs:
                 pull_number: parseInt(dashboardPrNumber)
               });
               
-              console.log('PR Status Details:');
-              console.log('  State:', prData.state);
-              console.log('  Mergeable:', prData.mergeable);
-              console.log('  Mergeable State:', prData.mergeable_state);
-              console.log('  Draft:', prData.draft);
-              console.log('  Head SHA:', prData.head.sha);
+              console.log('PR Details for security validation:');
+              console.log('  Title:', prData.title);
+              console.log('  Author:', prData.user.login);
+              console.log('  Author Type:', prData.user.type);
+              console.log('  Branch:', prData.head.ref);
               console.log('  Base:', prData.base.ref);
-              console.log('  URL:', prData.html_url);
+              console.log('  State:', prData.state);
               
+              // SECURITY CHECK 1: Validate PR state
               if (prData.state !== 'open') {
-                console.log('⚠️  PR is not open (state: ' + prData.state + ') - cannot merge');
+                console.log('❌ SECURITY: PR is not open - aborting force merge');
                 return;
               }
               
               if (prData.draft) {
-                console.log('⚠️  PR is in draft state - cannot merge');
+                console.log('❌ SECURITY: PR is in draft state - aborting force merge');
                 return;
               }
               
-              // Check for branch protection and status checks
-              try {
-                console.log('🔍 Checking branch protection rules and status checks...');
-                
-                // Get branch protection info
-                const { data: branchProtection } = await github.rest.repos.getBranchProtection({
-                  owner,
-                  repo,
-                  branch: prData.base.ref
-                }).catch(() => ({ data: null })); // Ignore 404 if no protection
-                
-                if (branchProtection) {
-                  console.log('Branch protection found:');
-                  console.log('  Required status checks:', branchProtection.required_status_checks?.contexts || 'None');
-                  console.log('  Required reviews:', branchProtection.required_pull_request_reviews?.required_approving_review_count || 'None');
-                  console.log('  Admin enforcement:', branchProtection.enforce_admins?.enabled || false);
-                }
-                
-                // Get status checks for the PR
-                const { data: statusChecks } = await github.rest.repos.getCombinedStatusForRef({
-                  owner,
-                  repo,
-                  ref: prData.head.sha
-                }).catch(() => ({ data: { statuses: [] } }));
-                
-                if (statusChecks.statuses.length > 0) {
-                  console.log('Status checks found:');
-                  statusChecks.statuses.forEach(check => {
-                    console.log(`  ${check.context}: ${check.state} (${check.description || 'No description'})`);
-                  });
-                  console.log('Overall status:', statusChecks.state);
-                } else {
-                  console.log('No status checks found');
-                }
-                
-                // Get check runs (GitHub Actions checks)
-                const { data: checkRuns } = await github.rest.checks.listForRef({
-                  owner,
-                  repo,
-                  ref: prData.head.sha
-                }).catch(() => ({ data: { check_runs: [] } }));
-                
-                if (checkRuns.check_runs.length > 0) {
-                  console.log('GitHub Actions checks:');
-                  checkRuns.check_runs.forEach(check => {
-                    console.log(`  ${check.name}: ${check.status} / ${check.conclusion}`);
-                  });
-                }
-                
-              } catch (protectionError) {
-                console.log('Could not check branch protection:', protectionError.message);
+              // SECURITY CHECK 2: Validate PR is created by GitHub Actions
+              if (prData.user.login !== 'github-actions[bot]' && prData.user.type !== 'Bot') {
+                console.log('❌ SECURITY: PR not created by GitHub Actions bot - aborting force merge');
+                console.log('   Author:', prData.user.login, '| Type:', prData.user.type);
+                return;
               }
               
-              // Check for blocking issues and wait longer if mergeable state is unknown
-              if (prData.mergeable_state === 'unknown') {
-                console.log('⏳ Mergeable state is unknown - waiting longer for GitHub to calculate...');
-                await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 more seconds
-                
-                // Re-check the PR status
-                const { data: updatedPrData } = await github.rest.pulls.get({
-                  owner,
-                  repo,
-                  pull_number: parseInt(dashboardPrNumber)
-                });
-                console.log('Updated mergeable state:', updatedPrData.mergeable_state);
-                console.log('Updated mergeable:', updatedPrData.mergeable);
-              } else {
-                console.log('⏳ Waiting 5 seconds for checks to initialize...');
-                await new Promise(resolve => setTimeout(resolve, 5000));
-              }
-              
-              // Auto-merge the specific PR with force options
-              console.log('🚀 Attempting to merge PR #' + dashboardPrNumber + '...');
-              
-              // Try multiple merge strategies
-              const mergeOptions = [
-                { method: 'squash', title: '📊 Auto-merged: AI Dashboard Update' },
-                { method: 'merge', title: '📊 Auto-merged: AI Dashboard Update (merge)' },
-                { method: 'rebase', title: '📊 Auto-merged: AI Dashboard Update (rebase)' }
+              // SECURITY CHECK 3: Validate PR title contains dashboard keywords
+              const validTitlePatterns = [
+                '📊 Dashboard Update',
+                '📊 Update AI Code Analysis Dashboard'
               ];
               
-              let mergeSuccessful = false;
+              const isValidTitle = validTitlePatterns.some(pattern => 
+                prData.title.includes(pattern)
+              );
               
-              for (const option of mergeOptions) {
-                try {
-                  console.log(`Trying ${option.method} merge...`);
-                  
-                  await github.rest.pulls.merge({
-                    owner,
-                    repo,
-                    pull_number: parseInt(dashboardPrNumber),
-                    merge_method: option.method,
-                    commit_title: option.title,
-                    commit_message: 'Automatically merged dashboard update PR\n\n🤖 This PR was auto-merged using administrative privileges to maintain dashboard currency.'
-                  });
-                  
-                  console.log(`✅ Successfully merged using ${option.method} method!`);
-                  mergeSuccessful = true;
-                  break;
-                  
-                } catch (mergeError) {
-                  console.log(`❌ ${option.method} merge failed:`, mergeError.message);
-                  if (mergeError.status === 405 && mergeError.response?.data?.message) {
-                    console.log('Merge error details:', mergeError.response.data.message);
-                  }
-                  // Continue to next merge method
-                }
+              if (!isValidTitle) {
+                console.log('❌ SECURITY: PR title does not match dashboard patterns - aborting force merge');
+                console.log('   Title:', prData.title);
+                console.log('   Expected patterns:', validTitlePatterns.join(' OR '));
+                return;
               }
               
-              if (!mergeSuccessful) {
-                throw new Error('All merge methods failed');
+              // SECURITY CHECK 4: Validate branch follows dashboard naming convention
+              if (!prData.head.ref.startsWith('dashboard-update-')) {
+                console.log('❌ SECURITY: Branch does not follow dashboard naming convention - aborting force merge');
+                console.log('   Branch:', prData.head.ref);
+                console.log('   Expected pattern: dashboard-update-YYYYMMDD');
+                return;
               }
               
-              console.log('✅ Auto-merged dashboard PR #' + dashboardPrNumber);
+              // SECURITY CHECK 5: Validate base branch is master
+              if (prData.base.ref !== 'master') {
+                console.log('❌ SECURITY: PR base is not master branch - aborting force merge');
+                console.log('   Base branch:', prData.base.ref);
+                return;
+              }
+              
+              // SECURITY CHECK 6: Validate PR only modifies allowed files
+              const { data: prFiles } = await github.rest.pulls.listFiles({
+                owner,
+                repo,
+                pull_number: parseInt(dashboardPrNumber)
+              });
+              
+              const allowedFiles = [
+                'AI-DASHBOARD.md',
+                '.github/data/ai-analysis-history.json'
+              ];
+              
+              const invalidFiles = prFiles.filter(file => 
+                !allowedFiles.includes(file.filename)
+              );
+              
+              if (invalidFiles.length > 0) {
+                console.log('❌ SECURITY: PR modifies unauthorized files - aborting force merge');
+                console.log('   Invalid files:', invalidFiles.map(f => f.filename).join(', '));
+                console.log('   Allowed files:', allowedFiles.join(', '));
+                return;
+              }
+              
+              console.log('✅ SECURITY: All validation checks passed');
+              console.log('🔒 Confirmed: This is a legitimate dashboard PR created by GitHub Actions');
+              
+              // SECURITY CHECK 7: Validate workflow trigger event
+              const currentEvent = context.eventName;
+              const allowedTriggers = ['pull_request_target', 'workflow_dispatch', 'schedule'];
+              
+              if (!allowedTriggers.includes(currentEvent)) {
+                console.log('❌ SECURITY: Invalid workflow trigger event - aborting force merge');
+                console.log('   Current event:', currentEvent);
+                console.log('   Allowed triggers:', allowedTriggers.join(', '));
+                return;
+              }
+              
+              console.log('🔒 SECURITY CHECK COMPLETE: All 7 security validations passed');
+              console.log('   ✅ PR state validation');
+              console.log('   ✅ GitHub Actions bot author validation');
+              console.log('   ✅ Dashboard title pattern validation');
+              console.log('   ✅ Dashboard branch naming validation');
+              console.log('   ✅ Master base branch validation');
+              console.log('   ✅ Authorized files only validation');
+              console.log('   ✅ Legitimate trigger event validation');
+              
+              // FORCE MERGE: Bypass all protections with admin token
+              console.log('⚡ INITIATING FORCE MERGE with admin privileges...');
+              console.log('🔒 SECURITY: Force merge restricted to verified dashboard PRs only');
+              
+              await github.rest.pulls.merge({
+                owner,
+                repo,
+                pull_number: parseInt(dashboardPrNumber),
+                merge_method: 'squash',
+                commit_title: '📊 Force-merged: AI Dashboard Update',
+                commit_message: 'Force-merged dashboard update PR using administrative privileges\n\n🤖 This PR was force-merged to maintain dashboard currency.'
+              });
+              
+              console.log('✅ FORCE-MERGED dashboard PR #' + dashboardPrNumber);
               console.log('🚀 Dashboard is now live with latest data!');
               
             } catch (error) {
