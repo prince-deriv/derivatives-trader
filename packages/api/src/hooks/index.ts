@@ -31,6 +31,5 @@ export { default as useGrowthbookGetFeatureValue } from './useGrowthbookGetFeatu
 export { default as useGrowthbookIsOn } from './useGrowthbookIsOn';
 export { default as useDtraderV2Flag } from './useDtraderV2Flag';
 export { default as useOauth2 } from './useOauth2';
-export { default as useSilentLoginAndLogout } from './useSilentLoginAndLogout';
 export { default as useAccountSettingsRedirect } from './useAccountSettingsRedirect';
 export { default as useTMB } from './useTMB';

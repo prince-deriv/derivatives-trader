@@ -1,15 +1,6 @@
 import { action, computed, makeObservable, observable, reaction } from 'mobx';
 
-import {
-    CFD_PLATFORMS,
-    ContentFlag,
-    formatMoney,
-    getAppstorePlatforms,
-    getCFDAvailableAccount,
-    WS,
-    PRODUCT,
-} from '@deriv/shared';
-import { localize } from '@deriv/translations';
+import { CFD_PLATFORMS, ContentFlag, formatMoney, getAppstorePlatforms, WS, PRODUCT } from '@deriv/shared';
 import BaseStore from './base-store';
 import { isEuCountry } from '_common/utility';
 import { logError } from '@deriv/utils';
@@ -83,7 +74,6 @@ export default class TradersHubStore extends BaseStore {
             closeModal: action.bound,
             content_flag: computed,
             getAccount: action.bound,
-            getAvailableCFDAccounts: action.bound,
             getAvailableDxtradeAccounts: action.bound,
             getAvailableCTraderAccounts: action.bound,
             setSelectedJurisdictionKYCStatus: action.bound,
@@ -150,7 +140,6 @@ export default class TradersHubStore extends BaseStore {
             ],
             () => {
                 this.getAvailablePlatforms();
-                this.getAvailableCFDAccounts();
             }
         );
 
@@ -425,155 +414,6 @@ export default class TradersHubStore extends BaseStore {
 
     setTogglePlatformType(platform_type) {
         this.selected_platform_type = platform_type;
-    }
-
-    getAvailableCFDAccounts() {
-        const {
-            trading_platform_available_accounts,
-            mt5_login_list,
-            landing_company_shortcode,
-            is_logged_in,
-            is_trading_platform_available_account_loaded,
-        } = this.root_store.client;
-        const getAccountDesc = () => {
-            return !this.is_eu_user || this.is_demo_low_risk
-                ? localize('CFDs on financial instruments.')
-                : localize('CFDs on derived and financial instruments.');
-        };
-        const getSwapFreeAccountDesc = () => {
-            return localize('Swap-free CFDs on selected financial and derived instruments.');
-        };
-        const getZeroSpreadAccountDesc = () => {
-            return localize('Zero spread CFDs on financial and derived instruments');
-        };
-
-        const getFinancialName = () => {
-            if (!this.is_eu_user || this.is_demo_low_risk) {
-                return 'Financial';
-            }
-            if (is_logged_in) {
-                return 'CFDs';
-            }
-            return 'Standard';
-        };
-
-        const getMT5Accounts = [
-            {
-                name: 'Standard',
-                description: localize('CFDs on derived and financial instruments.'),
-                platform: CFD_PLATFORMS.MT5,
-                market_type: 'synthetic',
-                product: 'standard',
-                icon: 'Standard',
-                availability: 'Non-EU',
-            },
-            {
-                name: getFinancialName(),
-                description: getAccountDesc(),
-                platform: CFD_PLATFORMS.MT5,
-                market_type: 'financial',
-                product: 'financial',
-                icon: getFinancialName(),
-                availability: 'All',
-            },
-            ...(this.is_real
-                ? [
-                      {
-                          name: 'Financial STP',
-                          description: localize('Direct access to market prices.'),
-                          platform: CFD_PLATFORMS.MT5,
-                          market_type: 'financial',
-                          product: PRODUCT.STP,
-                          icon: 'Financial',
-                          availability: 'Non-EU',
-                      },
-                  ]
-                : []),
-            {
-                name: 'Swap-Free',
-                description: getSwapFreeAccountDesc(),
-                platform: CFD_PLATFORMS.MT5,
-                market_type: 'all',
-                product: 'swap_free',
-                icon: 'SwapFree',
-                availability: 'Non-EU',
-            },
-            {
-                name: localize('Zero Spread'),
-                description: getZeroSpreadAccountDesc(),
-                platform: CFD_PLATFORMS.MT5,
-                market_type: 'all',
-                product: 'zero_spread',
-                icon: 'ZeroSpread',
-                availability: 'Non-EU',
-            },
-            {
-                name: localize('Gold'),
-                description: localize('Trading opportunities on popular precious metals.'),
-                platform: CFD_PLATFORMS.MT5,
-                market_type: 'financial',
-                product: 'gold',
-                icon: 'Gold',
-                availability: 'Non-EU',
-            },
-        ];
-        const groupedByProduct = trading_platform_available_accounts.reduce((acc, item) => {
-            const { product, is_default_jurisdiction, linkable_landing_companies } = item;
-            if (this.is_demo || (this.no_CR_account && !this.is_eu_user)) {
-                if (
-                    is_default_jurisdiction === 'true' ||
-                    (acc[product] && acc[product].some(i => i.is_default_jurisdiction === 'true'))
-                ) {
-                    if (!acc[product]) {
-                        acc[product] = [];
-                    }
-                    acc[product].push(item);
-                }
-            } else if (
-                (linkable_landing_companies.includes(landing_company_shortcode) &&
-                    is_default_jurisdiction === 'true') ||
-                (acc[product] && acc[product].some(i => i.is_default_jurisdiction === 'true'))
-            ) {
-                if (!acc[product]) {
-                    acc[product] = [];
-                }
-                acc[product].push(item);
-            }
-            return acc;
-        }, {});
-
-        const getFilteredAccounts = () => {
-            if (is_logged_in && this.content_flag === ContentFlag.LOW_RISK_CR_EU) {
-                const existing_account = mt5_login_list.filter(
-                    account => account.landing_company_short === landing_company_shortcode
-                );
-                return existing_account.length
-                    ? getMT5Accounts.filter(account => account.product === existing_account[0].product)
-                    : [];
-            } else if (is_logged_in && is_trading_platform_available_account_loaded) {
-                return getMT5Accounts.filter(account =>
-                    Object.prototype.hasOwnProperty.call(groupedByProduct, account.product)
-                );
-            }
-            return getMT5Accounts;
-        };
-
-        const all_available_accounts = [...getCFDAvailableAccount(), ...getFilteredAccounts()];
-
-        this.available_cfd_accounts = all_available_accounts.map(account => {
-            return {
-                ...account,
-                description: account.description,
-                //tracking name need not be localised,so added the localization here for the account name.
-                tracking_name: account.name,
-                name: localize(account.name),
-                product: account.product,
-            };
-        });
-        this.getAvailableDxtradeAccounts();
-        this.getAvailableCTraderAccounts();
-        this.getAvailableMt5Accounts();
-        this.setCombinedCFDMT5Accounts();
     }
 
     get financial_restricted_countries() {
