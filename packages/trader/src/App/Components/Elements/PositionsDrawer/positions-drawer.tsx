@@ -3,7 +3,7 @@ import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
 
 import { DataList, Icon, Money, PositionsDrawerCard, Text } from '@deriv/components';
-import { useNewRowTransition } from '@deriv/shared';
+import { useNewRowTransition, getEndTime } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { localize } from '@deriv/translations';
 
@@ -59,14 +59,19 @@ const PositionsDrawerCardItem = ({
     }, [portfolio_position?.contract_info.is_sold, measure, portfolio_position?.id]);
 
     React.useEffect(() => {
-        if (portfolio_position?.contract_info.is_sold) {
+        // Only remove positions that have actually ended (sold/expired)
+        // Use getEndTime to properly determine if a contract has ended
+        const contract_info = portfolio_position?.contract_info;
+        const has_ended = contract_info && !!getEndTime(contract_info);
+
+        if (has_ended) {
             const timeout = setTimeout(() => {
                 onClickRemove(portfolio_position.id);
             }, 8000);
 
             return () => clearTimeout(timeout);
         }
-    }, [portfolio_position?.contract_info.is_sold, portfolio_position?.id, onClickRemove]);
+    }, [portfolio_position?.contract_info, portfolio_position?.id, onClickRemove]);
 
     return (
         <CSSTransition
