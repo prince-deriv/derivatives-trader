@@ -78,7 +78,9 @@ const PositionsDrawerCard = ({
     const is_vanilla = isVanillaContract(contract_info?.contract_type);
     const is_crypto = isCryptoContract(contract_info?.underlying || '');
     const has_progress_slider = !is_multiplier || (is_crypto && is_multiplier);
-    const has_ended = !!getEndTime(contract_info as TContractInfo);
+    const end_time = getEndTime(contract_info as TContractInfo);
+    const has_ended = !!end_time;
+
     const is_mobile = isMobile();
     const contract_card_classname = classNames('dc-contract-card', {
         'dc-contract-card--green': Number(profit_loss) > 0 && !result,

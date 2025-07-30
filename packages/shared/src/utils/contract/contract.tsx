@@ -109,9 +109,16 @@ export const TRADE_TYPES = {
 
 export const getContractStatus = ({ contract_type, exit_tick_time, profit, status }: TContractInfo) => {
     const closed_contract_status = profit && profit < 0 && exit_tick_time ? 'lost' : 'won';
-    return isAccumulatorContract(contract_type)
-        ? (status === 'open' && !exit_tick_time && 'open') || closed_contract_status
-        : status;
+    const is_accumulator = isAccumulatorContract(contract_type);
+
+    let result;
+    if (is_accumulator) {
+        result = (status === 'open' && !exit_tick_time && 'open') || closed_contract_status;
+    } else {
+        result = status;
+    }
+
+    return result;
 };
 
 export const getFinalPrice = (contract_info: TContractInfo) => contract_info.sell_price || contract_info.bid_price;
@@ -133,9 +140,25 @@ export const isEnded = (contract_info?: TContractInfo) =>
         contract_info?.is_settleable
     );
 
-export const isOpen = (contract_info: TContractInfo) => getContractStatus(contract_info) === 'open';
+export const isOpen = (contract_info: TContractInfo) => {
+    const contract_status = getContractStatus(contract_info);
+    const result = contract_status === 'open';
 
-export const isUserSold = (contract_info?: TContractInfo) => contract_info?.status === 'sold';
+    return result;
+};
+
+export const isUserSold = (contract_info?: TContractInfo) => {
+    // Check both status field and is_sold property for comprehensive detection
+    // Handle type coercion: is_sold can be 0/1 (number), "0"/"1" (string), or boolean
+    const statusSold = contract_info?.status === 'sold';
+    const isSoldProperty = contract_info?.is_sold;
+    // Use type-safe comparison by converting to string first, then checking truthy values
+    const isSoldTrue = Boolean(isSoldProperty && (isSoldProperty === 1 || String(isSoldProperty) === '1'));
+
+    const result = statusSold || isSoldTrue;
+
+    return result;
+};
 
 export const isValidToCancel = (contract_info?: TContractInfo) => !!contract_info?.is_valid_to_cancel;
 
