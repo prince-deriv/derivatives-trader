@@ -286,7 +286,7 @@ jobs:
             
             ### 📄 No Changes Found
             
-            No changes with AI-generated code were detected in this PR.
+            No AI-generated code detected in the newly added lines of this PR.
             
             </div>
             
@@ -303,7 +303,7 @@ jobs:
             
             ${createProgressBar(results.summary.percentage, 25)}
             
-            **${results.summary.aiCharacters.toLocaleString()}** of **${results.summary.totalCharacters.toLocaleString()}** characters (${results.summary.percentage}%) in **PR changes** are AI-generated
+            **${results.summary.aiCharacters.toLocaleString()}** of **${results.summary.totalCharacters.toLocaleString()}** characters (${results.summary.percentage}%) in **newly added lines** are AI-generated
             
             </div>
             
@@ -314,16 +314,16 @@ jobs:
             | Metric | Value |
             |--------|-------|
             | 📁 **Files Changed** | ${results.files.length} |
-            | 📝 **Added Characters** | ${results.summary.totalCharacters.toLocaleString()} |
+            | ➕ **New Lines Added** | ${results.summary.totalCharacters.toLocaleString()} chars |
             | 🤖 **AI Characters** | ${results.summary.aiCharacters.toLocaleString()} |
             | 📈 **AI Percentage** | **${results.summary.percentage}%** |
             
             ---
             
-            ### 📋 Per-File Changes Breakdown
+            ### 📋 Per-File Breakdown (New Lines Only)
             
-            | File | Added Content | AI Content | Percentage |
-            |------|---------------|------------|------------|`;
+            | File | Lines Added | AI Content | Percentage |
+            |------|-------------|------------|------------|`;
             
               // Add file details
               results.files
