@@ -18,6 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Verify user
+        uses: 'deriv-com/shared-actions/.github/actions/verify_user_in_organization@v1'
+        with:
+          username: ${{ github.event.pull_request.user.login }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:

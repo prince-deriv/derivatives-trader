@@ -18,6 +18,10 @@ jobs:
     # Run this job to check if we should skip due to dashboard PR loop prevention
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    env:
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+      PR_AUTHOR: ${{ github.event.pull_request.user.login }}
     outputs:
       should-skip: ${{ steps.check.outputs.should-skip }}
       skip-reason: ${{ steps.check.outputs.skip-reason }}
@@ -28,24 +32,24 @@ jobs:
           echo "🔍 Checking if this PR should trigger dashboard update..."
           echo ""
           echo "PR Details:"
-          echo "  Title: ${{ github.event.pull_request.title }}"
-          echo "  Branch: ${{ github.event.pull_request.head.ref }}"
-          echo "  Author: ${{ github.event.pull_request.user.login }}"
+          echo "  Title: $PR_TITLE"
+          echo "  Branch: $PR_HEAD_REF"
+          echo "  Author: $PR_AUTHOR"
           echo ""
           
           SHOULD_SKIP="false"
           SKIP_REASON=""
           
-          if [[ "${{ github.event.pull_request.title }}" == *"📊 Dashboard Update"* ]]; then
+          if [[ "$PR_TITLE" == *"📊 Dashboard Update"* ]]; then
             SHOULD_SKIP="true"
             SKIP_REASON="PR title contains '📊 Dashboard Update'"
-          elif [[ "${{ github.event.pull_request.title }}" == *"📊 Update AI Code Analysis Dashboard"* ]]; then
+          elif [[ "$PR_TITLE" == *"📊 Update AI Code Analysis Dashboard"* ]]; then
             SHOULD_SKIP="true"
             SKIP_REASON="PR title contains '📊 Update AI Code Analysis Dashboard'"
-          elif [[ "${{ github.event.pull_request.head.ref }}" == dashboard-update-* ]]; then
+          elif [[ "$PR_HEAD_REF" == dashboard-update-* ]]; then
             SHOULD_SKIP="true"
             SKIP_REASON="PR branch starts with 'dashboard-update-'"
-          elif [[ "${{ github.event.pull_request.user.login }}" == "github-actions[bot]" ]]; then
+          elif [[ "$PR_AUTHOR" == "github-actions[bot]" ]]; then
             SHOULD_SKIP="true"
             SKIP_REASON="PR author is github-actions[bot]"
           fi
@@ -65,6 +69,12 @@ jobs:
     needs: check-if-dashboard-pr
     if: needs.check-if-dashboard-pr.outputs.should-skip == 'false'
     runs-on: ubuntu-latest
+    env:
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+      PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+      PR_NUMBER: ${{ github.event.number }}
+      REPO_NAME: ${{ github.repository }}
     
     steps:
       - name: Checkout repository
@@ -88,8 +98,8 @@ jobs:
           const fs = require('fs');
           
           const TOKEN = '${{ secrets.GITHUB_TOKEN }}';
-          const REPO = '${{ github.repository }}';
-          const PR_NUMBER = ${{ github.event.number }};
+          const REPO = process.env.REPO_NAME;
+          const PR_NUMBER = process.env.PR_NUMBER;
           
           function makeRequest(path) {
             return new Promise((resolve, reject) => {
@@ -98,33 +108,48 @@ jobs:
                 path: path,
                 headers: {
                   'Authorization': 'token ' + TOKEN,
-                  'User-Agent': 'Merged-PR-Tracker',
+                  'User-Agent': 'GitHub-Actions',
                   'Accept': 'application/vnd.github.v3+json'
                 }
               };
               
-              const req = https.request(options, (res) => {
+              https.get(options, (res) => {
                 let data = '';
                 res.on('data', chunk => data += chunk);
-                res.on('end', () => resolve(JSON.parse(data)));
-              });
-              req.on('error', reject);
-              req.end();
+                res.on('end', () => {
+                  try {
+                    resolve(JSON.parse(data));
+                  } catch (e) {
+                    reject(e);
+                  }
+                });
+              }).on('error', reject);
             });
           }
           
-          function extractAIAnalysis(comment) {
+          function parseAIAnalysis(comment) {
             if (!comment.body.includes('🤖 AI Code Analysis')) return null;
             
-            const jsonMatch = comment.body.match(/\`\`\`json\\n([\\s\\S]*?)\\n\`\`\`/);
-            if (!jsonMatch) return null;
+            const body = comment.body;
             
-            try {
-              const data = JSON.parse(jsonMatch[1]);
-              if (data.summary && data.files && data.timestamp) return data;
-            } catch (e) {}
+            // Extract percentage
+            const percentageMatch = body.match(/(\d+(?:\.\d+)?)%\s+AI-generated/);
+            const percentage = percentageMatch ? parseFloat(percentageMatch[1]) : 0;
             
-            return null;
+            // Extract total characters
+            const totalMatch = body.match(/(\d+)\s+total\s+characters/);
+            const totalCharacters = totalMatch ? parseInt(totalMatch[1]) : 0;
+            
+            // Extract AI characters  
+            const aiMatch = body.match(/(\d+)\s+(?:of\s+\d+\s+)?characters.*AI-generated/);
+            const aiCharacters = aiMatch ? parseInt(aiMatch[1]) : Math.round((percentage / 100) * totalCharacters);
+            
+            return {
+              percentage: percentage,
+              totalCharacters: totalCharacters,
+              aiCharacters: aiCharacters,
+              files: [] // Could extract file list if needed
+            };
           }
           
           async function main() {
@@ -146,18 +171,16 @@ jobs:
                 timestamp: new Date().toISOString(),
                 repository: REPO,
                 pullRequest: PR_NUMBER,
-                branch: '${{ github.event.pull_request.head.ref }}',
-                author: '${{ github.event.pull_request.user.login }}',
-                prTitle: '${{ github.event.pull_request.title }}',
-                prUrl: '${{ github.event.pull_request.html_url }}',
-                mergedAt: '${{ github.event.pull_request.merged_at }}',
+                branch: process.env.PR_HEAD_REF,
+                author: process.env.PR_AUTHOR,
+                prTitle: process.env.PR_TITLE,
+                hasAnalysis: false,
                 summary: {
+                  percentage: 0,
                   totalCharacters: 0,
-                  aiCharacters: 0,
-                  percentage: 0
+                  aiCharacters: 0
                 },
-                files: [],
-                hasAnalysis: false
+                files: []
               };
               
               fs.writeFileSync('merged_pr_data.json', JSON.stringify(basicEntry, null, 2));
@@ -166,19 +189,23 @@ jobs:
             
             console.log('SUCCESS: Found AI analysis for PR #' + PR_NUMBER);
             
-            const analysis = extractAIAnalysis(aiComments[0]);
+            const analysis = parseAIAnalysis(aiComments[0]);
             if (!analysis) {
               console.log('ERROR: Could not parse AI analysis data');
               return;
             }
             
-            // Enhance analysis with PR metadata
-            analysis.prTitle = '${{ github.event.pull_request.title }}';
-            analysis.prUrl = '${{ github.event.pull_request.html_url }}';
-            analysis.mergedAt = '${{ github.event.pull_request.merged_at }}';
+            console.log('PR #' + PR_NUMBER + ': ' + analysis.percentage + '% AI (' + analysis.files.length + ' files)');
+            
+            analysis.timestamp = new Date().toISOString();
+            analysis.repository = REPO;
+            analysis.pullRequest = PR_NUMBER; 
+            analysis.branch = process.env.PR_HEAD_REF;
+            analysis.author = process.env.PR_AUTHOR;
+            analysis.prTitle = process.env.PR_TITLE;
             analysis.hasAnalysis = true;
             
-            console.log('PR #' + PR_NUMBER + ': ' + analysis.summary.percentage + '% AI (' + analysis.files.length + ' files)');
+            console.log('PR #' + PR_NUMBER + ': ' + analysis.percentage + '% AI (' + analysis.files.length + ' files)');
             
             fs.writeFileSync('merged_pr_data.json', JSON.stringify(analysis, null, 2));
           }
@@ -274,19 +301,19 @@ jobs:
           git add .github/data/ai-analysis-history.json AI-DASHBOARD.md
           
           # Commit changes
-          git commit -m "📊 Track merged PR #${{ github.event.number }}: ${{ github.event.pull_request.title }}
+          git commit -m "📊 Track merged PR #$PR_NUMBER: $PR_TITLE
           
           - Merged: ${{ github.event.pull_request.merged_at }}
-          - Author: ${{ github.event.pull_request.user.login }}
+          - Author: $PR_AUTHOR
           - Updated dashboard with historical data"
           
           # Push to remote (force to handle multiple updates to same branch)
           git push origin "$BRANCH_NAME" --force
           
           echo "✅ Changes pushed to branch: $BRANCH_NAME"
-          echo "PR_NUMBER=${{ github.event.number }}" >> $GITHUB_ENV
-          echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
-          echo "PR_AUTHOR=${{ github.event.pull_request.user.login }}" >> $GITHUB_ENV
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+          echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
+          echo "PR_AUTHOR=$PR_AUTHOR" >> $GITHUB_ENV
 
       - name: Create or Update Pull Request
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
@@ -444,18 +471,20 @@ jobs:
             }
 
       - name: Output summary
+        env:
+          SHIFTAI_TOKEN: ${{ secrets.SHIFTAI_TOKEN }}
         run: |
           echo "📊 Merged PR Tracking Complete!"
           echo ""
-          echo "✅ Tracked PR #${{ github.event.number }}: ${{ github.event.pull_request.title }}"
-          echo "👤 Author: ${{ github.event.pull_request.user.login }}"
+          echo "✅ Tracked PR #$PR_NUMBER: $PR_TITLE"
+          echo "👤 Author: $PR_AUTHOR"
           echo "🕐 Merged: ${{ github.event.pull_request.merged_at }}"
           echo ""
           echo "🔄 Update process:"
           echo "   • ✅ Added to historical tracking data"
           echo "   • ✅ Generated updated dashboard"
           echo "   • Created/updated dashboard PR"
-          if [ -n "${{ secrets.SHIFTAI_TOKEN }}" ]; then
+          if [ -n "$SHIFTAI_TOKEN" ]; then
             echo "   • 🤖 Auto-merge attempted (SHIFTAI_TOKEN detected)"
           else
             echo "   • ⏳ Waiting for PR review and merge"
