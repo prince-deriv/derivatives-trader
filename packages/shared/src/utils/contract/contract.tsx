@@ -152,8 +152,10 @@ export const isUserSold = (contract_info?: TContractInfo) => {
     // Handle type coercion: is_sold can be 0/1 (number), "0"/"1" (string), or boolean
     const statusSold = contract_info?.status === 'sold';
     const isSoldProperty = contract_info?.is_sold;
-    // Use type-safe comparison by converting to string first, then checking truthy values
-    const isSoldTrue = Boolean(isSoldProperty && (isSoldProperty === 1 || String(isSoldProperty) === '1'));
+    // Use type-safe comparison to handle all possible truthy values for is_sold
+    const isSoldTrue = Boolean(
+        isSoldProperty && (isSoldProperty === 1 || isSoldProperty === true || String(isSoldProperty) === '1')
+    );
 
     const result = statusSold || isSoldTrue;
 
