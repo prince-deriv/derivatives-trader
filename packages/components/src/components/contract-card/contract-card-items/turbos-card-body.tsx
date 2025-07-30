@@ -43,6 +43,7 @@ const TurbosCardBody = ({
         profit,
         barrier,
         entry_spot_display_value,
+        entry_spot,
         limit_order = {},
         sell_price,
     } = contract_info;
@@ -82,7 +83,11 @@ const TurbosCardBody = ({
                     is_crypto={isCryptocurrency(currency)}
                     className='dc-contract-card__entry-spot'
                 >
-                    {addComma(entry_spot_display_value)}
+                    {entry_spot_display_value
+                        ? addComma(entry_spot_display_value)
+                        : entry_spot
+                          ? addComma(entry_spot.toString())
+                          : '-'}
                 </ContractCardItem>
 
                 <div className='dc-contract-card__limit-order-info'>
