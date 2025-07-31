@@ -54,6 +54,9 @@ inputs:
   # TRUSTPILOT_API_KEY:
   #   description: 'Trustpilot api key'
   #   required: false
+  QA197_AUTH_TOKEN:
+    description: 'QA197 authentication token for testing'
+    required: false
 
 runs:
   using: composite
@@ -77,5 +80,6 @@ runs:
       REF_NAME: ${{ inputs.REF_NAME }}
       # REMOTE_CONFIG_URL: ${{ inputs.REMOTE_CONFIG_URL }}
       # TRUSTPILOT_API_KEY: ${{ inputs.TRUSTPILOT_API_KEY }}
+      QA197_AUTH_TOKEN: ${{ inputs.QA197_AUTH_TOKEN }}
     run: npm run build:all
     shell: bash
