@@ -142,6 +142,7 @@ const plugins = ({ base, is_test_env }) => {
             'process.env.REMOTE_CONFIG_URL': JSON.stringify(process.env.REMOTE_CONFIG_URL),
             'process.env.ACC_TRANSLATION_PATH': JSON.stringify('deriv-app-account/staging'),
             'process.env.CROWDIN_URL': JSON.stringify('https://translations.deriv.com'),
+            'process.env.QA197_AUTH_TOKEN': JSON.stringify(process.env.QA197_AUTH_TOKEN),
         }),
         new CleanWebpackPlugin(),
         new CopyPlugin(copyConfig(base)),
