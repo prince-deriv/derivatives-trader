@@ -17,6 +17,6 @@ runs:
     run: |
       npm i wrangler@3.1.0
       cd packages/core
-      npx wrangler pages deploy dist/ --project-name=derivatives-trader --branch=main
+      npx wrangler pages deploy dist/ --project-name=derivatives-trader --branch=production
       echo "New website - http://derivatives-trader.pages.dev"
     shell: bash
