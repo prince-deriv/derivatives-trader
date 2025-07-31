@@ -11,8 +11,8 @@ jest.mock('react-router', () => ({
     }),
 }));
 
-jest.mock('@deriv/hooks', () => ({
-    ...jest.requireActual('@deriv/hooks'),
+jest.mock('@deriv/api', () => ({
+    ...jest.requireActual('@deriv/api'),
     useIsHubRedirectionEnabled: () => ({
         isHubRedirectionEnabled: false,
     }),

@@ -13,8 +13,6 @@ import {
     getSortedTradeTypes,
     getUnitMap,
     hasIntradayDurationUnit,
-    isDtraderV2DesktopEnabled,
-    isDtraderV2MobileEnabled,
     isTimeValid,
     minDate,
     toMoment,
@@ -207,9 +205,7 @@ export const ContractType = (() => {
             case 'Call':
             case 'Put':
                 stored_barriers_data =
-                    v2_params_initial_values?.strike &&
-                    (isDtraderV2MobileEnabled(root_store?.ui.is_mobile) ||
-                        isDtraderV2DesktopEnabled(root_store?.ui.is_desktop))
+                    v2_params_initial_values?.strike && root_store?.ui.is_mobile // V2 for mobile only
                         ? ({
                               ...strike_price_choices,
                               barrier: v2_params_initial_values.strike,

@@ -7,8 +7,6 @@ import {
     getEndTime,
     getPlatformRedirect,
     hasContractStarted,
-    isDtraderV2DesktopEnabled,
-    isDtraderV2MobileEnabled,
 } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { useDevice } from '@deriv-com/ui';
@@ -86,8 +84,7 @@ const ReplayChart = observer(
         const prev_start_epoch = usePrevious(start_epoch);
 
         const has_ended = !!getEndTime(contract_info);
-        const is_dtrader_v2_enabled =
-            isDtraderV2DesktopEnabled(ui.is_desktop) || isDtraderV2MobileEnabled(ui.is_mobile);
+        const is_dtrader_v2_enabled = isMobile; // V2 for mobile, V1 for desktop
 
         return (
             <SmartChart

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useLocalStorageData } from '@deriv/hooks';
+import { useLocalStorageData } from '@deriv/api';
 import { Localize } from '@deriv/translations';
 import { Modal } from '@deriv-com/quill-ui';
 

@@ -35,7 +35,7 @@ const supported_non_high_low_contract = {
 jest.mock('../../storage', () => ({
     ...jest.requireActual('../../storage'),
     LocalStore: {
-        getObject: jest.fn(() => ({ data: { sharkfin: false } })),
+        getObject: jest.fn(() => ({ data: {} })),
     },
 }));
 
@@ -192,27 +192,23 @@ describe('getCleanedUpCategories', () => {
         };
         expect(getCleanedUpCategories(initial_categories)).toEqual(resulting_categories);
     });
-    it('should return only those trade categories that do not have disabled feature flag', () => {
+    it('should return all trade categories when there are no feature flags to filter', () => {
         const initial_categories = {
-            Sharkfin: {
-                name: 'Sharkfin',
-                categories: [
-                    {
-                        value: 'sharkfincall',
-                        text: 'Call/Put',
-                    },
-                    {
-                        value: 'sharkfinput',
-                        text: 'Call/Put',
-                    },
-                ],
-            },
             Multipliers: {
                 name: 'Multipliers',
                 categories: [
                     {
                         value: TRADE_TYPES.MULTIPLIER,
                         text: 'Multipliers',
+                    },
+                ],
+            },
+            Turbos: {
+                name: 'Turbos',
+                categories: [
+                    {
+                        value: TRADE_TYPES.TURBOS.LONG,
+                        text: 'Turbos Long',
                     },
                 ],
             },
@@ -224,6 +220,15 @@ describe('getCleanedUpCategories', () => {
                     {
                         value: TRADE_TYPES.MULTIPLIER,
                         text: 'Multipliers',
+                    },
+                ],
+            },
+            Turbos: {
+                name: 'Turbos',
+                categories: [
+                    {
+                        value: TRADE_TYPES.TURBOS.LONG,
+                        text: 'Turbos Long',
                     },
                 ],
             },

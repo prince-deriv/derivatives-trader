@@ -4,7 +4,7 @@ import { Button, Modal } from '@deriv/components';
 import { getDomainUrl, routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { localize } from '@deriv/translations';
-import { useIsHubRedirectionEnabled } from '@deriv/hooks';
+import { useIsHubRedirectionEnabled } from '@deriv/api';
 
 type TInsufficientBalanceModal = RouteComponentProps & {
     is_virtual?: boolean;

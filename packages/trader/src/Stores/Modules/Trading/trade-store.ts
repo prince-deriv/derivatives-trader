@@ -40,8 +40,6 @@ import {
     isAccumulatorContract,
     isBarrierSupported,
     isCryptocurrency,
-    isDtraderV2DesktopEnabled,
-    isDtraderV2MobileEnabled,
     isEmptyObject,
     isHighLow,
     isMarketClosed,
@@ -451,8 +449,6 @@ export default class TradeStore extends BaseStore {
             is_chart_loading: observable,
             is_digits_widget_active: observable,
             is_dtrader_v2: computed,
-            is_dtrader_v2_mobile: computed,
-            is_dtrader_v2_desktop: computed,
             is_equal: observable,
             is_market_closed: observable,
             is_mobile_digit_view_selected: observable,
@@ -1448,16 +1444,9 @@ export default class TradeStore extends BaseStore {
         }
     }
 
-    get is_dtrader_v2_mobile() {
-        return isDtraderV2MobileEnabled(this.root_store.ui.is_mobile);
-    }
-
-    get is_dtrader_v2_desktop() {
-        return isDtraderV2DesktopEnabled(this.root_store.ui.is_desktop);
-    }
-
     get is_dtrader_v2() {
-        return this.is_dtrader_v2_mobile || this.is_dtrader_v2_desktop;
+        // Use simple device detection: V2 for mobile, V1 for desktop
+        return this.root_store.ui.is_mobile;
     }
 
     get is_synthetics_available() {

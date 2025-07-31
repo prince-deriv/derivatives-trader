@@ -10,7 +10,7 @@ import App from 'App/app.jsx';
 import { checkAndSetEndpointFromUrl } from '@deriv/shared';
 import AppNotificationMessages from './App/Containers/app-notification-messages.jsx';
 import { AnalyticsInitializer } from 'Utils/Analytics';
-import { getActiveAccounts, isTmbEnabled } from '@deriv/utils';
+import { isTmbEnabled } from '@deriv/utils';
 import './temp-auth'; // Temporary: Authentication flow
 
 AnalyticsInitializer();
@@ -28,10 +28,9 @@ const has_endpoint_url = checkAndSetEndpointFromUrl();
 if (!has_endpoint_url) {
     const initApp = async () => {
         const is_tmb_enabled = await isTmbEnabled();
-        const accounts = await getActiveAccounts();
-        const root_store = is_tmb_enabled
-            ? initStore(AppNotificationMessages, accounts)
-            : initStore(AppNotificationMessages);
+        // For simplified authentication, we don't need to pass accounts to initStore
+        // The authentication will be handled by temp-auth.js and client-store.js
+        const root_store = initStore(AppNotificationMessages);
 
         const wrapper = document.getElementById('deriv_app');
         if (wrapper) {

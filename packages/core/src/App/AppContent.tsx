@@ -1,16 +1,15 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { useRemoteConfig } from '@deriv/api';
 import {
+    useRemoteConfig,
     useGrowthbookGetFeatureValue,
     useGrowthbookIsOn,
     useIntercom,
     useIsHubRedirectionEnabled,
     useLiveChat,
     useOauth2,
-    useSilentLoginAndLogout,
-} from '@deriv/hooks';
+} from '@deriv/api';
 import { observer, useStore } from '@deriv/stores';
 import { ThemeProvider } from '@deriv-com/quill-ui';
 import { useTranslations } from '@deriv-com/translations';
@@ -30,7 +29,7 @@ import AppModals from './Containers/Modals';
 import Routes from './Containers/Routes/routes.jsx';
 import Devtools from './Devtools';
 
-const AppContent: React.FC<{ passthrough: unknown }> = observer(({ passthrough }) => {
+const AppContent: React.FC<{ passthrough: any }> = observer(({ passthrough }) => {
     const store = useStore();
     const {
         has_wallet,
@@ -44,8 +43,6 @@ const AppContent: React.FC<{ passthrough: unknown }> = observer(({ passthrough }
         email,
         setIsPasskeySupported,
         account_settings,
-        setIsPhoneNumberVerificationEnabled,
-        setIsCountryCodeDropdownEnabled,
         accounts,
     } = store.client;
     const { current_language, changeSelectedLanguage } = store.common;
@@ -56,32 +53,16 @@ const AppContent: React.FC<{ passthrough: unknown }> = observer(({ passthrough }
     const location = useLocation();
     const has_access_denied_error = location.search.includes('access_denied');
 
-    const { oAuthLogout } = useOauth2({
-        handleLogout: async () => {
-            await logout();
-        },
-    });
     const { isChangingToHubAppId } = useIsHubRedirectionEnabled();
 
     const is_app_id_set = localStorage.getItem('config.app_id');
     const is_change_login_app_id_set = localStorage.getItem('change_login_app_id');
-
-    useSilentLoginAndLogout({
-        is_client_store_initialized,
-        oAuthLogout,
-    });
 
     const [isWebPasskeysFFEnabled, isGBLoaded] = useGrowthbookIsOn({
         featureFlag: 'web_passkeys',
     });
     const [isServicePasskeysFFEnabled] = useGrowthbookIsOn({
         featureFlag: 'service_passkeys',
-    });
-    const [isPhoneNumberVerificationEnabled, isPhoneNumberVerificationGBLoaded] = useGrowthbookGetFeatureValue({
-        featureFlag: 'phone_number_verification',
-    });
-    const [isCountryCodeDropdownEnabled, isCountryCodeDropdownGBLoaded] = useGrowthbookGetFeatureValue({
-        featureFlag: 'enable_country_code_dropdown',
     });
     const [isDuplicateLoginEnabled] = useGrowthbookGetFeatureValue({
         featureFlag: 'duplicate-login',
@@ -120,18 +101,6 @@ const AppContent: React.FC<{ passthrough: unknown }> = observer(({ passthrough }
     React.useEffect(() => {
         switchLanguage(current_language);
     }, [current_language, switchLanguage]);
-
-    React.useEffect(() => {
-        if (isPhoneNumberVerificationGBLoaded) {
-            setIsPhoneNumberVerificationEnabled(!!isPhoneNumberVerificationEnabled);
-        }
-    }, [isPhoneNumberVerificationEnabled, setIsPhoneNumberVerificationEnabled, isPhoneNumberVerificationGBLoaded]);
-
-    React.useEffect(() => {
-        if (isCountryCodeDropdownGBLoaded) {
-            setIsCountryCodeDropdownEnabled(!!isCountryCodeDropdownEnabled);
-        }
-    }, [isCountryCodeDropdownEnabled, setIsCountryCodeDropdownEnabled, isCountryCodeDropdownGBLoaded]);
 
     React.useEffect(() => {
         if (isGBLoaded && isWebPasskeysFFEnabled && isServicePasskeysFFEnabled) {
@@ -173,7 +142,7 @@ const AppContent: React.FC<{ passthrough: unknown }> = observer(({ passthrough }
             {!isCallBackPage && <Header />}
             <ErrorBoundary root_store={store}>
                 <AppContents>
-                    <Routes passthrough={passthrough} />
+                    <Routes {...({ passthrough } as any)} />
                 </AppContents>
             </ErrorBoundary>
             {!(isDuplicateLoginEnabled && has_access_denied_error) && <Footer />}

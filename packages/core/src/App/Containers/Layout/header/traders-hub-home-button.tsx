@@ -5,7 +5,7 @@ import { Icon, Text } from '@deriv/components';
 import { getDomainUrl, routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { Localize } from '@deriv/translations';
-import { useIsHubRedirectionEnabled } from '@deriv/hooks';
+import { useIsHubRedirectionEnabled } from '@deriv/api';
 
 const TradersHubHomeButton = observer(() => {
     const { client } = useStore();

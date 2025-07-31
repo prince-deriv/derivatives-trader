@@ -20,8 +20,6 @@ import {
     getTotalProfit,
     getTradeNotificationMessage,
     isAccumulatorContract,
-    isDtraderV2DesktopEnabled,
-    isDtraderV2MobileEnabled,
     isEmptyObject,
     isEnded,
     isMultiplierContract,
@@ -335,8 +333,7 @@ export default class PortfolioStore extends BaseStore {
                             ...response.error,
                         },
                         // Temporary switching off old snackbar for DTrader-V2
-                        isDtraderV2MobileEnabled(this.root_store.ui.is_mobile) ||
-                            isDtraderV2DesktopEnabled(this.root_store.ui.is_desktop)
+                        this.root_store.ui.is_mobile // V2 for mobile, V1 for desktop
                     );
                 } else if (window.location.pathname !== routes.trade || !this.root_store.ui.is_mobile) {
                     this.root_store.notifications.addNotificationMessage(contractCancelled());
@@ -402,8 +399,7 @@ export default class PortfolioStore extends BaseStore {
                         ...response.error,
                     },
                     // Temporary switching off old snackbar for dTrader-V2
-                    isDtraderV2MobileEnabled(this.root_store.ui.is_mobile) ||
-                        isDtraderV2DesktopEnabled(this.root_store.ui.is_desktop)
+                    this.root_store.ui.is_mobile // V2 for mobile, V1 for desktop
                 );
             }
         } else if (!response.error && response.sell) {
@@ -625,7 +621,12 @@ export default class PortfolioStore extends BaseStore {
     }
 
     setActivePositions() {
-        this.active_positions = this.positions.filter(portfolio_pos => !getEndTime(portfolio_pos.contract_info));
+        this.active_positions = this.positions.filter(portfolio_pos => {
+            const contract_info = portfolio_pos.contract_info;
+            const end_time = getEndTime(contract_info);
+
+            return !end_time;
+        });
         this.all_positions = [...this.positions];
         this.open_accu_contract = this.active_positions.find(({ type }) => isAccumulatorContract(type));
     }

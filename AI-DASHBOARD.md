@@ -3,7 +3,7 @@
 <div align="center">
 
 **deriv-com/derivatives-trader**  
-📅 Last updated: 2025-07-29 • 🔄 Tracking merged PRs to main/master
+📅 Last updated: 2025-07-31 • 🔄 Tracking merged PRs to main/master
 
 </div>
 
@@ -13,19 +13,22 @@
 
 | Metric | Value | Metric | Value |
 |--------|-------|--------|-------|
-| **📁 Total Merged PRs** | 0 | **📈 Average AI Code** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
+| **📁 Total Merged PRs** | 2 | **📈 Average AI Code** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
 | **🤖 PRs with AI Analysis** | 0 | **🎯 Overall AI Percentage** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
 | **📄 Files Analyzed** | 0 | **⚡ Total AI Characters** | 0 |
 
 ---
 
 
-## 📈 Ready to Track AI Code
+## 🚀 Recent Merged Pull Requests
 
-> 🚀 **Getting Started**: When you merge PRs with AI analysis, they'll appear here!  
-> 💡 Create a PR with `[AI]` wrapped code to get started.
+> 📊 Showing the 10 most recent merged PRs (stats above include all 2 PRs)
 
----
+| PR | Author | Date | Files | AI Content | Percentage |
+|----|--------|------|-------|------------|------------|
+| [#59](undefined) **Prince/rename PR title and fix merging of data** | [@prince-deriv](https://github.com/prince-deriv) | 7/31/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
+| [#58](undefined) **Matin/Corrected CF Branch** | [@matin-deriv](https://github.com/matin-deriv) | 7/31/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
+
 
 
 ---
@@ -37,7 +40,8 @@
 
 ```
 AI Percentage Distribution:
-No data available yet
+PR #59 Prince/rename PR title and ... │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ 0%
+PR #58 Matin/Corrected CF Branch      │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ 0%
 ```
 
 ### 🎯 Summary Statistics

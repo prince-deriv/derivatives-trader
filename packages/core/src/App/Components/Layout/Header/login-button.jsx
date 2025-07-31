@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
 
 import { Button } from '@deriv/components';
-import { useTMB } from '@deriv/hooks';
+import { useTMB } from '@deriv/api';
 import { getDomainUrl, isStaging, redirectToLogin } from '@deriv/shared';
 import { getLanguage, localize } from '@deriv/translations';
 import { requestOidcAuthentication } from '@deriv-com/auth-client';

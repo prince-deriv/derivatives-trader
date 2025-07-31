@@ -28,7 +28,6 @@ The codebase is organized into multiple packages:
 - **shared**: Common utilities, constants, and helpers shared across packages
 - **translations**: Internationalization support using i18n
 - **utils**: Utility functions for common operations
-- **hooks**: Custom React hooks shared across the application
 - **reports**: Reporting and analysis functionality
 - **core**: Core business logic and domain models
 

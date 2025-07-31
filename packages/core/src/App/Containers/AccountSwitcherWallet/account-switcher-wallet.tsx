@@ -4,7 +4,7 @@ import { Icon, Text, ThemedScrollbars, useOnClickOutside } from '@deriv/componen
 import { platforms, routes } from '@deriv/shared';
 import { observer } from '@deriv/stores';
 import { Localize } from '@deriv/translations';
-import { useIsHubRedirectionEnabled, useStoreWalletAccountsList } from '@deriv/hooks';
+import { useIsHubRedirectionEnabled, useStoreWalletAccountsList } from '@deriv/api';
 import { AccountSwitcherWalletList } from './account-switcher-wallet-list';
 
 type TAccountSwitcherWalletProps = {

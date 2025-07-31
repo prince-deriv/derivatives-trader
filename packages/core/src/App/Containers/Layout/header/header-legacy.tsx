@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 
-import { useIsHubRedirectionEnabled } from '@deriv/hooks';
+import { useIsHubRedirectionEnabled } from '@deriv/api';
 import { platforms, routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { useDevice } from '@deriv-com/ui';

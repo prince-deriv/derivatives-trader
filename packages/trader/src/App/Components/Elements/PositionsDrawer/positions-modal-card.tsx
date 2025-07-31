@@ -87,6 +87,7 @@ const PositionsModalCard = observer(
             date_expiry,
             date_start,
             entry_spot_display_value,
+            entry_spot,
             is_sold,
             profit,
             sell_price,
@@ -153,7 +154,11 @@ const PositionsModalCard = observer(
                                 {ENTRY_SPOT}
                             </Text>
                             <Text weight='bold' size='xxs' className='positions-modal-card__purchase-value'>
-                                {addComma(entry_spot_display_value)}
+                                {entry_spot_display_value
+                                    ? addComma(entry_spot_display_value)
+                                    : entry_spot
+                                      ? addComma(entry_spot.toString())
+                                      : '-'}
                             </Text>
                         </div>
                         <div className='positions-modal-card__payout-price'>
