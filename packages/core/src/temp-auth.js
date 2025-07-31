@@ -10,17 +10,14 @@ if (serverUrl !== 'qa197.deriv.dev') {
 } else {
     console.log('🔓 [AUTH] Debug authentication enabled for qa197.deriv.dev');
 
-    // Timeout to ensure environment variables are available
-    setTimeout(() => {
-        // Get token from environment variable for security
-        const TEST_TOKEN = process.env.QA197_AUTH_TOKEN;
+    // Get token from environment variable for security
+    const TEST_TOKEN = process.env.QA197_AUTH_TOKEN;
 
-        // Check if token is available
-        if (!TEST_TOKEN) {
-            console.error('❌ [AUTH] QA197_AUTH_TOKEN environment variable not set');
-            console.log('🔒 [AUTH] Debug authentication disabled - missing token');
-            return;
-        }
+    // Check if token is available
+    if (!TEST_TOKEN) {
+        console.error('❌ [AUTH] QA197_AUTH_TOKEN environment variable not set');
+        console.log('🔒 [AUTH] Debug authentication disabled - missing token');
+    } else {
         console.log('🚀 [AUTH] Brand-Platform authentication script loaded');
 
         // Check if we need to set URL parameters for authentication
@@ -131,5 +128,5 @@ if (serverUrl !== 'qa197.deriv.dev') {
                 }
             }, 3000);
         }
-    }, 100); // Close setTimeout with 100ms delay
+    }
 } // End of server URL check
