@@ -41,55 +41,36 @@ function fibonacciMemo(n, memo = new Map()) {
   if (memo.has(n)) return memo.get(n);
   
   const result = fibonacciMemo(n - 1, memo) + fibonacciMemo(n - 2, memo);
-  memo.set(n, result);
-  return result;
+// Fibonacci sequence implementations in JavaScript
+
+/**
+ * Iterative Fibonacci implementation (most efficient)
+ * @param {number} n - The position in the Fibonacci sequence
+ * @returns {number} The Fibonacci number at position n
+ */
+function fibonacciIterative(n) {
+  if (n <= 1) return n;
+  
+  let a = 0, b = 1;
+  for (let i = 2; i <= n; i++) {
+    const temp = a + b;
+    a = b;
+    b = temp;
+  }
+  return b;
 }
 
 /**
- * Generates fibonacci numbers up to a maximum value
- * @param {number} maxValue - Maximum value to generate up to
- * @returns {number[]} Array of fibonacci numbers up to maxValue
+ * Recursive Fibonacci implementation (simple but inefficient for large n)
+ * @param {number} n - The position in the Fibonacci sequence
+ * @returns {number} The Fibonacci number at position n
  */
-function fibonacciUpTo(maxValue) {
-  if (maxValue < 0) return [];
-  
-  const sequence = [0];
-  if (maxValue >= 1) sequence.push(1);
-  
-  let current = 1;
-  let previous = 0;
-  
-  while (true) {
-    const next = current + previous;
-    if (next > maxValue) break;
-    
-    sequence.push(next);
-    previous = current;
-    current = next;
-  }
-  
-  return sequence;
+function fibonacciRecursive(n) {
+  if (n <= 1) return n;
+  return fibonacciRecursive(n - 1) + fibonacciRecursive(n - 2);
 }
 
-// Example usage and demonstrations
-console.log('Fibonacci Examples:');
-console.log('==================');
 
-console.log('First 10 fibonacci numbers:', fibonacci(10));
-console.log('8th fibonacci number (recursive):', fibonacciNth(8));
-console.log('8th fibonacci number (memoized):', fibonacciMemo(8));
-console.log('Fibonacci numbers up to 100:', fibonacciUpTo(100));
-
-// Export functions for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    fibonacci,
-    fibonacciNth,
-    fibonacciMemo,
-    fibonacciUpTo
-  };
-}
-// [/AI]
 
 
 const humancode = () => {
