@@ -13,4 +13,5 @@ permissions:
 jobs:
   call-ai-analysis:
     uses: prince-deriv/shared-actions/.github/workflows/ai-code-analysis.yml@3d2ece1d169b526d9ab8bbd797bbe7a3bdd9a72f
-    secrets: inherit
+    secrets:
+      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
