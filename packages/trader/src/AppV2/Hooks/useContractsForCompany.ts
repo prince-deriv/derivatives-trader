@@ -63,11 +63,11 @@ const useContractsForCompany = () => {
     );
 
     const isQueryEnabled = useCallback(() => {
-        if (isLoginidDefined(loginid) && !symbol) return false;
+        // Always validate symbol presence first - prevents API calls with undefined symbol
+        if (!symbol) return false;
         if (is_switching) return false;
-        // if (!symbol) return false; // Additional null safety check
         return true;
-    }, [loginid, is_switching, symbol]);
+    }, [symbol, is_switching]);
 
     // Get the underlying_symbol for the API call
     const underlying_symbol = getUnderlyingSymbol(symbol);
