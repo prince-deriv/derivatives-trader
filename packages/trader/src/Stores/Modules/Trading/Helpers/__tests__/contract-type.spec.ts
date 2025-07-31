@@ -200,8 +200,6 @@ jest.mock('@deriv/shared', () => ({
             })
         ),
     },
-    isDtraderV2MobileEnabled: jest.fn().mockReturnValue(true),
-    isDtraderV2DesktopEnabled: jest.fn().mockReturnValue(true),
 }));
 
 jest.mock('_common/base/server_time', () => ({
@@ -282,7 +280,7 @@ describe('ContractType.getContractValues', () => {
                 { text: 'Payout', value: 'payout' },
             ],
             basis: 'stake',
-            trade_types: { CALL: 'Higher' },
+            trade_types: { CALL: 'CALL' },
             start_date: 0,
             start_dates_list: [{ text: 'Now', value: 0 }],
             contract_start_type: 'spot',
@@ -303,10 +301,11 @@ describe('ContractType.getContractValues', () => {
             has_cancellation: false,
         });
     });
-    it('should use strike value from v2_params_initial_values for Vanillas contract as barrier_1 if isDtraderV2MobileEnabled or isDtraderV2DesktopEnabled === true', async () => {
+    it('should use strike value from v2_params_initial_values for Vanillas contract as barrier_1 if on mobile (DTrader V2)', async () => {
         const symbol = '1HZ100V';
         trade_store.contract_type = 'vanillalongcall';
         trade_store.v2_params_initial_values = { strike: '+1.80' };
+        trade_store.root_store = { ui: { is_mobile: true } };
         await ContractType.buildContractTypesConfig(symbol);
 
         const result = ContractType.getContractValues(trade_store);

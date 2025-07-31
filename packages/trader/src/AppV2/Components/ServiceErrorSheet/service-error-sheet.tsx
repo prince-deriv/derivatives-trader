@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
-import { useIsHubRedirectionEnabled } from '@deriv/hooks';
+import { useIsHubRedirectionEnabled } from '@deriv/api';
 import { getDomainUrl, isEmptyObject, redirectToLogin, redirectToSignUp, routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { getLanguage, Localize } from '@deriv/translations';

@@ -666,7 +666,7 @@ export const getSupportedContracts = (is_high_low?: boolean) =>
         // and also to DTRADER_FLAGS in FeatureFlagsStore, e.g.: sharkfin: false,
     }) as const;
 
-export const TRADE_FEATURE_FLAGS = ['sharkfin', 'dtrader_v2'];
+export const TRADE_FEATURE_FLAGS: string[] = [];
 
 export const getCleanedUpCategories = (categories: TTradeTypesCategories) => {
     const categories_copy: TTradeTypesCategories = cloneObject(categories);

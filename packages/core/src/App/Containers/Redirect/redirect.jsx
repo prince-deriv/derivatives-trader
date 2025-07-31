@@ -3,7 +3,7 @@ import { useHistory, withRouter } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
 
-import { useIsHubRedirectionEnabled, useTMB } from '@deriv/hooks';
+import { useIsHubRedirectionEnabled, useTMB } from '@deriv/api';
 import { getDomainName, platforms, redirectToLogin, routes, SessionStore } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { getLanguage } from '@deriv/translations';

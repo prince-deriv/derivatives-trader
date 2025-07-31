@@ -4,9 +4,9 @@ import { screen, render } from '@testing-library/react';
 import { StoreProvider, mockStore } from '@deriv/stores';
 import AccountSwitcher from '../account-switcher.jsx';
 
-jest.mock('@deriv/hooks', () => {
+jest.mock('@deriv/api', () => {
     return {
-        ...jest.requireActual('@deriv/hooks'),
+        ...jest.requireActual('@deriv/api'),
         useHasSetCurrency: jest.fn(() => true),
     };
 });

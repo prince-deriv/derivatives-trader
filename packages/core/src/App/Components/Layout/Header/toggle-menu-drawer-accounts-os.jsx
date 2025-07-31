@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { Div100vhContainer, Icon, MobileDrawer } from '@deriv/components';
-import { useOauth2 } from '@deriv/hooks';
+import { useOauth2 } from '@deriv/api';
 import { getOSNameWithUAParser, routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { localize } from '@deriv/translations';

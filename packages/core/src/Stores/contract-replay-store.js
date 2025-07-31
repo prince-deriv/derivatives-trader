@@ -1,14 +1,5 @@
 import { action, observable, makeObservable, override } from 'mobx';
-import {
-    routes,
-    isDtraderV2MobileEnabled,
-    isDtraderV2DesktopEnabled,
-    isEmptyObject,
-    isForwardStarting,
-    WS,
-    contractCancelled,
-    contractSold,
-} from '@deriv/shared';
+import { routes, isEmptyObject, isForwardStarting, WS, contractCancelled, contractSold } from '@deriv/shared';
 import { Money } from '@deriv/components';
 import { Analytics } from '@deriv-com/analytics';
 import { localize } from '@deriv/translations';
@@ -149,7 +140,9 @@ export default class ContractReplayStore extends BaseStore {
             this.is_chart_loading = false;
             return;
         }
-        if (+response.proposal_open_contract.contract_id !== this.contract_id) return;
+        if (+response.proposal_open_contract.contract_id !== this.contract_id) {
+            return;
+        }
 
         this.contract_info = response.proposal_open_contract;
         this.contract_update = response.proposal_open_contract.limit_order;
@@ -240,8 +233,7 @@ export default class ContractReplayStore extends BaseStore {
                             ...response.error,
                         },
                         // Temporary switching off old snackbar for DTrader-V2
-                        isDtraderV2MobileEnabled(this.root_store.ui.is_mobile) ||
-                            isDtraderV2DesktopEnabled(this.root_store.ui.is_desktop)
+                        this.root_store.ui.is_mobile // V2 for mobile, V1 for desktop
                     );
                 } else {
                     this.root_store.notifications.addNotificationMessage(contractCancelled());
@@ -268,8 +260,7 @@ export default class ContractReplayStore extends BaseStore {
                     ...response.error,
                 },
                 // Temporary switching off old snackbar for DTrader-V2
-                isDtraderV2MobileEnabled(this.root_store.ui.is_mobile) ||
-                    isDtraderV2DesktopEnabled(this.root_store.ui.is_desktop)
+                this.root_store.ui.is_mobile // V2 for mobile, V1 for desktop
             );
         } else if (!response.error && response.sell) {
             this.is_sell_requested = false;

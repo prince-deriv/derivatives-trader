@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router';
 import { routes, isTabletOs, getDomainUrl } from '@deriv/shared';
 import { Button, Icon, Popover } from '@deriv/components';
-import { useIsHubRedirectionEnabled, useAccountSettingsRedirect } from '@deriv/hooks';
+import { useIsHubRedirectionEnabled, useAccountSettingsRedirect } from '@deriv/api';
 import { useDevice } from '@deriv-com/ui';
 import { localize, Localize } from '@deriv/translations';
 import { observer, useStore } from '@deriv/stores';

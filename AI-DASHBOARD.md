@@ -1,10 +1,8 @@
 # 🤖 AI Code Analysis Dashboard
 
 <div align="center">
-
-**prince-deriv/derivatives-trader**  
-📅 Last updated: 2025-07-29 • 🔄 Tracking merged PRs to main/master
-
+**deriv-com/derivatives-trader**  
+📅 Last updated: 2025-07-31 • 🔄 Tracking merged PRs to main/master
 </div>
 
 ---
@@ -13,9 +11,9 @@
 
 | Metric | Value | Metric | Value |
 |--------|-------|--------|-------|
-| **📁 Total Merged PRs** | 2 | **📈 Average AI Code** | 🟧🟧🟧🟧🟧⬜⬜⬜⬜⬜ 48% |
-| **🤖 PRs with AI Analysis** | 2 | **🎯 Overall AI Percentage** | 🟥⬜⬜⬜⬜⬜⬜⬜⬜⬜ 10% |
-| **📄 Files Analyzed** | 3 | **⚡ Total AI Characters** | 3,446 |
+| **📁 Total Merged PRs** | 2 | **📈 Average AI Code** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
+| **🤖 PRs with AI Analysis** | 0 | **🎯 Overall AI Percentage** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
+| **📄 Files Analyzed** | 0 | **⚡ Total AI Characters** | 0 |
 
 ---
 
@@ -26,8 +24,9 @@
 
 | PR | Author | Date | Files | AI Content | Percentage |
 |----|--------|------|-------|------------|------------|
-| [#13](https://github.com/prince-deriv/derivatives-trader/pull/13) **Test** | [@prince-deriv](https://github.com/prince-deriv) | 7/29/2025 | 1 | 3,446 / 3,602 chars | 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜  96% |
-| [#11](https://github.com/prince-deriv/derivatives-trader/pull/11) **fix: workflow syntax error** | [@prince-deriv](https://github.com/prince-deriv) | 7/29/2025 | 2 | 0 / 30,442 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
+| [#59](undefined) **Prince/rename PR title and fix merging of data** | [@prince-deriv](https://github.com/prince-deriv) | 7/31/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
+| [#58](undefined) **Matin/Corrected CF Branch** | [@matin-deriv](https://github.com/matin-deriv) | 7/31/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
+
 
 
 
@@ -40,8 +39,8 @@
 
 ```
 AI Percentage Distribution:
-PR #13 Test                           │██████████████████████████████████████░░│ 96%
-PR #11 fix: workflow syntax error     │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ 0%
+PR #59 Prince/rename PR title and ... │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ 0%
+PR #58 Matin/Corrected CF Branch      │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ 0%
 ```
 
 ### 🎯 Summary Statistics

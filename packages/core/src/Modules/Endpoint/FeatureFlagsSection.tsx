@@ -1,23 +1,25 @@
 import React from 'react';
 import { observer, useStore } from '@deriv/stores';
-import { website_domain, TRADE_FEATURE_FLAGS } from '@deriv/shared';
+import { website_domain } from '@deriv/shared';
 import { Checkbox, Text } from '@deriv/components';
 
 export const FeatureFlagsSection = observer(() => {
     const { feature_flags } = useStore();
-    const HIDDEN_FEATURE_FLAGS = ['wallet'];
 
+    // Only show feature flags on non-production environments
     const visible_feature_flags = Object.entries(feature_flags.data ?? {})?.reduce<{ [key: string]: boolean }>(
         (flags, [key, value]) => {
             const is_production = location.hostname === website_domain;
-            if ((!is_production || !TRADE_FEATURE_FLAGS.includes(key)) && !HIDDEN_FEATURE_FLAGS.includes(key)) {
+            if (!is_production && typeof value === 'boolean') {
                 flags[key] = value;
             }
             return flags;
         },
-        {} // hiding trade features flags from production
+        {} // hiding all flags from production
     );
-    if (!feature_flags.data) return null;
+
+    // Don't render anything if there are no feature flags or no data
+    if (!feature_flags.data || Object.keys(visible_feature_flags).length === 0) return null;
 
     return (
         <div className='feature-flags'>

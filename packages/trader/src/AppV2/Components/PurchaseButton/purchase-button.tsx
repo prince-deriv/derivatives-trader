@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 
 import { usePrevious } from '@deriv/components';
-import { useMFAccountStatus } from '@deriv/hooks';
+import { useMFAccountStatus } from '@deriv/api';
 import { StandaloneStopwatchRegularIcon } from '@deriv/quill-icons';
 import {
     getCardLabelsV2,

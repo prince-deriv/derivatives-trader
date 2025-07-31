@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 import { ThemedScrollbars } from '@deriv/components';
-import { useGrowthbookGetFeatureValue } from '@deriv/hooks';
+import { useGrowthbookGetFeatureValue } from '@deriv/api';
 import { CookieStorage, platforms, redirectToLogin, routes, TRACKING_STATUS_KEY, WS } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { getLanguage } from '@deriv/translations';
@@ -46,15 +46,10 @@ const AppContents = observer(({ children }) => {
     const scroll_ref = React.useRef(null);
     const child_ref = React.useRef(null);
 
-    const [dtrader_v2_enabled_mobile] = useGrowthbookGetFeatureValue({
-        featureFlag: 'dtrader_v2_enabled',
-    });
-    const [dtrader_v2_enabled_desktop] = useGrowthbookGetFeatureValue({
-        featureFlag: 'dtrader_v2_enabled_desktop',
-    });
     const [isDuplicateLoginEnabled] = useGrowthbookGetFeatureValue({
         featureFlag: 'duplicate-login',
     });
+
     React.useEffect(() => {
         if (should_redirect_user_to_login) {
             setShouldRedirectToLogin(false);
@@ -140,7 +135,7 @@ const AppContents = observer(({ children }) => {
                     (isDuplicateLoginEnabled && has_access_denied_error) ||
                     (platforms[platform] && !(is_from_tradershub_os && isMobile)),
                 'app-contents--is-onboarding': window.location.pathname === routes.onboarding,
-                'app-contents--is-dtrader-v2': dtrader_v2_enabled_mobile || dtrader_v2_enabled_desktop,
+                'app-contents--is-dtrader-v2': isMobile,
             })}
             ref={scroll_ref}
         >

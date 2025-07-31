@@ -35,8 +35,8 @@ jest.mock('../contract-replay-widget', () => ({
 
 jest.mock('../replay-chart', () => jest.fn(() => <div>ReplayChart</div>));
 
-jest.mock('@deriv/hooks', () => ({
-    ...jest.requireActual('@deriv/hooks'),
+jest.mock('@deriv/api', () => ({
+    ...jest.requireActual('@deriv/api'),
     useFeatureFlags: jest.fn(() => ({})),
 }));
 

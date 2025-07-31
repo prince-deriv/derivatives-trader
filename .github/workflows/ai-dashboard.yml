@@ -1,0 +1,29 @@
+name: AI Dashboard Tracker
+
+on:
+  # Trigger when PRs are merged
+  pull_request_target:
+    types: [closed]
+    branches: [main, master]
+  
+  # Allow manual trigger
+  workflow_dispatch:
+  
+  # Weekly refresh
+  schedule:
+    - cron: '0 6 * * 0'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  call-dashboard-update:
+    uses: prince-deriv/shared-actions/.github/workflows/shiftai/ai-dashboard.yml@master
+    with:
+      target_repository: ${{ github.repository }}
+      dashboard_file: 'AI-DASHBOARD.md'
+      data_file: '.github/data/ai-analysis-history.json'
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SHIFTAI_TOKEN: ${{ secrets.SHIFTAI_TOKEN }} 

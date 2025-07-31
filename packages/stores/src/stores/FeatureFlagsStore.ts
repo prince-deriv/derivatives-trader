@@ -1,12 +1,6 @@
 import BaseStore from './BaseStore';
 
-const FLAGS = {
-    dtrader_v2_mobile: false,
-    dtrader_v2_desktop: false,
-    next_qs: false,
-    sharkfin: false,
-    wallet: false,
-} satisfies Record<string, boolean>;
+const FLAGS = {} satisfies Record<string, boolean>;
 
 export default class FeatureFlagsStore extends BaseStore<{ [k in keyof typeof FLAGS]: boolean }> {
     private static instance: FeatureFlagsStore | null = null;

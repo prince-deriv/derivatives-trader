@@ -4,11 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { StoreProvider, mockStore } from '@deriv/stores';
 import { AccountSwitcherWalletMobile } from '../account-switcher-wallet-mobile';
 
-jest.mock('@deriv/hooks', () => ({
-    ...jest.requireActual('@deriv/hooks'),
-    useWalletAccountsList: jest.fn(() => ({
-        data: [{ loginid: 'CR007', dtrade_loginid: 'CR008' }],
-    })),
+jest.mock('@deriv/api', () => ({
+    ...jest.requireActual('@deriv/api'),
     useIsHubRedirectionEnabled: jest.fn(() => ({
         isHubRedirectionEnabled: false,
     })),
@@ -26,6 +23,7 @@ jest.mock('../account-switcher-wallet-list', () => ({
 }));
 
 const props: React.ComponentProps<typeof AccountSwitcherWalletMobile> = {
+    loginid: 'CR007',
     is_visible: true,
     toggle: jest.fn(),
 };
