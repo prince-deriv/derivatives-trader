@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   call-ai-analysis:
-    uses: prince-deriv/shared-actions/.github/workflows/shiftai/ai-code-analysis.yml@master
+    uses: prince-deriv/shared-actions/.github/workflows/ai-code-analysis.yml@master
     with:
       checkout_ref: ${{ github.event.pull_request.head.sha }}
     secrets:

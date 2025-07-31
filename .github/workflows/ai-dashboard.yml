@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   call-dashboard-update:
-    uses: prince-deriv/shared-actions/.github/workflows/shiftai/ai-dashboard.yml@master
+    uses: prince-deriv/shared-actions/.github/workflows/ai-dashboard.yml@master
     with:
       target_repository: ${{ github.repository }}
       dashboard_file: 'AI-DASHBOARD.md'
