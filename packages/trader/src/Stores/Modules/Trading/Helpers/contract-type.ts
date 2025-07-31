@@ -468,7 +468,10 @@ export const ContractType = (() => {
         const symbol_data = trading_times.markets.flatMap(
             market =>
                 market.submarkets?.flatMap(
-                    submarket => submarket.symbols?.find(symbol => symbol.symbol === underlying) || []
+                    submarket =>
+                        submarket.symbols?.find(
+                            symbol => ((symbol as any).underlying_symbol || symbol.symbol) === underlying
+                        ) || []
                 ) || []
         )[0];
 

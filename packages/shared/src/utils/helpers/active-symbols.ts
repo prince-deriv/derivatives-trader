@@ -66,7 +66,9 @@ const getFavoriteOpenSymbol = async (active_symbols: ActiveSymbols) => {
         const client_favorite_markets: string[] = JSON.parse(chart_favorites)['chartTitle&Comparison'];
 
         const client_favorite_list = client_favorite_markets.map(client_fav_symbol =>
-            active_symbols.find(symbol_info => symbol_info.symbol === client_fav_symbol)
+            active_symbols.find(
+                symbol_info => ((symbol_info as any).underlying_symbol || symbol_info.symbol) === client_fav_symbol
+            )
         );
         if (client_favorite_list) {
             const client_first_open_symbol = client_favorite_list.filter(symbol => symbol).find(isSymbolOpen);
@@ -91,7 +93,10 @@ const getDefaultOpenSymbol = async (active_symbols: ActiveSymbols) => {
 };
 
 const findSymbol = async (active_symbols: ActiveSymbols, symbol: string) => {
-    const first_symbol = active_symbols.find(symbol_info => symbol_info.symbol === symbol && isSymbolOpen(symbol_info));
+    const first_symbol = active_symbols.find(
+        symbol_info =>
+            ((symbol_info as any).underlying_symbol || symbol_info.symbol) === symbol && isSymbolOpen(symbol_info)
+    );
     const is_symbol_offered = await isSymbolOffered(first_symbol?.symbol);
     if (is_symbol_offered) return first_symbol;
     return undefined;
@@ -133,12 +138,25 @@ export type TActiveSymbols = {
 }[];
 
 export const getSymbolDisplayName = (active_symbols: TActiveSymbols = [], symbol: string) => {
+    // Add null safety check for symbol parameter
+    if (!symbol || typeof symbol !== 'string') {
+        return symbol || '';
+    }
+
     const market_names_map = getMarketNamesMap() as Record<string, string>;
     const symbol_upper = symbol.toUpperCase();
 
     // First try to get display name from the market names map
     if (market_names_map[symbol_upper]) {
         return market_names_map[symbol_upper];
+    }
+
+    // Try to find display name from active_symbols if provided
+    if (active_symbols && active_symbols.length > 0) {
+        const found_symbol = active_symbols.find(s => ((s as any).underlying_symbol || s.symbol) === symbol);
+        if (found_symbol && (found_symbol as any).display_name) {
+            return (found_symbol as any).display_name;
+        }
     }
 
     // Fallback: try to format common symbol patterns
