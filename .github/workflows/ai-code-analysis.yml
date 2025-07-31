@@ -13,8 +13,6 @@ permissions:
 jobs:
   call-ai-analysis:
     uses: prince-deriv/shared-actions/.github/workflows/ai-code-analysis.yml@master
-    with:
-      checkout_ref: ${{ github.event.pull_request.head.sha }}
     secrets:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }} 

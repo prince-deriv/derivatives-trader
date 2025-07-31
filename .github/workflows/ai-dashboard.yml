@@ -20,10 +20,6 @@ permissions:
 jobs:
   call-dashboard-update:
     uses: prince-deriv/shared-actions/.github/workflows/ai-dashboard.yml@master
-    with:
-      target_repository: ${{ github.repository }}
-      dashboard_file: 'AI-DASHBOARD.md'
-      data_file: '.github/data/ai-analysis-history.json'
     secrets:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SHIFTAI_TOKEN: ${{ secrets.SHIFTAI_TOKEN }} 
