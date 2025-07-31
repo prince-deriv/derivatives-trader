@@ -15,4 +15,4 @@ jobs:
     uses: prince-deriv/shared-actions/.github/workflows/ai-code-analysis.yml@master
     secrets:
       PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+    # Note: GITHUB_TOKEN is automatically available via github.token, no need to pass explicitly 
