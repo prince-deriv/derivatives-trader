@@ -1,132 +1,95 @@
 // [AI]
-// Fibonacci sequence implementations in JavaScript
+/**
+ * Fibonacci sequence generator with multiple implementation approaches
+ */
 
 /**
- * Iterative Fibonacci implementation (most efficient)
- * @param {number} n - The position in the Fibonacci sequence
- * @returns {number} The Fibonacci number at position n
+ * Generates fibonacci sequence up to n numbers (iterative approach - most efficient)
+ * @param {number} n - Number of fibonacci numbers to generate
+ * @returns {number[]} Array of fibonacci numbers
  */
-function fibonacciIterative(n) {
-  if (n <= 1) return n;
-  
-  let a = 0, b = 1;
-  for (let i = 2; i <= n; i++) {
-    const temp = a + b;
-    a = b;
-    b = temp;
-  }
-  return b;
-}
-
-/**
- * Recursive Fibonacci implementation (simple but inefficient for large n)
- * @param {number} n - The position in the Fibonacci sequence
- * @returns {number} The Fibonacci number at position n
- */
-function fibonacciRecursive(n) {
-  if (n <= 1) return n;
-  return fibonacciRecursive(n - 1) + fibonacciRecursive(n - 2);
-}
-
-/**
- * Memoized recursive Fibonacci (efficient recursive approach)
- * @param {number} n - The position in the Fibonacci sequence
- * @param {Map} memo - Memoization cache
- * @returns {number} The Fibonacci number at position n
- */
-function fibonacciMemoized(n, memo = new Map()) {
-  if (n <= 1) return n;
-  if (memo.has(n)) return memo.get(n);
-  
-  const result = fibonacciMemoized(n - 1, memo) + fibonacciMemoized(n - 2, memo);
-  memo.set(n, result);
-  return result;
-}
-
-/**
- * Generate Fibonacci sequence up to n terms
- * @param {number} terms - Number of terms to generate
- * @returns {number[]} Array of Fibonacci numbers
- */
-function generateFibonacciSequence(terms) {
-  if (terms <= 0) return [];
-  if (terms === 1) return [0];
-  if (terms === 2) return [0, 1];
+function fibonacci(n) {
+  if (n <= 0) return [];
+  if (n === 1) return [0];
+  if (n === 2) return [0, 1];
   
   const sequence = [0, 1];
-  for (let i = 2; i < terms; i++) {
+  for (let i = 2; i < n; i++) {
     sequence[i] = sequence[i - 1] + sequence[i - 2];
   }
   return sequence;
 }
 
 /**
- * Check if a number is a Fibonacci number
- * @param {number} num - Number to check
- * @returns {boolean} True if the number is a Fibonacci number
+ * Gets the nth fibonacci number (recursive approach - elegant but slower)
+ * @param {number} n - Position in fibonacci sequence (0-indexed)
+ * @returns {number} The nth fibonacci number
  */
-function isFibonacci(num) {
-  if (num < 0) return false;
-  
-  let a = 0, b = 1;
-  if (num === a || num === b) return true;
-  
-  while (b < num) {
-    const temp = a + b;
-    a = b;
-    b = temp;
-    if (b === num) return true;
-  }
-  return false;
+function fibonacciNth(n) {
+  if (n <= 1) return n;
+  return fibonacciNth(n - 1) + fibonacciNth(n - 2);
 }
 
-// Example usage and testing
-console.log('🔢 Fibonacci Implementations Demo\n');
+/**
+ * Gets the nth fibonacci number (memoized recursive approach - faster)
+ * @param {number} n - Position in fibonacci sequence (0-indexed)
+ * @param {Map} memo - Memoization cache
+ * @returns {number} The nth fibonacci number
+ */
+function fibonacciMemo(n, memo = new Map()) {
+  if (n <= 1) return n;
+  if (memo.has(n)) return memo.get(n);
+  
+  const result = fibonacciMemo(n - 1, memo) + fibonacciMemo(n - 2, memo);
+  memo.set(n, result);
+  return result;
+}
 
-// Test different implementations
-const testNumber = 10;
-console.log(`Testing with n = ${testNumber}:`);
-console.log(`Iterative: ${fibonacciIterative(testNumber)}`);
-console.log(`Recursive: ${fibonacciRecursive(testNumber)}`);
-console.log(`Memoized: ${fibonacciMemoized(testNumber)}`);
+/**
+ * Generates fibonacci numbers up to a maximum value
+ * @param {number} maxValue - Maximum value to generate up to
+ * @returns {number[]} Array of fibonacci numbers up to maxValue
+ */
+function fibonacciUpTo(maxValue) {
+  if (maxValue < 0) return [];
+  
+  const sequence = [0];
+  if (maxValue >= 1) sequence.push(1);
+  
+  let current = 1;
+  let previous = 0;
+  
+  while (true) {
+    const next = current + previous;
+    if (next > maxValue) break;
+    
+    sequence.push(next);
+    previous = current;
+    current = next;
+  }
+  
+  return sequence;
+}
 
-// Generate sequence
-console.log('\n📋 First 15 Fibonacci numbers:');
-const sequence = generateFibonacciSequence(15);
-console.log(sequence.join(', '));
+// Example usage and demonstrations
+console.log('Fibonacci Examples:');
+console.log('==================');
 
-// Test Fibonacci checker
-console.log('\n✅ Fibonacci number checker:');
-const testNumbers = [0, 1, 2, 3, 5, 8, 13, 21, 22, 34];
-testNumbers.forEach(num => {
-  console.log(`${num}: ${isFibonacci(num) ? '✓' : '✗'}`);
-});
-
-// Performance comparison
-console.log('\n⚡ Performance comparison (n=35):');
-const n = 35;
-
-console.time('Iterative');
-const iterResult = fibonacciIterative(n);
-console.timeEnd('Iterative');
-
-console.time('Memoized');
-const memoResult = fibonacciMemoized(n);
-console.timeEnd('Memoized');
-
-console.log(`Result: ${iterResult} (both methods should give same result: ${iterResult === memoResult})`);
+console.log('First 10 fibonacci numbers:', fibonacci(10));
+console.log('8th fibonacci number (recursive):', fibonacciNth(8));
+console.log('8th fibonacci number (memoized):', fibonacciMemo(8));
+console.log('Fibonacci numbers up to 100:', fibonacciUpTo(100));
 
 // Export functions for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
-    fibonacciIterative,
-    fibonacciRecursive,
-    fibonacciMemoized,
-    generateFibonacciSequence,
-    isFibonacci
+    fibonacci,
+    fibonacciNth,
+    fibonacciMemo,
+    fibonacciUpTo
   };
 }
-// [/AI] 
+// [/AI]
 
 
 const humancode = () => {
