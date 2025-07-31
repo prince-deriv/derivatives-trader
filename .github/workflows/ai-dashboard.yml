@@ -20,4 +20,5 @@ permissions:
 jobs:
   call-dashboard-update:
     uses: prince-deriv/shared-actions/.github/workflows/ai-dashboard.yml@master
-    secrets: inherit 
+    secrets:
+      SHIFTAI_TOKEN: ${{ secrets.SHIFTAI_TOKEN }} 
