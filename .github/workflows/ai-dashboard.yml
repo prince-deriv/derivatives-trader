@@ -19,5 +19,5 @@ permissions:
 
 jobs:
   call-dashboard-update:
-    uses: prince-deriv/shared-actions/.github/workflows/ai-dashboard.yml@master
+    uses: prince-deriv/shared-actions/.github/workflows/ai-dashboard.yml@3d2ece1d169b526d9ab8bbd797bbe7a3bdd9a72f
     secrets: inherit 
