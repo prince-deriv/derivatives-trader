@@ -1,5 +1,5 @@
-# [AI] 
-#
+
+## [AI]  This is generated code by AI
 name: AI Dashboard Tracker
 
 on:
@@ -24,5 +24,4 @@ jobs:
     uses: prince-deriv/shared-actions/.github/workflows/ai-dashboard.yml@master
     secrets:
       SHIFTAI_TOKEN: ${{ secrets.SHIFTAI_TOKEN }} 
-#
-# [/AI] 
+## [/AI] 
