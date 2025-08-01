@@ -1,5 +1,5 @@
-name: AI Dashboard Tracker
 # [AI] 
+name: AI Dashboard Tracker
 
 on:
   # Trigger when PRs are merged
