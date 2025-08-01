@@ -1,5 +1,6 @@
+
+## [AI]  This is generated code by AI
 name: AI Dashboard Tracker
-# [AI] 
 
 on:
   # Trigger when PRs are merged
@@ -23,5 +24,4 @@ jobs:
     uses: prince-deriv/shared-actions/.github/workflows/ai-dashboard.yml@master
     secrets:
       SHIFTAI_TOKEN: ${{ secrets.SHIFTAI_TOKEN }} 
-
-# [/AI] 
+## [/AI] 
