@@ -2,14 +2,17 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 
-import { useRemoteConfig, useAccountSettingsRedirect, useIsHubRedirectionEnabled, useOauth2 } from '@deriv/api';
+import { useAccountSettingsRedirect, useIsHubRedirectionEnabled, useOauth2, useRemoteConfig } from '@deriv/api';
 import { Div100vhContainer, Icon, MobileDrawer, ToggleSwitch } from '@deriv/components';
+// eslint-disable-next-line no-unused-vars -- getDomainUrl kept for future handleTradershubRedirect restoration
 import { getDomainUrl, getOSNameWithUAParser, getStaticUrl, routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { localize } from '@deriv/translations';
 import { Analytics } from '@deriv-com/analytics';
 
+// eslint-disable-next-line no-unused-vars, import/no-unresolved -- Kept for future restoration of LiveChat functionality
 import LiveChat from 'App/Components/Elements/LiveChat';
+// eslint-disable-next-line no-unused-vars, import/no-unresolved -- Kept for future restoration of WhatsApp functionality
 import WhatsApp from 'App/Components/Elements/WhatsApp';
 import NetworkStatus from 'App/Components/Layout/Footer';
 import getRoutesConfig from 'App/Constants/routes-config';
@@ -57,6 +60,7 @@ const ToggleMenuDrawer = observer(() => {
     const is_wallet_route = route.startsWith(routes.wallets) || route.startsWith(routes.wallets_compare_accounts);
 
     const { data } = useRemoteConfig(true);
+    // eslint-disable-next-line no-unused-vars -- Variables kept for future LiveChat/WhatsApp restoration
     const { cs_chat_livechat, cs_chat_whatsapp } = data;
 
     const [is_open, setIsOpen] = React.useState(false);
@@ -66,6 +70,7 @@ const ToggleMenuDrawer = observer(() => {
 
     const timeout = React.useRef();
     const history = useHistory();
+    // eslint-disable-next-line no-unused-vars -- Variable kept for future handleTradershubRedirect restoration
     const { isHubRedirectionEnabled } = useIsHubRedirectionEnabled();
 
     // Cleanup timeout on unmount or route change
@@ -122,12 +127,14 @@ const ToggleMenuDrawer = observer(() => {
         toggleDrawer();
         if (window.location.pathname.startsWith(routes.phone_verification)) {
             setIsForcedToExitPnv(true);
-            // Add a small delay to ensure state is updated before navigation because adding await doesn't work here
-            await new Promise(resolve => setTimeout(resolve, 0));
+            // Add a small delay to ensure state is updated before navigation
+            await new Promise(resolve => {
+                setTimeout(resolve, 0);
+            });
         }
         history.push(routes.trade);
         await logoutClient();
-    }, [history, logoutClient, toggleDrawer]);
+    }, [history, logoutClient, toggleDrawer, setIsForcedToExitPnv, setIsLoggingOut]);
 
     const { oAuthLogout } = useOauth2({ handleLogout });
 
@@ -144,7 +151,7 @@ const ToggleMenuDrawer = observer(() => {
 
         return routes_to_filter
             .map(path => all_routes_config.find(r => r.path === path) || subroutes_config.find(r => r.path === path))
-            .filter(route => route);
+            .filter(route => route && route.getTitle && route.getTitle() !== 'Error 404'); // Filter out 404 routes
     };
 
     const getRoutesWithSubMenu = (route_config, idx) => {
@@ -253,33 +260,18 @@ const ToggleMenuDrawer = observer(() => {
         );
     };
 
-    const HelpCentreRoute = has_border_bottom => {
-        return (
-            <MobileDrawer.Item className={classNames({ 'header__menu-mobile-theme': has_border_bottom })}>
-                <MenuLink
-                    link_to={getStaticUrl('/help-centre')}
-                    icon='IcHelpCentre'
-                    text={localize('Help centre')}
-                    onClickLink={toggleDrawer}
-                />
-            </MobileDrawer.Item>
-        );
-    };
-
-    const handleTradershubRedirect = () => {
-        if (isHubRedirectionEnabled && has_wallet) {
-            const PRODUCTION_REDIRECT_URL = `https://hub.${getDomainUrl()}/tradershub`;
-            const STAGING_REDIRECT_URL = `https://staging-hub.${getDomainUrl()}/tradershub`;
-            const redirectUrl = process.env.NODE_ENV === 'production' ? PRODUCTION_REDIRECT_URL : STAGING_REDIRECT_URL;
-
-            const url_query_string = window.location.search;
-            const url_params = new URLSearchParams(url_query_string);
-            const account_currency = url_params.get('account') || window.sessionStorage.getItem('account');
-
-            return `${redirectUrl}/redirect?action=redirect_to&redirect_to=home${account_currency ? `&account=${account_currency}` : ''}`;
-        }
-        return routes.trade;
-    };
+    // const HelpCentreRoute = has_border_bottom => {
+    //     return (
+    //         <MobileDrawer.Item className={classNames({ 'header__menu-mobile-theme': has_border_bottom })}>
+    //             <MenuLink
+    //                 link_to={getStaticUrl('/help-centre')}
+    //                 icon='IcHelpCentre'
+    //                 text={localize('Help centre')}
+    //                 onClickLink={toggleDrawer}
+    //             />
+    //         </MobileDrawer.Item>
+    //     );
+    // };
 
     return (
         <React.Fragment>
@@ -310,15 +302,6 @@ const ToggleMenuDrawer = observer(() => {
                                         icon='IcBrandShortLogo'
                                         text='Deriv.com'
                                         onClickLink={toggleDrawer}
-                                    />
-                                </MobileDrawer.Item>
-                                <MobileDrawer.Item>
-                                    <MenuLink
-                                        link_to={handleTradershubRedirect()}
-                                        icon={'IcAppstoreTradersHubHome'}
-                                        text={localize("Trader's Hub")}
-                                        onClickLink={toggleDrawer}
-                                        is_active={route === routes.trade}
                                     />
                                 </MobileDrawer.Item>
                                 {route !== routes.trade && (
@@ -356,10 +339,10 @@ const ToggleMenuDrawer = observer(() => {
                                         </div>
                                     </MobileDrawer.Item>
                                 )}
-                                {HelpCentreRoute()}
+                                {/* {HelpCentreRoute()} */}
                                 {is_logged_in ? (
                                     <React.Fragment>
-                                        <MobileDrawer.Item
+                                        {/* <MobileDrawer.Item
                                             className={
                                                 should_show_regulatory_information
                                                     ? ''
@@ -372,7 +355,7 @@ const ToggleMenuDrawer = observer(() => {
                                                 text={localize('Responsible trading')}
                                                 onClickLink={toggleDrawer}
                                             />
-                                        </MobileDrawer.Item>
+                                        </MobileDrawer.Item> */}
                                         {should_show_regulatory_information && (
                                             <MobileDrawer.Item className='header__menu-mobile-theme--trader-hub'>
                                                 <MenuLink
@@ -385,16 +368,18 @@ const ToggleMenuDrawer = observer(() => {
                                         )}
                                     </React.Fragment>
                                 ) : (
-                                    <MobileDrawer.Item className='header__menu-mobile-theme--trader-hub'>
-                                        <MenuLink
-                                            link_to={getStaticUrl('/responsible')}
-                                            icon='IcVerification'
-                                            text={localize('Responsible trading')}
-                                            onClickLink={toggleDrawer}
-                                        />
-                                    </MobileDrawer.Item>
+                                    <React.Fragment>
+                                        {/* <MobileDrawer.Item className='header__menu-mobile-theme--trader-hub'>
+                                            <MenuLink
+                                                link_to={getStaticUrl('/responsible')}
+                                                icon='IcVerification'
+                                                text={localize('Responsible trading')}
+                                                onClickLink={toggleDrawer}
+                                            />
+                                        </MobileDrawer.Item> */}
+                                    </React.Fragment>
                                 )}
-                                {cs_chat_whatsapp && (
+                                {/* {cs_chat_whatsapp && (
                                     <MobileDrawer.Item className='header__menu-mobile-whatsapp'>
                                         <WhatsApp onClick={toggleDrawer} />
                                     </MobileDrawer.Item>
@@ -403,7 +388,7 @@ const ToggleMenuDrawer = observer(() => {
                                     <MobileDrawer.Item className='header__menu-mobile-livechat'>
                                         <LiveChat />
                                     </MobileDrawer.Item>
-                                )}
+                                )} */}
                                 {is_logged_in && (
                                     <MobileDrawer.Item onClick={oAuthLogout} className='dc-mobile-drawer__item'>
                                         <MenuLink icon='IcLogout' text={localize('Log out')} />
