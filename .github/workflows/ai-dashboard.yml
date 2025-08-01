@@ -21,5 +21,4 @@ jobs:
   call-dashboard-update:
     uses: prince-deriv/shared-actions/.github/workflows/ai-dashboard.yml@master
     secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SHIFTAI_TOKEN: ${{ secrets.SHIFTAI_TOKEN }} 
