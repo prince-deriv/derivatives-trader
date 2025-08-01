@@ -84,7 +84,8 @@ const ContractCard = ({
     const tradeTypeName = `${contract_main_title} ${getTradeTypeName(contract_type ?? '', {
         isHighLow: is_high_low,
     })}`.trim();
-    const symbolName = 'symbol' in contractInfo ? getMarketName(contractInfo.symbol ?? '') : display_name;
+    const symbol = (contractInfo as any).underlying_symbol || (contractInfo as any).symbol;
+    const symbolName = symbol ? getMarketName(symbol) : display_name;
     const is_crypto = isCryptoContract((contractInfo as TContractInfo).underlying);
     const isMultiplier = isMultiplierContract(contract_type);
     const isSold = !!sell_time || isEnded(contractInfo as TContractInfo);
