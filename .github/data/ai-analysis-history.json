@@ -49,11 +49,9 @@
       "author": "prince-deriv",
       "prTitle": "Prince/rename PR title and fix merging of data",
       "hasAnalysis": false,
-      "summary": {
-        "percentage": 0,
-        "totalCharacters": 0,
-        "aiCharacters": 0
-      },
+      "percentage": 0,
+      "totalCharacters": 0,
+      "aiCharacters": 0,
       "files": []
     },
     {
@@ -64,11 +62,9 @@
       "author": "matin-deriv",
       "prTitle": "Matin/Corrected CF Branch",
       "hasAnalysis": false,
-      "summary": {
-        "percentage": 0,
-        "totalCharacters": 0,
-        "aiCharacters": 0
-      },
+      "percentage": 0,
+      "totalCharacters": 0,
+      "aiCharacters": 0,
       "files": []
     }
   ]
