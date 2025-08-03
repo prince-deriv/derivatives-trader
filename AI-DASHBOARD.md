@@ -1,8 +1,10 @@
 # 🤖 AI Code Analysis Dashboard
 
 <div align="center">
-**deriv-com/derivatives-trader**  
-📅 Last updated: 2025-07-31 • 🔄 Tracking merged PRs to main/master
+
+**prince-deriv/derivatives-trader**
+📅 Last updated: 2025-08-03 06:29:21 UTC • 🔄 Tracking merged PRs to main/master
+
 </div>
 
 ---
@@ -12,11 +14,10 @@
 | Metric | Value | Metric | Value |
 |--------|-------|--------|-------|
 | **📁 Total Merged PRs** | 2 | **📈 Average AI Code** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
-| **🤖 PRs with AI Analysis** | 0 | **🎯 Overall AI Percentage** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
-| **📄 Files Analyzed** | 0 | **⚡ Total AI Characters** | 0 |
+| **🤖 PRs with AI Analysis** | 2 | **🎯 Overall AI Percentage** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
+| **📄 Files Analyzed** | 3 | **⚡ Total AI Characters** | 0 |
 
 ---
-
 
 ## 🚀 Recent Merged Pull Requests
 
@@ -24,36 +25,8 @@
 
 | PR | Author | Date | Files | AI Content | Percentage |
 |----|--------|------|-------|------------|------------|
-| [#59](undefined) **Prince/rename PR title and fix merging of data** | [@prince-deriv](https://github.com/prince-deriv) | 7/31/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-| [#58](undefined) **Matin/Corrected CF Branch** | [@matin-deriv](https://github.com/matin-deriv) | 7/31/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-
-
-
-
----
-
-<details>
-<summary><strong>📊 View detailed visual breakdown</strong></summary>
-
-### 📈 AI Usage Chart
-
-```
-AI Percentage Distribution:
-PR #59 Prince/rename PR title and ... │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ 0%
-PR #58 Matin/Corrected CF Branch      │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ 0%
-```
-
-### 🎯 Summary Statistics
-
-```
-Total Characters:     34,044
-AI Characters:        3,446
-Human Characters:     30,598
-
-AI vs Human Ratio:    10% : 90%
-```
-
-</details>
+| [#13](https://github.com/prince-deriv/derivatives-trader/pull/13) **Test** | [@prince-deriv](https://github.com/prince-deriv) | 7/29/2025 | 1 | 0 / 0 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
+| [#11](https://github.com/prince-deriv/derivatives-trader/pull/11) **fix: workflow syntax error** | [@prince-deriv](https://github.com/prince-deriv) | 7/29/2025 | 2 | 0 / 0 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 
 ---
 
