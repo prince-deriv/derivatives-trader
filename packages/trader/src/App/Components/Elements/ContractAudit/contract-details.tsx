@@ -61,10 +61,12 @@ const ContractDetails = ({
         display_number_of_contracts,
         entry_spot,
         entry_spot_display_value,
-        entry_tick_time,
+        // @ts-expect-error contract_info is not typed correctly this will not be an issue after the types are fixed
+        entry_spot_time,
         exit_tick,
         exit_tick_display_value,
-        exit_tick_time,
+        // @ts-expect-error contract_info is not typed correctly this will not be an issue after the types are fixed
+        exit_spot_time,
         high_barrier,
         is_sold,
         low_barrier,
@@ -335,7 +337,7 @@ const ContractDetails = ({
                                   ? addComma(entry_spot.toString())
                                   : ' - '
                         }
-                        value2={entry_tick_time ? toGMTFormat(epochToMoment(entry_tick_time)) : ' - '}
+                        value2={entry_spot_time ? toGMTFormat(epochToMoment(entry_spot_time)) : ' - '}
                         additional_info={
                             isTicksContract(contract_type) &&
                             localize('The entry spot is the first tick for High/Low Ticks.')
@@ -356,7 +358,7 @@ const ContractDetails = ({
                                     ? addComma(exit_tick.toString())
                                     : ' - '
                         }
-                        value2={toGMTFormat(epochToMoment(Number(exit_tick_time))) || ' - '}
+                        value2={toGMTFormat(epochToMoment(Number(exit_spot_time))) || ' - '}
                     />
                 )}
                 {!isNaN(Number(contract_end_time)) && (

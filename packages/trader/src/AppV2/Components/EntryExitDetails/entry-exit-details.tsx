@@ -24,10 +24,12 @@ const getDateTimeFromEpoch = (epoch: number) => {
 
 const EntryExitDetails = ({ contract_info }: { contract_info: TContractInfo }) => {
     const {
-        entry_tick_time,
+        //@ts-expect-error contract_info is not typed correctly this will not be an issue after the types are fixed
+        entry_spot_time,
         entry_spot_display_value,
         entry_spot,
-        exit_tick_time,
+        // @ts-expect-error contract_info is not typed correctly this will not be an issue after the types are fixed
+        exit_spot_time,
         date_start,
         exit_tick_display_value,
         exit_tick,
@@ -35,8 +37,8 @@ const EntryExitDetails = ({ contract_info }: { contract_info: TContractInfo }) =
 
     const dateTimes = useMemo(
         () => ({
-            entry: entry_tick_time ? getDateTimeFromEpoch(entry_tick_time) : undefined,
-            exit: exit_tick_time ? getDateTimeFromEpoch(exit_tick_time) : undefined,
+            entry: entry_spot_time ? getDateTimeFromEpoch(entry_spot_time) : undefined,
+            exit: exit_spot_time ? getDateTimeFromEpoch(exit_spot_time) : undefined,
             start: date_start ? getDateTimeFromEpoch(date_start) : undefined,
             end: getEndTime(contract_info) ? getDateTimeFromEpoch(getEndTime(contract_info) ?? 0) : undefined,
         }),

@@ -147,7 +147,10 @@ const Digits = React.memo((props: TDigits) => {
     };
 
     const getPopoverMessage = () => {
-        const underlying_name = is_trade_page ? underlying : contract_info.underlying;
+        // Backward compatibility: fallback to old field name
+        // @ts-expect-error - underlying_symbol exists in runtime but not in type definition
+        const contract_underlying = contract_info.underlying_symbol || contract_info.underlying;
+        const underlying_name = is_trade_page ? underlying : contract_underlying;
         return (
             <Localize
                 i18n_default_text='Last digit stats for latest 1000 ticks for {{underlying_name}}'

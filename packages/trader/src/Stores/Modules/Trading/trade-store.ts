@@ -715,7 +715,9 @@ export default class TradeStore extends BaseStore {
             this.is_accumulator &&
             !!this.root_store.portfolio.open_accu_contract &&
             !!this.root_store.portfolio.active_positions.find(
-                ({ contract_info, type }) => isAccumulatorContract(type) && contract_info.underlying === this.symbol
+                ({ contract_info, type }) =>
+                    //@ts-expect-error TContractInfo has an invalid type. This will be fixed in the future.
+                    isAccumulatorContract(type) && contract_info.underlying_symbol === this.symbol
             )
         );
     }

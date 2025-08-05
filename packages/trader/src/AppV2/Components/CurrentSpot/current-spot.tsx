@@ -31,7 +31,11 @@ const CurrentSpot = observer(() => {
         is_ended,
     } = last_contract.contract_info?.entry_tick || !prev_contract ? last_contract : prev_contract;
     const { tick_data, symbol } = useTraderStore();
-    const { contract_id, entry_tick, date_start, contract_type, tick_stream, underlying } = contract_info;
+    //
+    const { contract_id, entry_tick, date_start, contract_type, tick_stream } = contract_info;
+    // Backward compatibility: fallback to old field name
+    //@ts-expect-error TContractInfo has an invalid type, this will be fixed in a future update
+    const underlying = contract_info.underlying_symbol || contract_info.underlying;
     const prev_contract_id = usePrevious(contract_id);
     const last_contract_ticks = last_contract.contract_info?.tick_stream?.length;
     const prev_last_contract_ticks = usePrevious(last_contract_ticks);

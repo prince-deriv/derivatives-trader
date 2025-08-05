@@ -85,7 +85,8 @@ const ContractCard = ({
         isHighLow: is_high_low,
     })}`.trim();
     const symbolName = 'symbol' in contractInfo ? getMarketName(contractInfo.symbol ?? '') : display_name;
-    const is_crypto = isCryptoContract((contractInfo as TContractInfo).underlying);
+    // @ts-expect-error TContractInfo has an invalid type, this will be fixed in a future update
+    const is_crypto = isCryptoContract((contractInfo as TContractInfo).underlying_symbol);
     const isMultiplier = isMultiplierContract(contract_type);
     const isSold = !!sell_time || isEnded(contractInfo as TContractInfo);
     const totalProfit = getProfit(contractInfo);
