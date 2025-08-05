@@ -404,7 +404,7 @@ export function calculateMarker(contract_info, is_dark_theme, is_last_contract) 
     }
 
     if (is_accumulator_contract && tick_stream?.length > 0) {
-        const contract_status = getContractStatus({ contract_type, profit, exit_spot_time, status });
+        const contract_status = getContractStatus(contract_info);
         const is_accu_contract_ended = contract_status !== 'open';
 
         if (is_accu_contract_ended) {
@@ -445,9 +445,9 @@ function getAccumulatorBarrierMarkers({
     barrier_spot_distance,
     prev_epoch: epoch,
 }) {
-    const { contract_type, profit, exit_spot_time, status, is_sold } = contract_info || {};
+    const { profit, is_sold } = contract_info || {};
 
-    const contract_status = getContractStatus({ contract_type, profit, exit_spot_time, status });
+    const contract_status = getContractStatus(contract_info || {});
     const is_accu_contract_ended = contract_status !== 'open';
 
     const getStatus = () => {
