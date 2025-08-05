@@ -11,7 +11,6 @@ import { checkAndSetEndpointFromUrl } from '@deriv/shared';
 import AppNotificationMessages from './App/Containers/app-notification-messages.jsx';
 import { AnalyticsInitializer } from 'Utils/Analytics';
 import { isTmbEnabled } from '@deriv/utils';
-import './debug-auth'; // V2 Authentication debugging for QA197
 
 AnalyticsInitializer();
 if (
