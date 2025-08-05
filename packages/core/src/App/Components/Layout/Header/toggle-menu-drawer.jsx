@@ -1,8 +1,8 @@
 import React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { /* useHistory, */ useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 
-import { useAccountSettingsRedirect, useIsHubRedirectionEnabled, useOauth2, useRemoteConfig } from '@deriv/api';
+import { useAccountSettingsRedirect, useIsHubRedirectionEnabled, /* useOauth2, */ useRemoteConfig } from '@deriv/api';
 import { Div100vhContainer, Icon, MobileDrawer, ToggleSwitch } from '@deriv/components';
 // eslint-disable-next-line no-unused-vars -- getDomainUrl kept for future handleTradershubRedirect restoration
 import { getDomainUrl, getOSNameWithUAParser, getStaticUrl, routes } from '@deriv/shared';
@@ -31,7 +31,7 @@ const ToggleMenuDrawer = observer(() => {
         is_dark_mode_on: is_dark_mode,
         setDarkMode: toggleTheme,
         setMobileLanguageMenuOpen,
-        setIsForcedToExitPnv,
+        // setIsForcedToExitPnv,
     } = ui;
     const {
         account_status,
@@ -39,7 +39,7 @@ const ToggleMenuDrawer = observer(() => {
         is_logged_in,
         is_virtual,
         logout: logoutClient,
-        setIsLoggingOut,
+        // setIsLoggingOut,
         should_allow_authentication,
         should_allow_poinc_authentication,
         landing_company_shortcode: active_account_landing_company,
@@ -69,7 +69,7 @@ const ToggleMenuDrawer = observer(() => {
     const [, expandSubMenu] = React.useState(false);
 
     const timeout = React.useRef();
-    const history = useHistory();
+    // const history = useHistory();
     // eslint-disable-next-line no-unused-vars -- Variable kept for future handleTradershubRedirect restoration
     const { isHubRedirectionEnabled } = useIsHubRedirectionEnabled();
 
@@ -122,21 +122,27 @@ const ToggleMenuDrawer = observer(() => {
         expandSubMenu(false);
     }, [expandSubMenu, is_open, is_mobile_language_menu_open, setMobileLanguageMenuOpen]);
 
-    const handleLogout = React.useCallback(async () => {
-        setIsLoggingOut(true);
-        toggleDrawer();
-        if (window.location.pathname.startsWith(routes.phone_verification)) {
-            setIsForcedToExitPnv(true);
-            // Add a small delay to ensure state is updated before navigation
-            await new Promise(resolve => {
-                setTimeout(resolve, 0);
-            });
-        }
-        history.push(routes.trade);
-        await logoutClient();
-    }, [history, logoutClient, toggleDrawer, setIsForcedToExitPnv, setIsLoggingOut]);
+    // const handleLogout = React.useCallback(async () => {
+    //     setIsLoggingOut(true);
+    //     toggleDrawer();
+    //     if (window.location.pathname.startsWith(routes.phone_verification)) {
+    //         setIsForcedToExitPnv(true);
+    //         // Add a small delay to ensure state is updated before navigation
+    //         await new Promise(resolve => {
+    //             setTimeout(resolve, 0);
+    //         });
+    //     }
+    //     history.push(routes.trade);
+    //     await logoutClient();
+    // }, [history, logoutClient, toggleDrawer, setIsForcedToExitPnv, setIsLoggingOut]);
 
-    const { oAuthLogout } = useOauth2({ handleLogout });
+    // Simple logout handler that closes drawer and calls logout
+    const handleLogout = React.useCallback(async () => {
+        toggleDrawer();
+        await logoutClient();
+    }, [logoutClient, toggleDrawer]);
+
+    // const { oAuthLogout } = useOauth2({ handleLogout });
 
     const passkeysMenuOpenActionEventTrack = React.useCallback(() => {
         Analytics.trackEvent('ce_passkey_account_settings_form', {
@@ -390,7 +396,7 @@ const ToggleMenuDrawer = observer(() => {
                                     </MobileDrawer.Item>
                                 )} */}
                                 {is_logged_in && (
-                                    <MobileDrawer.Item onClick={oAuthLogout} className='dc-mobile-drawer__item'>
+                                    <MobileDrawer.Item onClick={handleLogout} className='dc-mobile-drawer__item'>
                                         <MenuLink icon='IcLogout' text={localize('Log out')} />
                                     </MobileDrawer.Item>
                                 )}

@@ -3,9 +3,9 @@ import { Button, Icon, Popover } from '@deriv/components';
 // import { useAccountSettingsRedirect } from '@deriv/api';
 import { formatMoney } from '@deriv/shared';
 import { useStore } from '@deriv/stores';
-import { localize, Localize } from '@deriv/translations';
-import { LoginButton } from './login-button.jsx';
-import { SignupButton } from './signup-button.jsx';
+import { localize } from '@deriv/translations';
+import { LoginButtonV2 } from './login-button-v2';
+// import { SignupButton } from './signup-button.jsx';
 // import ToggleNotifications from './toggle-notifications.jsx';
 import 'Sass/app/_common/components/account-switcher.scss';
 import { useDevice } from '@deriv-com/ui';
@@ -22,7 +22,8 @@ type TAccountActionsProps = {
     is_traders_hub_routes: boolean;
     is_virtual: boolean;
     // notifications_count: number;
-    onClickDeposit: () => void;
+    // onClickDeposit: () => void; // Commented out - deposit button hidden
+    onClickLogout: () => void;
     // toggleNotifications: () => void;
     // openRealAccountSignup: TUiStore['openRealAccountSignup'];
 };
@@ -77,14 +78,18 @@ const AccountInfo = React.lazy(
 //     />
 // );
 
-const DepositButton = ({ onClickDeposit }: { onClickDeposit: () => void }) => (
-    <Button className='acc-info__button' has_effect text={localize('Deposit')} onClick={onClickDeposit} primary />
+// const DepositButton = ({ onClickDeposit }: { onClickDeposit: () => void }) => (
+//     <Button className='acc-info__button' has_effect text={localize('Deposit')} onClick={onClickDeposit} primary />
+// );
+
+const LogoutButton = ({ onClickLogout }: { onClickLogout: () => void }) => (
+    <Button className='acc-info__button' has_effect text={localize('Log out')} onClick={onClickLogout} />
 );
 
 const LoggedOutView = () => (
     <>
-        <LoginButton className='acc-info__button' />
-        <SignupButton className='acc-info__button' />
+        <LoginButtonV2 className='acc-info__button' />
+        {/* <SignupButton className='acc-info__button' /> */}
     </>
 );
 
@@ -98,12 +103,14 @@ const AccountActionsComponent = ({
     is_traders_hub_routes,
     is_virtual,
     // notifications_count,
-    onClickDeposit,
+    // onClickDeposit, // Commented out - deposit button hidden
+    onClickLogout,
     // openRealAccountSignup,
     // toggleNotifications,
 }: TAccountActionsProps) => {
     const { isDesktop } = useDevice();
-    const isDepositButtonVisible = isDesktop && !is_traders_hub_routes && currency;
+    // const isDepositButtonVisible = isDesktop && !is_traders_hub_routes && currency; // Commented out - deposit button hidden
+    const isLogoutButtonVisible = isDesktop && is_logged_in;
     const formattedBalance = balance != null ? formatMoney(currency, balance, true) : undefined;
 
     const renderAccountInfo = () => (
@@ -127,8 +134,10 @@ const AccountActionsComponent = ({
 
     return (
         <React.Fragment>
-            {isDepositButtonVisible && <DepositButton onClickDeposit={onClickDeposit} />}
+            {/* TODO: Deposit button temporarily hidden - uncomment when needed */}
+            {/* {isDepositButtonVisible && <DepositButton onClickDeposit={onClickDeposit} />} */}
             {!is_traders_hub_routes && renderAccountInfo()}
+            {isLogoutButtonVisible && <LogoutButton onClickLogout={onClickLogout} />}
             {/* <NotificationsToggle
                 count={notifications_count}
                 is_visible={is_notifications_visible}

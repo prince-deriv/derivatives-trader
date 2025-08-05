@@ -871,7 +871,7 @@ export default class ClientStore extends BaseStore {
                 email: email || '',
                 landing_company_shortcode: landing_company_name || '',
                 country: country || '',
-                token: this.getToken(loginid) || localStorage.getItem('config.account1') || 'simplified_auth_token',
+                token: this.getToken(loginid) || localStorage.getItem('config.account1') || this.getSessionToken(),
                 session_start: parseInt(moment().utc().valueOf() / 1000),
                 // Mark as simplified auth for detection
                 is_simplified_auth: true,
@@ -1817,6 +1817,7 @@ export default class ClientStore extends BaseStore {
     }
 
     async setUserLogin(login_new_user) {
+        // EXISTING: All legacy code below remains 100% untouched
         // login_new_user is populated only on virtual sign-up
         let obj_params = {};
         const search = window.location.search;
@@ -1863,6 +1864,15 @@ export default class ClientStore extends BaseStore {
             search_params = search_params?.toString();
             const search_param_without_account = search_params ? `?${search_params}` : '/';
             history.replaceState(null, null, `${search_param_without_account}${window.location.hash}`);
+        }
+
+        // Check for V2 authentication (one-time token or existing session)
+        const one_time_token = login_new_user ? login_new_user.token : obj_params.token;
+        const existing_session_token = this.getSessionToken();
+
+        if (one_time_token || existing_session_token) {
+            // Route directly to V2 authentication - complete separation
+            return await this.setUserLoginV2(one_time_token);
         }
 
         const is_client_logging_in = login_new_user ? login_new_user.token1 : obj_params.token1;
@@ -1922,6 +1932,96 @@ export default class ClientStore extends BaseStore {
             });
             return authorize_response;
         }
+    }
+
+    // Unified V2 authentication method for both one-time tokens and session restoration
+    async setUserLoginV2(oneTimeToken = null) {
+        this.setIsLoggingIn(true);
+
+        try {
+            // Handle session restoration if no one-time token provided
+            if (!oneTimeToken) {
+                const existing_session_token = this.getSessionToken();
+                if (!existing_session_token) {
+                    return { error: { message: 'No authentication token available', code: 'NoToken' } };
+                }
+
+                // Session restoration flow
+                const authorizeResponse = await BinarySocket.authorize(existing_session_token);
+
+                if (authorizeResponse.error) {
+                    this.clearSessionToken();
+                    return authorizeResponse;
+                }
+
+                return authorizeResponse;
+            }
+
+            // One-time token flow
+            // Step 1: Exchange one-time token for session token
+            const sessionResponse = await BinarySocket.getSessionToken(oneTimeToken);
+
+            if (sessionResponse.error) {
+                return sessionResponse;
+            }
+
+            // Step 2: Store session token and expiration
+            const sessionToken = sessionResponse.get_session_token?.token;
+            const expirationTime = sessionResponse.get_session_token?.expires;
+
+            if (!sessionToken) {
+                return { error: { message: 'No session token received', code: 'SessionTokenError' } };
+            }
+
+            this.storeSessionToken(sessionToken, expirationTime);
+
+            // Step 3: Use session token for authorize
+            const authorizeResponse = await BinarySocket.authorize(sessionToken);
+
+            if (authorizeResponse.error) {
+                // Clear stored session token on authorize failure
+                this.clearSessionToken();
+                return authorizeResponse;
+            }
+
+            return authorizeResponse;
+        } catch (error) {
+            // Clear any stored session token on error
+            this.clearSessionToken();
+            return { error: { message: 'Authentication failed', code: 'AuthenticationError' } };
+        } finally {
+            this.setIsLoggingIn(false);
+        }
+    }
+
+    // Session token storage methods
+    storeSessionToken(token, expirationTime) {
+        if (token) {
+            localStorage.setItem('session_token', token);
+            if (expirationTime) {
+                localStorage.setItem('session_expiry', expirationTime.toString());
+            }
+        }
+    }
+
+    getSessionToken() {
+        const token = localStorage.getItem('session_token');
+        const expiry = localStorage.getItem('session_expiry');
+
+        if (!token) return null;
+
+        // Check if token is expired
+        if (expiry && Date.now() / 1000 > parseInt(expiry)) {
+            this.clearSessionToken();
+            return null;
+        }
+
+        return token;
+    }
+
+    clearSessionToken() {
+        localStorage.removeItem('session_token');
+        localStorage.removeItem('session_expiry');
     }
 
     async canStoreClientAccounts(obj_params, account_list) {
