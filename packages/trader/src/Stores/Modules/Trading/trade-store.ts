@@ -604,7 +604,9 @@ export default class TradeStore extends BaseStore {
                 const urlSymbol = searchParams.get('symbol');
                 const tradeStoreString = sessionStorage.getItem('trade_store');
                 const tradeStoreObj = safeParse(tradeStoreString ?? '{}') ?? {};
-                const isValidSymbol = this.active_symbols.some(symbol => symbol.symbol === urlSymbol);
+                const isValidSymbol = this.active_symbols.some(
+                    symbol => ((symbol as any).underlying_symbol || symbol.symbol) === urlSymbol
+                );
 
                 if (urlSymbol) {
                     if (isValidSymbol) {

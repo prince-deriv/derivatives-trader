@@ -2,8 +2,8 @@
 
 <div align="center">
 
-**deriv-com/derivatives-trader**  
-📅 Last updated: 2025-07-31 • 🔄 Tracking merged PRs to main/master
+**deriv-com/derivatives-trader**
+📅 Last updated: 2025-08-04 07:15:35 UTC • 🔄 Tracking merged PRs to main/master
 
 </div>
 
@@ -11,50 +11,25 @@
 
 ## 📊 Quick Stats
 
-| Metric | Value | Metric | Value |
-|--------|-------|--------|-------|
-| **📁 Total Merged PRs** | 2 | **📈 Average AI Code** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
-| **🤖 PRs with AI Analysis** | 0 | **🎯 Overall AI Percentage** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
-| **📄 Files Analyzed** | 0 | **⚡ Total AI Characters** | 0 |
+| Metric                      | Value | Metric                       | Value                    |
+| --------------------------- | ----- | ---------------------------- | ------------------------ |
+| **📁 Total Merged PRs**     | 5     | **📈 Average AI Code**       | 🟧🟧🟧🟧⬜⬜⬜⬜⬜⬜ 36% |
+| **🤖 PRs with AI Analysis** | 2     | **🎯 Overall AI Percentage** | 🟨🟨🟨🟨🟨🟨🟨⬜⬜⬜ 72% |
+| **📄 Files Analyzed**       | 2     | **⚡ Total AI Characters**   | 69                       |
 
 ---
-
 
 ## 🚀 Recent Merged Pull Requests
 
-> 📊 Showing the 10 most recent merged PRs (stats above include all 2 PRs)
+> 📊 Showing the 10 most recent merged PRs (stats above include all 5 PRs)
 
-| PR | Author | Date | Files | AI Content | Percentage |
-|----|--------|------|-------|------------|------------|
-| [#59](undefined) **Prince/rename PR title and fix merging of data** | [@prince-deriv](https://github.com/prince-deriv) | 7/31/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-| [#58](undefined) **Matin/Corrected CF Branch** | [@matin-deriv](https://github.com/matin-deriv) | 7/31/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-
-
-
----
-
-<details>
-<summary><strong>📊 View detailed visual breakdown</strong></summary>
-
-### 📈 AI Usage Chart
-
-```
-AI Percentage Distribution:
-PR #59 Prince/rename PR title and ... │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ 0%
-PR #58 Matin/Corrected CF Branch      │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ 0%
-```
-
-### 🎯 Summary Statistics
-
-```
-Total Characters:     0
-AI Characters:        0
-Human Characters:     0
-
-AI vs Human Ratio:    0% : 100%
-```
-
-</details>
+| PR                                                                       | Author                                                 | Date     | Files | AI Content    | Percentage                         |
+| ------------------------------------------------------------------------ | ------------------------------------------------------ | -------- | ----- | ------------- | ---------------------------------- |
+| [#1](#) **build(deps-dev): bump webpack-dev-server from 5.2.0 to 5.2.1** | [@dependabot[bot]](https://github.com/dependabot[bot]) | 8/4/2025 | N/A   | No data       | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%  |
+| [#3](#) **build(deps): bump @babel/helpers from 7.26.7 to 7.27.6**       | [@dependabot[bot]](https://github.com/dependabot[bot]) | 8/4/2025 | N/A   | No data       | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%  |
+| [#4](#) **build(deps): bump @babel/runtime from 7.26.7 to 7.27.6**       | [@dependabot[bot]](https://github.com/dependabot[bot]) | 8/4/2025 | N/A   | No data       | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%  |
+| [#85](#) **Prince/ added AI markers**                                    | [@prince-deriv](https://github.com/prince-deriv)       | 8/1/2025 | 2     | 69 / 96 chars | 🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨⬜⬜⬜⬜ 72% |
+| [#83](#) **Prince/ empty commit to trigger workflows**                   | [@prince-deriv](https://github.com/prince-deriv)       | 8/1/2025 | 0     | 0 / 0 chars   | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%  |
 
 ---
 
