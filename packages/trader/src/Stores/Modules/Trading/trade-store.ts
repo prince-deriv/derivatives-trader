@@ -717,7 +717,9 @@ export default class TradeStore extends BaseStore {
             this.is_accumulator &&
             !!this.root_store.portfolio.open_accu_contract &&
             !!this.root_store.portfolio.active_positions.find(
-                ({ contract_info, type }) => isAccumulatorContract(type) && contract_info.underlying === this.symbol
+                ({ contract_info, type }) =>
+                    //@ts-expect-error TContractInfo has an invalid type. This will be fixed in the future.
+                    isAccumulatorContract(type) && contract_info.underlying_symbol === this.symbol
             )
         );
     }
@@ -833,26 +835,6 @@ export default class TradeStore extends BaseStore {
 
         if (!active_symbols?.length) {
             await WS.wait('get_settings');
-            /*
-             * This logic is related to EU country checks
-             * Avoid moving this upward in the scope since mobx will lose reactivity
-             */
-            if (is_on_mf_account) {
-                showDigitalOptionsUnavailableError(showError, {
-                    text: localize(
-                        'We’re working to have this available for you soon. If you have another account, switch to that account to continue trading. You may add a Deriv MT5 Financial.'
-                    ),
-                    title: localize('{{platform_name_trader}} is not available for this account', {
-                        platform_name_trader: getPlatformSettings('trader').name,
-                    }),
-                    link: localize('Go to {{platform_name_mt5}} dashboard', {
-                        platform_name_mt5: getPlatformSettings('mt5').name,
-                    }),
-                });
-                return;
-            } else if (!is_on_mf_account) {
-                showUnavailableLocationError(showError, is_logged_in);
-            }
             showUnavailableLocationError(showError, is_logged_in);
         }
         await this.processNewValuesAsync({ active_symbols });

@@ -22,21 +22,11 @@ type TPlatformAppstore = {
 };
 
 type TPlatforms = {
-    ctrader: TPlatform;
     trader: TPlatform;
-    dbot: TPlatform;
-    mt5: TPlatform;
-    dxtrade: TPlatform;
-    smarttrader: TPlatform;
-    go: TPlatform;
 };
 
 type TPlatformsAppstore = {
-    ctrader: TPlatformAppstore;
     trader: TPlatformAppstore;
-    dbot: TPlatformAppstore;
-    smarttrader: TPlatformAppstore;
-    go: TPlatformAppstore;
 };
 
 const isDomainAllowed = (domain_name: string) => {

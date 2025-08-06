@@ -442,7 +442,7 @@ export default class PortfolioStore extends BaseStore {
         position.is_sold = 1;
         position.is_loading = false;
 
-        contract_info.exit_tick_time = contract_info.date_expiry;
+        contract_info.exit_spot_time = contract_info.date_expiry;
         contract_info.sell_price = String(amount);
         contract_info.profit = amount - contract_info.buy_price;
 
@@ -464,7 +464,7 @@ export default class PortfolioStore extends BaseStore {
         this.positions[i].is_valid_to_sell = isValidToSell(contract_response);
         this.positions[i].result = getDisplayStatus(contract_response);
         this.positions[i].profit_loss = +contract_response.profit;
-        this.positions[i].sell_time = getEndTime(contract_response) || contract_response.current_spot_time; // same as exit_spot, use latest spot time if no exit_tick_time
+        this.positions[i].sell_time = getEndTime(contract_response) || contract_response.current_spot_time; // same as exit_spot, use latest spot time if no exit_spot_time
         this.positions[i].sell_price = contract_response.sell_price;
         this.positions[i].status = 'complete';
 
@@ -541,8 +541,10 @@ export default class PortfolioStore extends BaseStore {
     }
 
     onHoverPosition(is_over, position, underlying) {
+        // Backward compatibility: fallback to old field name
+        const position_underlying = position.contract_info.underlying_symbol || position.contract_info.underlying;
         if (
-            position.contract_info.underlying !== underlying ||
+            position_underlying !== underlying ||
             isEnded(position.contract_info) ||
             !isMultiplierContract(position.type)
         ) {
