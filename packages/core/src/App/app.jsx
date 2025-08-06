@@ -7,7 +7,6 @@ import { APIProvider } from '@deriv/api';
 import { Loading } from '@deriv/components';
 import {
     initFormErrorMessages,
-    POIProvider,
     setSharedCFDText,
     setUrlLanguage,
     setWebsocket,
@@ -140,14 +139,12 @@ const AppWithoutTranslation = ({ root_store }) => {
                     <StoreProvider store={root_store}>
                         <BreakpointProvider>
                             <APIProvider>
-                                <POIProvider>
-                                    <TranslationProvider defaultLang={language} i18nInstance={i18nInstance}>
-                                        {/* This is required as translation provider uses suspense to reload language */}
-                                        <React.Suspense fallback={<Loading />}>
-                                            <AppContent passthrough={platform_passthrough} />
-                                        </React.Suspense>
-                                    </TranslationProvider>
-                                </POIProvider>
+                                <TranslationProvider defaultLang={language} i18nInstance={i18nInstance}>
+                                    {/* This is required as translation provider uses suspense to reload language */}
+                                    <React.Suspense fallback={<Loading />}>
+                                        <AppContent passthrough={platform_passthrough} />
+                                    </React.Suspense>
+                                </TranslationProvider>
                             </APIProvider>
                         </BreakpointProvider>
                     </StoreProvider>
