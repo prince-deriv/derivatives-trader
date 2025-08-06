@@ -1,16 +1,12 @@
 import React from 'react';
 import { Icon, Text } from '@deriv/components';
-import { getDomainUrl } from '@deriv/shared';
 import { observer } from '@deriv/stores';
 import { Localize } from '@deriv/translations';
+import { champion_url } from '@deriv/shared';
 
 const HubButton = observer(() => {
     const handleHubRedirect = () => {
-        const PRODUCTION_HUB_URL = `https://hub.${getDomainUrl()}/champion/`;
-        const STAGING_HUB_URL = `https://dev-hub.${getDomainUrl()}/champion/`;
-        const hubUrl = process.env.NODE_ENV === 'production' ? PRODUCTION_HUB_URL : STAGING_HUB_URL;
-
-        window.open(hubUrl, '_blank', 'noopener,noreferrer');
+        window.open(champion_url.home, '_blank', 'noopener,noreferrer');
     };
 
     return (

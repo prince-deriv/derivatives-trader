@@ -2,16 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Button } from '@deriv/components';
-import { getDomainUrl, isStaging } from '@deriv/shared';
 import { localize } from '@deriv/translations';
+import { champion_url } from '@deriv/shared';
 
-const LoginButtonV2 = ({ className }) => {
+interface LoginButtonV2Props {
+    className?: string;
+}
+
+const LoginButtonV2 = ({ className }: LoginButtonV2Props) => {
     const handleLogin = () => {
-        const hubUrl = isStaging()
-            ? `https://staging-hub.${getDomainUrl()}/champion/login`
-            : `https://dev-hub.${getDomainUrl()}/champion/login`;
-
-        window.location.href = hubUrl;
+        window.location.href = champion_url.login;
     };
 
     return (
