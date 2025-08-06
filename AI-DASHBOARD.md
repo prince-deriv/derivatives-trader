@@ -3,7 +3,7 @@
 <div align="center">
 
 **prince-deriv/derivatives-trader**
-📅 Last updated: 2025-08-03 06:29:21 UTC • 🔄 Tracking merged PRs to main/master
+📅 Last updated: 2025-08-06 07:50:56 UTC • 🔄 Tracking merged PRs to main/master
 
 </div>
 
@@ -13,18 +13,19 @@
 
 | Metric | Value | Metric | Value |
 |--------|-------|--------|-------|
-| **📁 Total Merged PRs** | 2 | **📈 Average AI Code** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
-| **🤖 PRs with AI Analysis** | 2 | **🎯 Overall AI Percentage** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% |
-| **📄 Files Analyzed** | 3 | **⚡ Total AI Characters** | 0 |
+| **📁 Total Merged PRs** | 3 | **📈 Average AI Code** | 🟧🟧🟧⬜⬜⬜⬜⬜⬜⬜ 29% |
+| **🤖 PRs with AI Analysis** | 3 | **🎯 Overall AI Percentage** | 🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜ 88% |
+| **📄 Files Analyzed** | 5 | **⚡ Total AI Characters** | 224 |
 
 ---
 
 ## 🚀 Recent Merged Pull Requests
 
-> 📊 Showing the 10 most recent merged PRs (stats above include all 2 PRs)
+> 📊 Showing the 10 most recent merged PRs (stats above include all 3 PRs)
 
 | PR | Author | Date | Files | AI Content | Percentage |
 |----|--------|------|-------|------------|------------|
+| [#128](#) **feat: update 2 files (ai-code-analysis.yml, ai-dashboard.yml)** | [@prince-deriv](https://github.com/prince-deriv) | 8/6/2025 | 2 | 224 / 256 chars | 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜  88% |
 | [#13](https://github.com/prince-deriv/derivatives-trader/pull/13) **Test** | [@prince-deriv](https://github.com/prince-deriv) | 7/29/2025 | 1 | 0 / 0 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 | [#11](https://github.com/prince-deriv/derivatives-trader/pull/11) **fix: workflow syntax error** | [@prince-deriv](https://github.com/prince-deriv) | 7/29/2025 | 2 | 0 / 0 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 

@@ -1,7 +1,35 @@
 {
-  "lastUpdated": "2025-07-29T13:27:49.716Z",
-  "totalMergedPRs": 2,
+  "lastUpdated": "2025-08-06T07:50:56.447Z",
+  "totalMergedPRs": 3,
   "analyses": [
+    {
+      "percentage": 88,
+      "totalCharacters": 256,
+      "aiCharacters": 224,
+      "files": [
+        {
+          "name": ".github/workflows/ai-code-analysis.yml",
+          "totalCharacters": 130,
+          "aiCharacters": 114,
+          "percentage": 88,
+          "addedContent": "    # [AI]  This is generated code by AI\n    uses: deriv-com/shared-actions/.github/workflows/ai-code-analysis.yml@v4\n    # [/AI] "
+        },
+        {
+          "name": ".github/workflows/ai-dashboard.yml",
+          "totalCharacters": 126,
+          "aiCharacters": 110,
+          "percentage": 87,
+          "addedContent": "    # [AI]  This is generated code by AI\n    uses: deriv-com/shared-actions/.github/workflows/ai-dashboard.yml@v4\n    # [/AI] "
+        }
+      ],
+      "timestamp": "2025-08-06T07:50:56.399Z",
+      "repository": "prince-deriv/derivatives-trader",
+      "pullRequest": "128",
+      "branch": "use-shared-workflows-in-fork",
+      "author": "prince-deriv",
+      "prTitle": "feat: update 2 files (ai-code-analysis.yml, ai-dashboard.yml)",
+      "hasAnalysis": true
+    },
     {
       "timestamp": "2025-07-29T13:26:43.510Z",
       "pullRequest": 13,
