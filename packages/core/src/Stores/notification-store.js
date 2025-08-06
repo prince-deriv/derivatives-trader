@@ -205,7 +205,10 @@ export default class NotificationStore extends BaseStore {
             currency,
             profit: isMultiplierContract(contract_type) && !isNaN(profit) ? getTotalProfit(contract_info) : profit,
             status,
-            symbol: getMarketName(underlying ?? extractInfoFromShortcode(shortcode).underlying),
+            // Backward compatibility: fallback to old field name
+            symbol: getMarketName(
+                (contract_info.underlying_symbol || underlying) ?? extractInfoFromShortcode(shortcode).underlying
+            ),
             timestamp: status === 'open' ? purchase_time : getEndTime(contract_info),
         });
         /* Consider notifications older than 100s ago as stale and filter out such trade_notifications from the array

@@ -31,7 +31,8 @@ const AccumulatorsProfitLossTooltip = ({
     current_spot_time,
     currency,
     exit_tick,
-    exit_tick_time,
+    // @ts-expect-error contract_info is not typed correctly this will not be an issue after the types are fixed
+    exit_spot_time,
     high_barrier,
     is_sold,
     profit,
@@ -80,9 +81,9 @@ const AccumulatorsProfitLossTooltip = ({
                 // this call will hide the marker:
                 ref.setPosition({ epoch: null, price: null });
             }
-            if (exit_tick_time && exit_tick) {
+            if (exit_spot_time && exit_tick) {
                 ref.setPosition({
-                    epoch: +exit_tick_time,
+                    epoch: +exit_spot_time,
                     price: +exit_tick,
                 });
             }
@@ -101,7 +102,7 @@ const AccumulatorsProfitLossTooltip = ({
             />
         );
 
-    return is_sold && exit_tick_time ? (
+    return is_sold && exit_spot_time ? (
         <FastMarker markerRef={onRef} className={classNames(className, won ? 'won' : 'lost')}>
             <span
                 className={`${className}__spot-circle`}

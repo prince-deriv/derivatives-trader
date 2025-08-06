@@ -36,7 +36,10 @@ const ReplayChart = observer(
         const { contract_store, chart_state, chartStateChange, margin } = contract_replay;
         const { contract_config, is_digit_contract, barriers_array, getContractsArray, markers_array, contract_info } =
             contract_store;
-        const { underlying: symbol, audit_details, barrier_count } = contract_info;
+        // Backward compatibility: fallback to old field name
+        //@ts-expect-error TContractInfo has an invalid type, this will be fixed in a future update
+        const symbol = contract_info.underlying_symbol || contract_info.underlying;
+        const { audit_details, barrier_count } = contract_info;
         const allow_scroll_to_epoch = chart_state === 'READY' || chart_state === 'SCROLL_TO_LEFT';
         const { app_routing_history, current_language, is_socket_opened } = common;
         const { is_chart_layout_default, is_chart_countdown_visible } = ui;
