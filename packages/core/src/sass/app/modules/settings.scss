@@ -4,12 +4,12 @@
 /** @define dc-modal-header; */
 .dc-modal-header {
     &--modal-settings {
-        background-color: var(--general-main-1);
+        background-color: var(--color-surface-primary);
     }
     &__title {
         &--modal-settings {
             min-width: 28%;
-            background-color: var(--general-section-1);
+            background-color: var(--color-surface-primary);
             max-width: 206px;
         }
     }

@@ -19,7 +19,6 @@ type TAccountActionsProps = {
     is_acc_switcher_disabled: boolean;
     // is_notifications_visible: boolean;
     is_logged_in: boolean;
-    is_traders_hub_routes: boolean;
     is_virtual: boolean;
     // notifications_count: number;
     onClickDeposit: () => void;
@@ -95,7 +94,6 @@ const AccountActionsComponent = ({
     is_acc_switcher_disabled,
     is_logged_in,
     // is_notifications_visible,
-    is_traders_hub_routes,
     is_virtual,
     // notifications_count,
     onClickDeposit,
@@ -103,7 +101,7 @@ const AccountActionsComponent = ({
     // toggleNotifications,
 }: TAccountActionsProps) => {
     const { isDesktop } = useDevice();
-    const isDepositButtonVisible = isDesktop && !is_traders_hub_routes && currency;
+    const isDepositButtonVisible = isDesktop && currency;
     const formattedBalance = balance != null ? formatMoney(currency, balance, true) : undefined;
 
     const renderAccountInfo = () => (
@@ -128,7 +126,7 @@ const AccountActionsComponent = ({
     return (
         <React.Fragment>
             {isDepositButtonVisible && <DepositButton onClickDeposit={onClickDeposit} />}
-            {!is_traders_hub_routes && renderAccountInfo()}
+            {renderAccountInfo()}
             {/* <NotificationsToggle
                 count={notifications_count}
                 is_visible={is_notifications_visible}
