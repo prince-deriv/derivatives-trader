@@ -12,6 +12,8 @@ permissions:
 
 jobs:
   call-ai-analysis:
-    uses: prince-deriv/shared-actions/.github/workflows/ai-code-analysis.yml@master
+    # [AI]  This is generated code by AI
+    uses: deriv-com/shared-actions/.github/workflows/ai-code-analysis.yml@v4
+    # [/AI] 
     secrets:
       PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
