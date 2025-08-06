@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 import { Icon, Money, Button, Text } from '@deriv/components';
-import { formatMoney, getCurrencyName, getCurrencyDisplayCode, isBot } from '@deriv/shared';
+import { formatMoney, getCurrencyName, getCurrencyDisplayCode } from '@deriv/shared';
 import { Localize, localize } from '@deriv/translations';
 
 const AccountList = ({
@@ -168,7 +168,6 @@ const AccountDisplay = ({
             </div>
         );
 
-    const is_bot = isBot();
     return (
         <div>
             {/* TODO: Remove below condition once deriv x changes are completed */}
@@ -180,9 +179,7 @@ const AccountDisplay = ({
                     <Text
                         color={is_dark_mode_on ? 'general' : 'colored-background'}
                         size='xxs'
-                        className={classNames('badge-server', {
-                            'badge-server-bot': is_bot,
-                        })}
+                        className={classNames('badge-server')}
                     >
                         {getServerName(server)}
                     </Text>
