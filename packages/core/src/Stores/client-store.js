@@ -299,15 +299,6 @@ export default class ClientStore extends BaseStore {
 
         const account = this.accounts[this.loginid];
 
-        // For simplified auth, ensure we have a valid balance
-        if (this.isSimplifiedAuth()) {
-            // Check for both balance property existence and valid value
-            if (account && typeof account.balance !== 'undefined' && account.balance !== null) {
-                return account.balance.toString();
-            }
-            return undefined;
-        }
-
         // Multi-account logic with enhanced checks
         if (account && 'balance' in account && typeof account.balance !== 'undefined' && account.balance !== null) {
             return account.balance.toString();
@@ -339,12 +330,6 @@ export default class ClientStore extends BaseStore {
     }
 
     hasAnyRealAccount = () => {
-        // For simplified auth, check single account directly for better performance
-        if (this.isSimplifiedAuth()) {
-            const account = this.accounts[this.loginid];
-            return account && account.is_virtual === 0;
-        }
-
         // Multi-account logic
         return this.account_list.some(acc => acc.is_virtual === 0);
     };
@@ -466,14 +451,6 @@ export default class ClientStore extends BaseStore {
     }
     // Hiding UST account from the Authorization call, as it should be not just disabled, but temporary removed
     get account_list() {
-        // For simplified auth, return single account directly for better performance
-        if (this.isSimplifiedAuth()) {
-            const account_info = this.getAccountInfo(this.loginid);
-            return account_info && !(account_info.title === CURRENCY_CONSTANTS.UST && account_info.is_disabled)
-                ? [account_info]
-                : [];
-        }
-
         // Multi-account logic
         return this.all_loginids
             .map(id => this.getAccountInfo(id))
@@ -483,12 +460,6 @@ export default class ClientStore extends BaseStore {
     // CFD login getters removed for simplified authentication
 
     get active_accounts() {
-        // For simplified auth, return single account directly for better performance
-        if (this.isSimplifiedAuth()) {
-            const account = this.accounts[this.loginid];
-            return account && !account.is_disabled ? [account] : [];
-        }
-
         // Multi-account logic
         return this.accounts instanceof Object
             ? Object.values(this.accounts).filter(account => !account.is_disabled)
@@ -496,11 +467,6 @@ export default class ClientStore extends BaseStore {
     }
 
     get all_loginids() {
-        // For simplified auth, return single loginid directly for better performance
-        if (this.isSimplifiedAuth()) {
-            return this.loginid ? [this.loginid] : [];
-        }
-
         // Multi-account logic
         return !isEmptyObject(this.accounts) ? Object.keys(this.accounts) : [];
     }
@@ -637,11 +603,6 @@ export default class ClientStore extends BaseStore {
             !this.accounts[this.loginid]
         ) {
             return false;
-        }
-
-        // For simplified auth, we don't require a token since authentication is handled differently
-        if (this.isSimplifiedAuth()) {
-            return true;
         }
 
         // For multi-account auth, require a valid token
@@ -843,125 +804,65 @@ export default class ClientStore extends BaseStore {
         this.selectCurrency('');
     }
 
-    // Helper method to detect simplified auth response format
-    isSimplifiedAuthResponse(response) {
-        const auth_data = response.authorize;
-        return (
-            auth_data &&
-            typeof auth_data.balance !== 'undefined' &&
-            typeof auth_data.currency !== 'undefined' &&
-            typeof auth_data.is_virtual !== 'undefined' &&
-            typeof auth_data.loginid !== 'undefined' &&
-            !auth_data.account_list
-        ); // No account_list in simplified format
-    }
-
-    // Handle simplified authentication response
-    handleSimplifiedAuth(response) {
-        const { balance, currency, is_virtual, loginid, email, landing_company_name, country, user_id } =
-            response.authorize;
-
-        // Create single account structure for backward compatibility
-        this.accounts = {
-            [loginid]: {
-                balance,
-                currency,
-                is_virtual: +is_virtual,
-                loginid,
-                email: email || '',
-                landing_company_shortcode: landing_company_name || '',
-                country: country || '',
-                token: this.getToken(loginid) || localStorage.getItem('config.account1') || this.getSessionToken(),
-                session_start: parseInt(moment().utc().valueOf() / 1000),
-                // Mark as simplified auth for detection
-                is_simplified_auth: true,
-            },
-        };
-
-        // Set current account and update storage
-        this.loginid = loginid;
-
-        // Set active_loginid in storage for simplified auth
-        if (/^(CR|MF|VRTC)\d/.test(loginid)) {
-            sessionStorage.setItem('active_loginid', loginid);
-            localStorage.setItem('active_loginid', loginid);
-        }
-        if (/^(CRW|MFW|VRW)\d/.test(loginid)) {
-            sessionStorage.setItem('active_wallet_loginid', loginid);
-        }
-
-        // Call resetLocalStorageValues to sync all storage properly
-        this.resetLocalStorageValues(loginid);
-
-        // Continue with existing responseAuthorize logic for compatibility
-        this.upgrade_info = this.getBasicUpgradeInfo();
-        this.user_id = user_id;
-        if (this.user_id) {
-            localStorage.setItem('active_user_id', this.user_id);
-        }
-        localStorage.setItem(storage_key, JSON.stringify(this.accounts));
-
-        // Set upgradeable landing companies (empty for simplified auth)
-        this.upgradeable_landing_companies = response.authorize.upgradeable_landing_companies
-            ? [...new Set(response.authorize.upgradeable_landing_companies)]
-            : [];
-
-        // Set local currency config if available
-        if (response.authorize.local_currencies && Object.keys(response.authorize.local_currencies).length > 0) {
-            this.local_currency_config.currency = Object.keys(response.authorize.local_currencies)[0];
-            const default_fractional_digits = 2;
-            const fractional_digits =
-                +response.authorize.local_currencies[this.local_currency_config.currency].fractional_digits;
-            this.local_currency_config.decimal_places = fractional_digits || default_fractional_digits;
-        } else {
-            // Default currency config for simplified auth
-            this.local_currency_config.currency = currency;
-            this.local_currency_config.decimal_places = 2;
-        }
-
-        // Handle notifications for simplified auth
-        const notification_messages = LocalStore.getObject('notification_messages');
-        const messages = notification_messages[this.loginid] ?? [];
-        LocalStore.setObject('notification_messages', {
-            [this.loginid]: messages,
-        });
-    }
-
     responseAuthorize(response) {
-        // Check if this is simplified auth format (no account_list)
-        if (this.isSimplifiedAuthResponse(response)) {
-            this.handleSimplifiedAuth(response);
-            return;
+        // Check if this is a V2 response (no account_list)
+        const isV2Response = !response.authorize.account_list;
+
+        if (isV2Response) {
+            // V2 simplified processing - only update essential fields
+            // Ensure the account object exists before setting properties
+            if (!this.accounts[this.loginid]) {
+                this.accounts[this.loginid] = {};
+            }
+
+            this.accounts[this.loginid].email = response.authorize.email || '';
+            this.accounts[this.loginid].currency = response.authorize.currency;
+            this.accounts[this.loginid].is_virtual = +response.authorize.is_virtual;
+            this.accounts[this.loginid].session_start = parseInt(moment().utc().valueOf() / 1000);
+            this.accounts[this.loginid].landing_company_shortcode = response.authorize.landing_company_name || '';
+            this.accounts[this.loginid].country = response.authorize.country || '';
+            this.user_id = response.authorize.user_id || '';
+
+            if (this.user_id) {
+                localStorage.setItem('active_user_id', this.user_id);
+            }
+            localStorage.setItem(storage_key, JSON.stringify(this.accounts));
+
+            // Skip complex legacy processing for V2
+            this.upgrade_info = this.getBasicUpgradeInfo();
+            this.upgradeable_landing_companies = [];
+            this.local_currency_config.currency = '';
+            this.local_currency_config.decimal_places = 2;
+        } else {
+            // Legacy multi-account logic
+            this.accounts[this.loginid].email = response.authorize.email;
+            this.accounts[this.loginid].currency = response.authorize.currency;
+            this.accounts[this.loginid].is_virtual = +response.authorize.is_virtual;
+            this.accounts[this.loginid].session_start = parseInt(moment().utc().valueOf() / 1000);
+            this.accounts[this.loginid].landing_company_shortcode = response.authorize.landing_company_name;
+            this.accounts[this.loginid].country = response.country;
+            this.updateAccountList(response.authorize.account_list);
+            this.upgrade_info = this.getBasicUpgradeInfo();
+            this.user_id = response.authorize.user_id;
+            localStorage.setItem('active_user_id', this.user_id);
+            localStorage.setItem(storage_key, JSON.stringify(this.accounts));
+            this.upgradeable_landing_companies = [...new Set(response.authorize.upgradeable_landing_companies)];
+            this.local_currency_config.currency = Object.keys(response.authorize.local_currencies)[0];
+
+            // delete all notifications key when set new account except notifications for this account
+            // need this because when the user switchs accounts we don't use logout
+            const notification_messages = LocalStore.getObject('notification_messages');
+            const messages = notification_messages[this.loginid] ?? [];
+            LocalStore.setObject('notification_messages', {
+                [this.loginid]: messages,
+            });
+
+            // For residences without local currency (e.g. ax)
+            const default_fractional_digits = 2;
+            this.local_currency_config.decimal_places = isEmptyObject(response.authorize.local_currencies)
+                ? default_fractional_digits
+                : +response.authorize.local_currencies[this.local_currency_config.currency].fractional_digits;
         }
-
-        // Continue with existing multi-account logic
-        this.accounts[this.loginid].email = response.authorize.email;
-        this.accounts[this.loginid].currency = response.authorize.currency;
-        this.accounts[this.loginid].is_virtual = +response.authorize.is_virtual;
-        this.accounts[this.loginid].session_start = parseInt(moment().utc().valueOf() / 1000);
-        this.accounts[this.loginid].landing_company_shortcode = response.authorize.landing_company_name;
-        this.accounts[this.loginid].country = response.country;
-        this.updateAccountList(response.authorize.account_list);
-        this.upgrade_info = this.getBasicUpgradeInfo();
-        this.user_id = response.authorize.user_id;
-        localStorage.setItem('active_user_id', this.user_id);
-        localStorage.setItem(storage_key, JSON.stringify(this.accounts));
-        this.upgradeable_landing_companies = [...new Set(response.authorize.upgradeable_landing_companies)];
-        this.local_currency_config.currency = Object.keys(response.authorize.local_currencies)[0];
-
-        // delete all notifications key when set new account except notifications for this account
-        // need this because when the user switchs accounts we don't use logout
-        const notification_messages = LocalStore.getObject('notification_messages');
-        const messages = notification_messages[this.loginid] ?? [];
-        LocalStore.setObject('notification_messages', {
-            [this.loginid]: messages,
-        });
-
-        // For residences without local currency (e.g. ax)
-        const default_fractional_digits = 2;
-        this.local_currency_config.decimal_places = isEmptyObject(response.authorize.local_currencies)
-            ? default_fractional_digits
-            : +response.authorize.local_currencies[this.local_currency_config.currency].fractional_digits;
     }
 
     setWebsiteStatus(response) {
@@ -1094,11 +995,6 @@ export default class ClientStore extends BaseStore {
     };
 
     updateAccountList(account_list) {
-        // Skip account list updates for simplified auth
-        if (this.isSimplifiedAuth()) {
-            return;
-        }
-
         this.authorize_accounts_list = account_list;
         account_list?.forEach(account => {
             if (account && account.loginid && this.accounts[account.loginid]) {
@@ -1174,7 +1070,23 @@ export default class ClientStore extends BaseStore {
             window.history.replaceState({}, document.title, routes.trade + search);
         }
 
-        const authorize_response = await this.setUserLogin(login_new_user);
+        // Check for V2 authentication (one-time token in URL or existing session token)
+        const urlParams = new URLSearchParams(search);
+        const oneTimeToken = urlParams.get('token'); // V2 uses 'token' parameter
+        const existingSessionToken = this.getSessionToken();
+
+        let authorize_response, client;
+
+        if (existingSessionToken) {
+            // If we have a session token, use it directly (pass null as oneTimeToken)
+            authorize_response = await this.authenticateV2(null);
+        } else if (oneTimeToken) {
+            // Only try to exchange one-time token if we don't have a session token
+            authorize_response = await this.authenticateV2(oneTimeToken);
+        } else {
+            // Legacy authentication flow
+            authorize_response = await this.setUserLogin(login_new_user);
+        }
 
         if (search) {
             if (window.location.pathname !== routes.callback_page) {
@@ -1195,6 +1107,7 @@ export default class ClientStore extends BaseStore {
         // On case of invalid token, no need to continue with additional api calls.
         if (authorize_response?.error) {
             await this.logout();
+
             this.root_store.common.setError(true, {
                 header: authorize_response.error.message,
                 code: authorize_response.error.code,
@@ -1226,7 +1139,6 @@ export default class ClientStore extends BaseStore {
         // Email verification handling removed for simplified authentication
         const storedToken = localStorage.getItem('config.account1');
         // Enhanced safe property access for client object
-        let client;
         try {
             client =
                 (this.accounts && typeof this.accounts === 'object' && this.loginid && this.accounts[this.loginid]) ||
@@ -1289,45 +1201,21 @@ export default class ClientStore extends BaseStore {
         this.responsePayoutCurrencies(await WS.authorized.payoutCurrencies());
 
         if (this.is_logged_in) {
-            // Simplified initialization for simplified authentication
-            if (this.isSimplifiedAuth()) {
-                // Statement handling removed for simplified authentication
-                if (Object.keys(this.account_settings).length === 0) {
-                    this.setAccountSettings((await WS.authorized.cache.getSettings()).get_settings);
-                }
-                if (this.account_settings) this.setPreferredLanguage(this.account_settings.preferred_language);
-                // Residence list fetching removed for trading-focused application
-                if (this.residence) {
-                    await WS.authorized.cache.landingCompany(this.residence).then(this.responseLandingCompany);
-                }
-                // Clean up callback page tokens
-                if (localStorage.getItem('config.tokens') && localStorage.getItem('config.account1')) {
-                    localStorage.removeItem('config.tokens');
-                    localStorage.removeItem('config.account1');
-                }
-            } else {
-                // Full multi-account initialization
+            if (Object.keys(this.account_settings).length === 0) {
+                this.setAccountSettings((await WS.authorized.cache.getSettings()).get_settings);
+            }
 
-                // CFD platform initialization removed for simplified authentication
+            if (this.account_settings) this.setPreferredLanguage(this.account_settings.preferred_language);
 
-                // Statement handling removed for simplified authentication
-                // Phone settings removed for simplified authentication
-                if (Object.keys(this.account_settings).length === 0) {
-                    this.setAccountSettings((await WS.authorized.cache.getSettings()).get_settings);
-                }
+            // Residence list fetching removed for trading-focused application
+            if (this.residence) {
+                await WS.authorized.cache.landingCompany(this.residence).then(this.responseLandingCompany);
+            }
 
-                if (this.account_settings) this.setPreferredLanguage(this.account_settings.preferred_language);
-
-                // Residence list fetching removed for trading-focused application
-                if (this.residence) {
-                    await WS.authorized.cache.landingCompany(this.residence).then(this.responseLandingCompany);
-                }
-
-                // This was set for the new callback page logic, once the user has logged in, we can remove the tokens and account1 from local storage since client.accounts is handling it already
-                if (localStorage.getItem('config.tokens') && localStorage.getItem('config.account1')) {
-                    localStorage.removeItem('config.tokens');
-                    localStorage.removeItem('config.account1');
-                }
+            // This was set for the new callback page logic, once the user has logged in, we can remove the tokens and account1 from local storage since client.accounts is handling it already
+            if (localStorage.getItem('config.tokens') && localStorage.getItem('config.account1')) {
+                localStorage.removeItem('config.tokens');
+                localStorage.removeItem('config.account1');
             }
         } else {
             // MT5 account list population reset removed for simplified authentication
@@ -1543,26 +1431,6 @@ export default class ClientStore extends BaseStore {
         return false;
     }
 
-    // Helper method to detect if current session is simplified auth
-    isSimplifiedAuth() {
-        // Enhanced null checking with multiple layers of safety - protect against 'this' being undefined
-        if (!this || typeof this !== 'object') {
-            return false;
-        }
-        if (!this.loginid || typeof this.loginid !== 'string') {
-            return false;
-        }
-        if (!this.accounts || typeof this.accounts !== 'object') {
-            return false;
-        }
-        // Triple-safe property access
-        const account = this.accounts?.[this.loginid];
-        if (!account || typeof account !== 'object') {
-            return false;
-        }
-        return account.is_simplified_auth === true;
-    }
-
     setBalanceActiveAccount(obj_balance) {
         if (!obj_balance || typeof obj_balance.balance === 'undefined') {
             return; // Invalid balance object
@@ -1573,9 +1441,8 @@ export default class ClientStore extends BaseStore {
             return; // Invalid loginid or account not found
         }
 
-        // For simplified auth, always update balance if loginid matches current account
-        // For multi-account auth, ensure loginid matches current active account
-        const shouldUpdateBalance = this.isSimplifiedAuth() ? loginid === this.loginid : loginid === this.loginid;
+        // Always update balance if loginid matches current active account
+        const shouldUpdateBalance = loginid === this.loginid;
 
         if (shouldUpdateBalance) {
             // Ensure MobX reactivity by updating the observable property
@@ -1689,6 +1556,7 @@ export default class ClientStore extends BaseStore {
             this.responsePayoutCurrencies(await WS.payoutCurrencies());
         });
         this.root_store.notifications.removeAllNotificationMessages(true);
+
         // Legacy platform sync removed as part of cleanup
     }
 
@@ -1866,15 +1734,6 @@ export default class ClientStore extends BaseStore {
             history.replaceState(null, null, `${search_param_without_account}${window.location.hash}`);
         }
 
-        // Check for V2 authentication (one-time token or existing session)
-        const one_time_token = login_new_user ? login_new_user.token : obj_params.token;
-        const existing_session_token = this.getSessionToken();
-
-        if (one_time_token || existing_session_token) {
-            // Route directly to V2 authentication - complete separation
-            return await this.setUserLoginV2(one_time_token);
-        }
-
         const is_client_logging_in = login_new_user ? login_new_user.token1 : obj_params.token1;
         const is_callback_page_client_logging_in = localStorage.getItem('config.account1') || '';
 
@@ -1934,102 +1793,102 @@ export default class ClientStore extends BaseStore {
         }
     }
 
-    // Unified V2 authentication method for both one-time tokens and session restoration
-    async setUserLoginV2(oneTimeToken = null) {
-        this.setIsLoggingIn(true);
-
+    // V2 Authentication Method
+    async authenticateV2(oneTimeToken) {
         try {
-            // Handle session restoration if no one-time token provided
-            if (!oneTimeToken) {
-                const existing_session_token = this.getSessionToken();
-                if (!existing_session_token) {
-                    return { error: { message: 'No authentication token available', code: 'NoToken' } };
+            this.setIsLoggingIn(true);
+
+            let sessionToken = this.getSessionToken();
+
+            // If we don't have a session token but we have a one-time token, exchange it
+            if (!sessionToken && oneTimeToken) {
+                const sessionResponse = await WS.getSessionToken(oneTimeToken);
+
+                if (sessionResponse.error) {
+                    return {
+                        error: {
+                            code: 'TokenExchangeError',
+                            message: sessionResponse.error.message,
+                        },
+                    };
                 }
 
-                // Session restoration flow
-                const authorizeResponse = await BinarySocket.authorize(existing_session_token);
-
-                if (authorizeResponse.error) {
-                    this.clearSessionToken();
-                    return authorizeResponse;
-                }
-
-                return authorizeResponse;
+                sessionToken = sessionResponse.get_session_token.token;
+                this.storeSessionToken(sessionToken);
+            } else if (!sessionToken) {
+                return {
+                    error: {
+                        code: 'NoSessionToken',
+                        message: 'No valid session token available',
+                    },
+                };
             }
 
-            // One-time token flow
-            // Step 1: Exchange one-time token for session token
-            const sessionResponse = await BinarySocket.getSessionToken(oneTimeToken);
-
-            if (sessionResponse.error) {
-                return sessionResponse;
-            }
-
-            // Step 2: Store session token and expiration
-            const sessionToken = sessionResponse.get_session_token?.token;
-            const expirationTime = sessionResponse.get_session_token?.expires;
-
-            if (!sessionToken) {
-                return { error: { message: 'No session token received', code: 'SessionTokenError' } };
-            }
-
-            this.storeSessionToken(sessionToken, expirationTime);
-
-            // Step 3: Use session token for authorize
+            // Authorize with session token
             const authorizeResponse = await BinarySocket.authorize(sessionToken);
 
             if (authorizeResponse.error) {
-                // Clear stored session token on authorize failure
                 this.clearSessionToken();
                 return authorizeResponse;
             }
 
+            // Process successful authorization
+            const { authorize } = authorizeResponse;
+            const loginid = authorize.loginid;
+
+            // Initialize account structure
+            this.accounts = {
+                [loginid]: {
+                    balance: authorize.balance,
+                    currency: authorize.currency,
+                    is_virtual: authorize.is_virtual,
+                    loginid: loginid,
+                    token: sessionToken,
+                    session_start: parseInt(moment().utc().valueOf() / 1000),
+                },
+            };
+
+            // Set active login ID
+            this.setLoginId(loginid);
+
+            // Store accounts in localStorage
+            localStorage.setItem(storage_key, JSON.stringify(this.accounts));
+            localStorage.setItem('active_loginid', loginid);
+            sessionStorage.setItem('active_loginid', loginid);
+
+            // Process authorization response
+            this.responseAuthorize(authorizeResponse);
+
+            this.setIsLoggingIn(false);
             return authorizeResponse;
         } catch (error) {
-            // Clear any stored session token on error
-            this.clearSessionToken();
-            return { error: { message: 'Authentication failed', code: 'AuthenticationError' } };
-        } finally {
             this.setIsLoggingIn(false);
+
+            return {
+                error: {
+                    code: 'UnexpectedAuthError',
+                    message: error.message || 'Unexpected authentication error',
+                },
+            };
         }
     }
 
     // Session token storage methods
-    storeSessionToken(token, expirationTime) {
+    storeSessionToken(token) {
         if (token) {
             localStorage.setItem('session_token', token);
-            if (expirationTime) {
-                localStorage.setItem('session_expiry', expirationTime.toString());
-            }
         }
     }
 
     getSessionToken() {
-        const token = localStorage.getItem('session_token');
-        const expiry = localStorage.getItem('session_expiry');
-
-        if (!token) return null;
-
-        // Check if token is expired
-        if (expiry && Date.now() / 1000 > parseInt(expiry)) {
-            this.clearSessionToken();
-            return null;
-        }
-
-        return token;
+        return localStorage.getItem('session_token');
     }
 
     clearSessionToken() {
         localStorage.removeItem('session_token');
-        localStorage.removeItem('session_expiry');
     }
 
     async canStoreClientAccounts(obj_params, account_list) {
-        // Simplified validation for simplified authentication
-        if (this.isSimplifiedAuth()) {
-            return true; // Always allow storing for simplified auth
-        }
-
         // Multi-account validation logic
         let is_TMB_enabled;
         const is_ready_to_process = account_list && isEmptyObject(this.accounts);
