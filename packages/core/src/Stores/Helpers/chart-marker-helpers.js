@@ -73,7 +73,8 @@ export const createMarkerResetTime = contract_info => {
 
 // -------------------- Spots --------------------
 export const createMarkerSpotEntry = contract_info => {
-    const entry_spot_time = contract_info.entry_spot_time;
+    // Backward compatibility: fallback to entry_tick_time if entry_spot_time is not available
+    const entry_spot_time = contract_info.entry_spot_time ?? contract_info.entry_tick_time;
     if (!entry_spot_time) return false;
 
     const entry_tick = contract_info.entry_spot;
@@ -93,7 +94,8 @@ export const createMarkerSpotEntry = contract_info => {
 };
 
 export const createMarkerSpotExit = (contract_info, tick, idx) => {
-    const exit_spot_time = contract_info.exit_spot_time;
+    // Backward compatibility: fallback to exit_tick_time if exit_spot_time is not available
+    const exit_spot_time = contract_info.exit_spot_time ?? contract_info.exit_tick_time;
     if (!exit_spot_time) return false;
     const is_ticks_contract = isTicksContract(contract_info.contract_type);
 
