@@ -39,6 +39,7 @@ const EntryExitDetails = ({ contract_info }: { contract_info: TContractInfo }) =
 
     // [AI]
     // Backward compatibility: fallback to old field names
+    const actual_entry_spot = entry_spot ?? entry_spot_display_value;
     const actual_exit_spot = exit_spot ?? exit_tick;
     const actual_exit_spot_display_value = exit_tick_display_value ?? exit_spot;
     // [/AI]
@@ -53,11 +54,7 @@ const EntryExitDetails = ({ contract_info }: { contract_info: TContractInfo }) =
         [contract_info]
     );
 
-    const entryValue = entry_spot_display_value
-        ? addComma(entry_spot_display_value)
-        : entry_spot
-          ? addComma(entry_spot.toString())
-          : null;
+    const entryValue = actual_entry_spot ? addComma(actual_entry_spot.toString()) : null;
     const exitValue = actual_exit_spot_display_value
         ? addComma(actual_exit_spot_display_value)
         : actual_exit_spot

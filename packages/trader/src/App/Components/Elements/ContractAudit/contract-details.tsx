@@ -86,6 +86,7 @@ const ContractDetails = ({
 
     // [AI]
     // Backward compatibility: fallback to old field names
+    const actual_entry_spot = entry_spot ?? entry_spot_display_value;
     const actual_exit_spot = exit_spot_value ?? exit_tick;
     const actual_exit_spot_display_value = exit_tick_display_value;
     // [/AI]
@@ -338,13 +339,7 @@ const ContractDetails = ({
                         id='dt_entry_spot_label'
                         icon={<Icon icon='IcContractEntrySpot' size={24} />}
                         label={localize('Entry spot')}
-                        value={
-                            entry_spot_display_value
-                                ? addComma(entry_spot_display_value)
-                                : entry_spot
-                                  ? addComma(entry_spot.toString())
-                                  : ' - '
-                        }
+                        value={actual_entry_spot ? addComma(actual_entry_spot.toString()) : ' - '}
                         value2={entry_spot_time ? toGMTFormat(epochToMoment(entry_spot_time)) : ' - '}
                         additional_info={
                             isTicksContract(contract_type) &&
