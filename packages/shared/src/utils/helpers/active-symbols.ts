@@ -45,10 +45,17 @@ export const showUnavailableLocationError = flow(function* (showError, is_logged
 });
 
 export const isMarketClosed = (active_symbols: ActiveSymbols = [], symbol: string) => {
-    if (!active_symbols.length) return false;
-    return active_symbols.filter(x => x.symbol === symbol)[0]
-        ? !active_symbols.filter(symbol_info => symbol_info.symbol === symbol)[0].exchange_is_open
-        : false;
+    if (!active_symbols.length) {
+        return false;
+    }
+
+    // Handle empty or invalid symbols
+    if (!symbol || symbol.trim() === '') {
+        return false;
+    }
+
+    const found_symbol = active_symbols.find(x => x.symbol === symbol || (x as any).underlying_symbol === symbol);
+    return found_symbol ? !found_symbol.exchange_is_open : false;
 };
 
 export const pickDefaultSymbol = async (active_symbols: ActiveSymbols = []) => {
