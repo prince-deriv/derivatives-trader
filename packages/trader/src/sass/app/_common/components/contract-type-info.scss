@@ -234,13 +234,13 @@
         }
 
         .dc-button-menu__button {
-            background-color: var(--color-surface-primary) !important;
+            background-color: var(--color-surface-section) !important;
 
             .dc-btn__text {
                 color: var(--color-text-secondary) !important;
             }
             &--active {
-                background-color: var(--color-surface-section) !important;
+                background-color: var(--color-surface-primary) !important;
 
                 .dc-btn__text {
                     color: var(--color-text-primary) !important;
