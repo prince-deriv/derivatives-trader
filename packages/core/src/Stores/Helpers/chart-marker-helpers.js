@@ -77,7 +77,7 @@ export const createMarkerSpotEntry = contract_info => {
     const entry_spot_time = contract_info.entry_spot_time ?? contract_info.entry_tick_time;
     if (!entry_spot_time) return false;
 
-    const entry_tick = contract_info.entry_spot;
+    const entry_tick = contract_info.entry_spot ?? contract_info.entry_tick_display_value;
     const spot_has_label = isDigitContract(contract_info.contract_type) || isTicksContract(contract_info.contract_type);
     const marker_type = MARKER_TYPES_CONFIG.SPOT_ENTRY.type;
     let component_props = {};
@@ -105,7 +105,7 @@ export const createMarkerSpotExit = (contract_info, tick, idx) => {
         align_label = tick.align_label;
     }
 
-    const exit_tick = contract_info.exit_spot;
+    const exit_tick = contract_info.exit_spot ?? contract_info.exit_tick_display_value;
 
     const should_show_spot_exit_2 = is_ticks_contract && idx + 1 !== contract_info.selected_tick;
     const should_show_profit_label = isVanillaContract(contract_info.contract_type) && isDesktop();
