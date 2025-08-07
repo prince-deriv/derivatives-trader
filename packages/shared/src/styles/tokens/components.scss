@@ -28,8 +28,8 @@
         --color-button-disabled-text: var(--color-text-disabled);
 
         // Trading/Purchase Colors (exact legacy match for light theme)
-        --color-trade-buy: #{$color-secondary}; // Buy/Higher/Rise trades
-        --color-trade-buy-bg: #{darken($color-secondary, 10%)}; // Buy background (derived from brand-secondary to get #3d9494)
+        --color-trade-buy: #{$color-success}; // Buy/Higher/Rise trades
+        --color-trade-buy-bg: #{darken($color-success, 10%)}; // Buy background (derived from brand-secondary to get #3d9494)
         --color-trade-sell: #{$color-danger}; // Sell/Lower/Fall trades
         --color-trade-sell-bg: #{darken($color-danger, 10%)}; // Sell background (derived from brand-danger)
         --color-trade-disabled: var(--color-interactive-disabled);
@@ -122,8 +122,8 @@
         --color-button-disabled-text: var(--color-text-disabled);
 
         // Trading/Purchase Colors (dark theme variants)
-        --color-trade-buy: #{$color-secondary}; // Buy/Higher/Rise trades (dark)
-        --color-trade-buy-bg: #{darken($color-secondary, 10%)}; // Buy background (derived from brand-secondary to get #3d9494)
+        --color-trade-buy: #{$color-success}; // Buy/Higher/Rise trades (dark)
+        --color-trade-buy-bg: #{darken($color-success, 10%)}; // Buy background (derived from brand-secondary to get #3d9494)
         --color-trade-sell: #{$color-danger}; // Sell/Lower/Fall trades (dark)
         --color-trade-sell-bg: #{darken($color-danger, 10%)}; // Sell background (derived from brand-danger)
         --color-trade-disabled: var(--color-interactive-disabled);

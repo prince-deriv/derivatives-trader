@@ -6,6 +6,7 @@
         "primary": "#ff444f",
         "secondary": "#85acb0",
         "tertiary": "#ff6b35",
+        "success": "#4bb4b3",
         "danger": "#ec3f3f",
         "warning": "#ffad3a",
         "info": "#00d0ff",

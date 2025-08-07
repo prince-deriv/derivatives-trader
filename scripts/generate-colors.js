@@ -34,9 +34,8 @@ function adjustColor(hex, percentage, lighten = true) {
     const adjust = color => {
         if (lighten) {
             return Math.min(255, Math.round(color + (255 - color) * (percentage / 100)));
-        } 
-            return Math.max(0, Math.round(color * (1 - percentage / 100)));
-        
+        }
+        return Math.max(0, Math.round(color * (1 - percentage / 100)));
     };
 
     const newR = adjust(r);
@@ -92,6 +91,7 @@ $color-primary: ${colors.primary};
 $color-secondary: ${colors.secondary};
 $color-tertiary: ${colors.tertiary};
 $color-danger: ${colors.danger};
+$color-success: ${colors.success};
 $color-warning: ${colors.warning};
 $color-info: ${colors.info};
 $color-neutral: ${colors.neutral};
@@ -114,6 +114,12 @@ $color-tertiary-light: ${adjustColor(colors.tertiary, lightenPercent, true)};
 $color-tertiary-dark: ${adjustColor(colors.tertiary, darkenPercent, false)};
 $color-danger-light: ${adjustColor(colors.danger, lightenPercent, true)};
 $color-danger-dark: ${adjustColor(colors.danger, darkenPercent, false)};
+$color-success-light: ${adjustColor(colors.success, lightenPercent, true)};
+$color-success-dark: ${adjustColor(colors.success, darkenPercent, false)};
+$color-warning-light: ${adjustColor(colors.warning, lightenPercent, true)};
+$color-warning-dark: ${adjustColor(colors.warning, darkenPercent, false)};
+$color-info-light: ${adjustColor(colors.info, lightenPercent, true)};
+$color-info-dark: ${adjustColor(colors.info, darkenPercent, false)};
 
 `;
     }
@@ -140,6 +146,7 @@ function generateBrandTokens(config) {
   --brand-primary: #{$color-primary};           // Main brand color (buttons, links, highlights)
   --brand-secondary: #{$color-secondary};       // Success color (rise trades, success states)
   --brand-tertiary: #{$color-tertiary};         // Accent color (highlights, call-to-actions)
+  --brand-success: #{$color-success};           // Success color (profit trades, success states)
   --brand-danger: #{$color-danger};             // Error color (fall trades, error states)
   --brand-warning: #{$color-warning};           // Warning color (warning states)
   --brand-info: #{$color-info};                 // Information color (info states, highlights)
@@ -159,6 +166,12 @@ function generateBrandTokens(config) {
   --brand-tertiary-dark: #{$color-tertiary-dark};
   --brand-danger-light: #{$color-danger-light};
   --brand-danger-dark: #{$color-danger-dark};
+  --brand-success-light: #{$color-success-light};
+  --brand-success-dark: #{$color-success-dark};
+  --brand-warning-light: #{$color-warning-light};
+  --brand-warning-dark: #{$color-warning-dark};
+  --brand-info-light: #{$color-info-light};
+  --brand-info-dark: #{$color-info-dark};
 
 `;
     }
@@ -198,7 +211,7 @@ function generateSemanticTokens() {
     --color-text-secondary: #{transparentize($color-black, 0.3)}; // Secondary text (body text)
     --color-text-disabled: #{transparentize($color-black, 0.6)};  // Disabled text
     --color-text-inverse: var(--brand-white);         // Text on dark backgrounds
-    --color-text-success: var(--brand-secondary);     // Success messages, profit text
+    --color-text-success: var(--brand-success);     // Success messages, profit text
     --color-text-danger: var(--brand-danger);         // Error messages, loss text
     --color-text-warning: var(--brand-warning);       // Warning messages
     --color-text-info: var(--brand-info);             // Info messages
@@ -212,8 +225,8 @@ function generateSemanticTokens() {
     --color-interactive-focus: var(--brand-info);     // Focus states
 
     // Status Colors
-    --color-status-success: var(--brand-secondary);
-    --color-status-success-bg: #{transparentize($color-secondary, 0.84)};
+    --color-status-success: var(--brand-success);
+    --color-status-success-bg: #{transparentize($color-success, 0.84)};
     --color-status-danger: var(--brand-danger);
     --color-status-danger-bg: #{transparentize($color-danger, 0.84)};
     --color-status-warning: var(--brand-warning);
@@ -241,7 +254,7 @@ function generateSemanticTokens() {
     --color-text-secondary: #{transparentize($color-white, 0.2)}; // Secondary text (body text)
     --color-text-disabled: #{transparentize($color-white, 0.6)};  // Disabled text
     --color-text-inverse: var(--brand-white);         // Text on dark backgrounds
-    --color-text-success: var(--brand-secondary);     // Success messages, profit text
+    --color-text-success: var(--brand-success);     // Success messages, profit text
     --color-text-danger: var(--brand-danger);         // Error messages, loss text
     --color-text-warning: var(--brand-warning);       // Warning messages
     --color-text-info: var(--brand-info);             // Info messages
@@ -255,8 +268,8 @@ function generateSemanticTokens() {
     --color-interactive-focus: var(--brand-info);     // Focus states
 
     // Status Colors
-    --color-status-success: var(--brand-secondary);
-    --color-status-success-bg: #{transparentize($color-secondary, 0.84)};
+    --color-status-success: var(--brand-success);
+    --color-status-success-bg: #{transparentize($color-success, 0.84)};
     --color-status-danger: var(--brand-danger);
     --color-status-danger-bg: #{transparentize($color-danger, 0.84)};
     --color-status-warning: var(--brand-warning);
@@ -306,8 +319,8 @@ function generateComponentTokens() {
     --color-button-disabled-text: var(--color-text-disabled);
 
     // Trading/Purchase Colors (exact legacy match for light theme)
-    --color-trade-buy: #{$color-secondary};                 // Buy/Higher/Rise trades
-    --color-trade-buy-bg: #{darken($color-secondary, 10%)};              // Buy background (derived from brand-secondary to get #3d9494)
+    --color-trade-buy: #{$color-success};                 // Buy/Higher/Rise trades
+    --color-trade-buy-bg: #{darken($color-success, 10%)};              // Buy background (derived from brand-secondary to get #3d9494)
     --color-trade-sell: #{$color-danger};                   // Sell/Lower/Fall trades
     --color-trade-sell-bg: #{darken($color-danger, 10%)};                // Sell background (derived from brand-danger)
     --color-trade-disabled: var(--color-interactive-disabled);
@@ -400,8 +413,8 @@ function generateComponentTokens() {
     --color-button-disabled-text: var(--color-text-disabled);
 
     // Trading/Purchase Colors (dark theme variants)
-    --color-trade-buy: #{$color-secondary};                 // Buy/Higher/Rise trades (dark)
-    --color-trade-buy-bg: #{darken($color-secondary, 10%)};              // Buy background (derived from brand-secondary to get #3d9494)
+    --color-trade-buy: #{$color-success};                 // Buy/Higher/Rise trades (dark)
+    --color-trade-buy-bg: #{darken($color-success, 10%)};              // Buy background (derived from brand-secondary to get #3d9494)
     --color-trade-sell: #{$color-danger};                  // Sell/Lower/Fall trades (dark)
     --color-trade-sell-bg: #{darken($color-danger, 10%)};               // Sell background (derived from brand-danger)
     --color-trade-disabled: var(--color-interactive-disabled);
