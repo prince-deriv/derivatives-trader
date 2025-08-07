@@ -1,7 +1,111 @@
 {
-  "lastUpdated": "2025-08-06T06:52:02.339Z",
-  "totalMergedPRs": 7,
+  "lastUpdated": "2025-08-07T08:24:05.783Z",
+  "totalMergedPRs": 11,
   "analyses": [
+    {
+      "percentage": 0,
+      "totalCharacters": 1252,
+      "aiCharacters": 0,
+      "files": [
+        {
+          "name": "packages/core/src/Stores/Helpers/chart-marker-helpers.js",
+          "totalCharacters": 359,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "addedContent": "    const entry_spot_time = contract_info.entry_spot_time ?? contract_info.entry_tick_time;\n    const entry_tick = contract_info.entry_spot ?? contract_info.entry_tick_display_value;\n    const exit_sp..."
+        },
+        {
+          "name": "packages/core/src/Stores/Helpers/chart-markers.js",
+          "totalCharacters": 385,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "addedContent": "\n    // Backward compatibility: use new property names with fallback to old ones\n    const entry_spot = contract_info.entry_spot ?? entry_tick;\n    const exit_spot = contract_info.exit_spot ?? exit_ti..."
+        },
+        {
+          "name": "packages/core/src/Stores/contract-trade-store.js",
+          "totalCharacters": 274,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "addedContent": "                const entry_value = info.entry_spot ?? info.entry_tick;\n                if (trade_type_is_supported && is_call_put && ((info.barrier && entry_value) || info.shortcode)) {\n             ..."
+        },
+        {
+          "name": "packages/core/src/Stores/portfolio-store.js",
+          "totalCharacters": 234,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "addedContent": "        // workaround if no exit_spot/exit_tick in proposal_open_contract, use latest spot\n        this.positions[i].exit_spot =\n            contract_response.exit_spot ?? contract_response.exit_tick ..."
+        }
+      ],
+      "timestamp": "2025-08-07T08:24:05.736Z",
+      "repository": "deriv-com/derivatives-trader",
+      "pullRequest": "107",
+      "branch": "jim/fix-markers-2",
+      "author": "jim-deriv",
+      "prTitle": "feat: replace entry_tick/exit_tick with entry_spot/exit_spot with bac…",
+      "hasAnalysis": true
+    },
+    {
+      "percentage": 0,
+      "totalCharacters": 0,
+      "aiCharacters": 0,
+      "files": [],
+      "timestamp": "2025-08-06T08:29:27.897Z",
+      "repository": "deriv-com/derivatives-trader",
+      "pullRequest": "103",
+      "branch": "undo-testing-official-workflow",
+      "author": "prince-deriv",
+      "prTitle": "Prince/ remove testing file",
+      "hasAnalysis": true
+    },
+    {
+      "percentage": 98,
+      "totalCharacters": 707,
+      "aiCharacters": 695,
+      "files": [
+        {
+          "name": "fibonacci.js",
+          "totalCharacters": 707,
+          "aiCharacters": 695,
+          "percentage": 98,
+          "addedContent": "// [AI]\nfunction fibonacci(n) {\n    if (n <= 0) return [];\n    if (n === 1) return [0];\n    if (n === 2) return [0, 1];\n    \n    const sequence = [0, 1];\n    for (let i = 2; i < n; i++) {\n        sequ..."
+        }
+      ],
+      "timestamp": "2025-08-06T08:23:55.325Z",
+      "repository": "deriv-com/derivatives-trader",
+      "pullRequest": "101",
+      "branch": "test-official-workflows",
+      "author": "prince-deriv",
+      "prTitle": "Prince/ testing official workflows",
+      "hasAnalysis": true
+    },
+    {
+      "percentage": 87,
+      "totalCharacters": 257,
+      "aiCharacters": 224,
+      "files": [
+        {
+          "name": ".github/workflows/ai-code-analysis.yml",
+          "totalCharacters": 130,
+          "aiCharacters": 114,
+          "percentage": 88,
+          "addedContent": "    # [AI]  This is generated code by AI\n    uses: deriv-com/shared-actions/.github/workflows/ai-code-analysis.yml@v4\n    # [/AI] "
+        },
+        {
+          "name": ".github/workflows/ai-dashboard.yml",
+          "totalCharacters": 127,
+          "aiCharacters": 110,
+          "percentage": 87,
+          "addedContent": "    # [AI]  This is generated code by AI\n    uses: deriv-com/shared-actions/.github/workflows/ai-dashboard.yml@v4\n    # [/AI] \n"
+        }
+      ],
+      "timestamp": "2025-08-06T08:13:11.888Z",
+      "repository": "deriv-com/derivatives-trader",
+      "pullRequest": "99",
+      "branch": "update-ai-workflow-source",
+      "author": "prince-deriv",
+      "prTitle": "Prince/update workflow to use official deriv-com reusable workflow",
+      "hasAnalysis": true
+    },
     {
       "percentage": 0,
       "totalCharacters": 1529,

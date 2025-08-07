@@ -311,6 +311,10 @@ export function calculateMarker(contract_info, is_dark_theme, is_last_contract) 
         profit,
         is_sold,
     } = contract_info;
+
+    // Backward compatibility: use new property names with fallback to old ones
+    const entry_spot = contract_info.entry_spot ?? entry_tick;
+    const exit_spot = contract_info.exit_spot ?? exit_tick;
     const is_accumulator_contract = isAccumulatorContract(contract_type);
     const is_digit_contract = isDigitContract(contract_type);
     const is_tick_contract = tick_count > 0;
@@ -327,7 +331,7 @@ export function calculateMarker(contract_info, is_dark_theme, is_last_contract) 
 
     let barrier_price;
     if (is_digit_contract || is_accumulator_contract) {
-        barrier_price = +entry_tick;
+        barrier_price = +entry_spot;
     } else if (+barrier_count === 1 && barrier) {
         barrier_price = +barrier;
     } else if (+barrier_count === 2 && high_barrier && low_barrier) {
@@ -358,7 +362,7 @@ export function calculateMarker(contract_info, is_dark_theme, is_last_contract) 
         });
     }
 
-    if (date_start && entry_tick) {
+    if (date_start && entry_spot) {
         const color = is_non_tick_contract ? getColor({ status: 'open', profit }) : undefined;
         markers.push({
             epoch: date_start,
@@ -369,7 +373,7 @@ export function calculateMarker(contract_info, is_dark_theme, is_last_contract) 
         });
     }
 
-    if (entry_tick) {
+    if (entry_spot) {
         markers.push({
             epoch: entry_spot_time,
             quote: price,
@@ -379,7 +383,7 @@ export function calculateMarker(contract_info, is_dark_theme, is_last_contract) 
         if (is_high_low_contract || is_touch_contract || is_turbos) {
             markers.push({
                 epoch: entry_spot_time,
-                quote: entry_tick,
+                quote: entry_spot,
                 type: 'entryTick',
             });
         }
@@ -393,10 +397,10 @@ export function calculateMarker(contract_info, is_dark_theme, is_last_contract) 
         });
     }
 
-    if (exit_tick) {
+    if (exit_spot) {
         markers.push({
             epoch: exit_spot_time,
-            quote: +exit_tick,
+            quote: +exit_spot,
             type: 'exit',
         });
     } else if (tick_stream?.length > 0) {
