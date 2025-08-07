@@ -26,7 +26,7 @@
         justify-content: center;
         z-index: 999;
         transition: opacity 0.25s cubic-bezier(0.25, 0.1, 0.1, 0.25);
-        background-color: var(--overlay-outside-dialog);
+        background-color: var(--color-modal-backdrop);
 
         &--enter,
         &--exit {

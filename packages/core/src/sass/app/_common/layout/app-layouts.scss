@@ -106,7 +106,7 @@
         pointer-events: auto;
     }
     &--is-route-modal {
-        background-color: var(--overlay-outside-dialog);
+        background-color: var(--color-modal-backdrop);
     }
     &--is-hidden {
         margin-top: 0;

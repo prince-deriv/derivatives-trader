@@ -13,9 +13,6 @@ $MIN_HEIGHT_FLOATING: calc(
     border-radius: $BORDER_RADIUS;
     height: 100%;
 
-    &:not(&--floating) {
-        background-color: var(--color-surface-primary);
-    }
     &--floating {
         justify-content: center;
     }
@@ -220,8 +217,6 @@ $MIN_HEIGHT_FLOATING: calc(
         align-items: flex-start;
         border-radius: 0 $BORDER_RADIUS $BORDER_RADIUS 0;
         position: relative;
-        background-color: var(--color-surface-primary);
-
         grid-area: form-content;
 
         &-side-note {

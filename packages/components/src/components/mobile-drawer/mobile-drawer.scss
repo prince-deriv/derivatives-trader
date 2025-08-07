@@ -276,7 +276,7 @@
     }
     &__overlay {
         z-index: 9999 !important;
-        background-color: var(--overlay-outside-dialog) !important;
+        background-color: var(--color-modal-backdrop) !important;
     }
     &.exit {
         animation: closeDrawer 0.3s;

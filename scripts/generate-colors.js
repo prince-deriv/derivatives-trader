@@ -444,8 +444,8 @@ function generateComponentTokens() {
     --color-nav-item-hover: var(--color-interactive-hover);
 
     // Modal/Dialog Colors
-    --color-modal-bg: #{lighten($color-black, 8%)};
-    --color-modal-backdrop: #{transparentize($color-black, 0.04)};
+    --color-modal-bg: var(--color-surface-overlay);
+    --color-modal-backdrop: #{transparentize($color-black, 0.4)};
     --color-modal-border: var(--color-interactive-default);
 
     // Table Colors

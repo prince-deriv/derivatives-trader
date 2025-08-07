@@ -689,7 +689,7 @@ $FLOATING_HEADER_HEIGHT: 41px;
             height: 100%;
             z-index: 999;
             content: '';
-            background-color: var(--overlay-outside-dialog);
+            background-color: var(--color-modal-backdrop);
         }
         &--market-closed {
             & .dc-tooltip--with-label {

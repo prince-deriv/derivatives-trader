@@ -3,13 +3,10 @@
 
 /** @define dc-modal-header; */
 .dc-modal-header {
-    &--modal-settings {
-        background-color: var(--color-surface-primary);
-    }
     &__title {
         &--modal-settings {
             min-width: 28%;
-            background-color: var(--color-surface-primary);
+            background-color: var(--color-surface-section);
             max-width: 206px;
         }
     }
@@ -26,6 +23,7 @@
         & .dc-vertical-tab__tab-meta-wrapper {
             width: 100%;
             max-width: 206px;
+            height: 100%;
         }
     }
 }
