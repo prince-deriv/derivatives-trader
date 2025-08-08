@@ -73,8 +73,10 @@ const getFavoriteOpenSymbol = async (active_symbols: ActiveSymbols) => {
         if (client_favorite_list) {
             const client_first_open_symbol = client_favorite_list.filter(symbol => symbol).find(isSymbolOpen);
             if (client_first_open_symbol) {
-                const is_symbol_offered = await isSymbolOffered(client_first_open_symbol.symbol);
-                if (is_symbol_offered) return client_first_open_symbol.symbol;
+                const symbol_to_use =
+                    (client_first_open_symbol as any).underlying_symbol || client_first_open_symbol.symbol;
+                const is_symbol_offered = await isSymbolOffered(symbol_to_use);
+                if (is_symbol_offered) return symbol_to_use;
             }
         }
         return undefined;
@@ -98,7 +100,8 @@ const findSymbol = async (active_symbols: ActiveSymbols, symbol: string) => {
         symbol_info =>
             ((symbol_info as any).underlying_symbol || symbol_info.symbol) === symbol && isSymbolOpen(symbol_info)
     );
-    const is_symbol_offered = await isSymbolOffered(first_symbol?.symbol);
+    const symbol_to_check = first_symbol ? (first_symbol as any).underlying_symbol || first_symbol.symbol : undefined;
+    const is_symbol_offered = await isSymbolOffered(symbol_to_check);
     if (is_symbol_offered) return first_symbol;
     return undefined;
 };
@@ -107,7 +110,8 @@ const findFirstSymbol = async (active_symbols: ActiveSymbols, pattern: RegExp) =
     const first_symbol = active_symbols.find(
         symbol_info => pattern.test(symbol_info.submarket) && isSymbolOpen(symbol_info)
     );
-    const is_symbol_offered = await isSymbolOffered(first_symbol?.symbol);
+    const symbol_to_check = first_symbol ? (first_symbol as any).underlying_symbol || first_symbol.symbol : undefined;
+    const is_symbol_offered = await isSymbolOffered(symbol_to_check);
     if (is_symbol_offered) return first_symbol;
     return undefined;
 };
@@ -120,7 +124,8 @@ export const findFirstOpenMarket = async (
 ): Promise<TFindFirstOpenMarket> => {
     const market = markets.shift();
     const first_symbol = active_symbols.find(symbol_info => market === symbol_info.market && isSymbolOpen(symbol_info));
-    const is_symbol_offered = await isSymbolOffered(first_symbol?.symbol);
+    const symbol_to_check = first_symbol ? (first_symbol as any).underlying_symbol || first_symbol.symbol : undefined;
+    const is_symbol_offered = await isSymbolOffered(symbol_to_check);
     if (is_symbol_offered) return { category: first_symbol?.market, subcategory: first_symbol?.submarket };
     else if (markets.length > 0) return findFirstOpenMarket(active_symbols, markets);
     return undefined;
