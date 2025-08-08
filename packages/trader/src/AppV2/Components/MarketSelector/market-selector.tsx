@@ -174,11 +174,11 @@ const MarketSelector = observer(() => {
                             )}
                             <LabelPairedChevronDownMdRegularIcon fill='var(--component-textIcon-normal-default' />
                         </div>
-                        {/* {current_spot ? (
+                        {current_spot ? (
                             <CaptionText className='market-selector-info__price'>{current_spot}</CaptionText>
                         ) : (
                             current_spot_replacement
-                        )} */}
+                        )}
                     </div>
                 </div>
             </div>
