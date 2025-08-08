@@ -21,8 +21,8 @@ export const routes = {
     os_redirect: '/os-redirect',
 };
 
-// External URLs for champion navigation
-export const champion_url = {
+// External URLs for brand navigation
+export const brand_url = {
     base: 'https://staging-app.champion.trade/champion',
     home: 'https://staging-app.champion.trade/champion/home',
     login: 'https://staging-app.champion.trade/champion/login',

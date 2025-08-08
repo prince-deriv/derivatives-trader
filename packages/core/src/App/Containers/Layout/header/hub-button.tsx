@@ -1,12 +1,13 @@
 import React from 'react';
+
 import { Icon, Text } from '@deriv/components';
+import { brand_url } from '@deriv/shared';
 import { observer } from '@deriv/stores';
 import { Localize } from '@deriv/translations';
-import { champion_url } from '@deriv/shared';
 
 const HubButton = observer(() => {
     const handleHubRedirect = () => {
-        window.open(champion_url.home, '_blank', 'noopener,noreferrer');
+        window.open(brand_url.home, '_blank', 'noopener,noreferrer');
     };
 
     return (

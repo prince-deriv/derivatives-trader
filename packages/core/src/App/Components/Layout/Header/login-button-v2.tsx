@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Button } from '@deriv/components';
+import { brand_url } from '@deriv/shared';
 import { localize } from '@deriv/translations';
-import { champion_url } from '@deriv/shared';
 
 interface LoginButtonV2Props {
     className?: string;
@@ -11,7 +11,7 @@ interface LoginButtonV2Props {
 
 const LoginButtonV2 = ({ className }: LoginButtonV2Props) => {
     const handleLogin = () => {
-        window.location.href = champion_url.login;
+        window.location.href = brand_url.login;
     };
 
     return (

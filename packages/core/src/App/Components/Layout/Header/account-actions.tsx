@@ -1,14 +1,16 @@
 import React from 'react';
+
 import { Button, Icon, Popover } from '@deriv/components';
 // import { useAccountSettingsRedirect } from '@deriv/api';
 import { formatMoney } from '@deriv/shared';
 import { useStore } from '@deriv/stores';
 import { localize } from '@deriv/translations';
+import { useDevice } from '@deriv-com/ui';
+
 import { LoginButtonV2 } from './login-button-v2';
-// import { SignupButton } from './signup-button.jsx';
+
 // import ToggleNotifications from './toggle-notifications.jsx';
 import 'Sass/app/_common/components/account-switcher.scss';
-import { useDevice } from '@deriv-com/ui';
 
 type TUiStore = ReturnType<typeof useStore>['ui'];
 
@@ -22,7 +24,7 @@ type TAccountActionsProps = {
     is_traders_hub_routes: boolean;
     is_virtual: boolean;
     // notifications_count: number;
-    // onClickDeposit: () => void; // Commented out - deposit button hidden
+    // onClickDeposit: () => void; // Commented out - deposit button hidden, remove if no longer needed
     onClickLogout: () => void;
     // toggleNotifications: () => void;
     // openRealAccountSignup: TUiStore['openRealAccountSignup'];
@@ -78,6 +80,7 @@ const AccountInfo = React.lazy(
 //     />
 // );
 
+// TODO: Temporarily hidden deposit button, remove if no longer needed
 // const DepositButton = ({ onClickDeposit }: { onClickDeposit: () => void }) => (
 //     <Button className='acc-info__button' has_effect text={localize('Deposit')} onClick={onClickDeposit} primary />
 // );
@@ -89,7 +92,6 @@ const LogoutButton = ({ onClickLogout }: { onClickLogout: () => void }) => (
 const LoggedOutView = () => (
     <>
         <LoginButtonV2 className='acc-info__button' />
-        {/* <SignupButton className='acc-info__button' /> */}
     </>
 );
 
@@ -103,13 +105,13 @@ const AccountActionsComponent = ({
     is_traders_hub_routes,
     is_virtual,
     // notifications_count,
-    // onClickDeposit, // Commented out - deposit button hidden
+    // onClickDeposit, // Commented out - deposit button hidden, remove if no longer needed
     onClickLogout,
     // openRealAccountSignup,
     // toggleNotifications,
 }: TAccountActionsProps) => {
     const { isDesktop } = useDevice();
-    // const isDepositButtonVisible = isDesktop && !is_traders_hub_routes && currency; // Commented out - deposit button hidden
+    // const isDepositButtonVisible = isDesktop && !is_traders_hub_routes && currency; // Commented out - deposit button hidden, remove if no longer needed
     const isLogoutButtonVisible = isDesktop && is_logged_in;
     const formattedBalance = balance != null ? formatMoney(currency, balance, true) : undefined;
 

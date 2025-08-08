@@ -1,5 +1,5 @@
 import React from 'react';
-import { /* useHistory, */ useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { useAccountSettingsRedirect, useIsHubRedirectionEnabled, /* useOauth2, */ useRemoteConfig } from '@deriv/api';
@@ -31,7 +31,6 @@ const ToggleMenuDrawer = observer(() => {
         is_dark_mode_on: is_dark_mode,
         setDarkMode: toggleTheme,
         setMobileLanguageMenuOpen,
-        // setIsForcedToExitPnv,
     } = ui;
     const {
         account_status,
@@ -39,7 +38,6 @@ const ToggleMenuDrawer = observer(() => {
         is_logged_in,
         is_virtual,
         logout: logoutClient,
-        // setIsLoggingOut,
         should_allow_authentication,
         should_allow_poinc_authentication,
         landing_company_shortcode: active_account_landing_company,
@@ -69,7 +67,6 @@ const ToggleMenuDrawer = observer(() => {
     const [, expandSubMenu] = React.useState(false);
 
     const timeout = React.useRef();
-    // const history = useHistory();
     // eslint-disable-next-line no-unused-vars -- Variable kept for future handleTradershubRedirect restoration
     const { isHubRedirectionEnabled } = useIsHubRedirectionEnabled();
 
@@ -122,6 +119,7 @@ const ToggleMenuDrawer = observer(() => {
         expandSubMenu(false);
     }, [expandSubMenu, is_open, is_mobile_language_menu_open, setMobileLanguageMenuOpen]);
 
+    // TODO: Commented out legacy logout handling, remove if no longer needed
     // const handleLogout = React.useCallback(async () => {
     //     setIsLoggingOut(true);
     //     toggleDrawer();
