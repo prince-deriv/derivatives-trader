@@ -3,13 +3,13 @@ import { observer, useStore } from '@deriv/stores';
 import { AccountActions } from 'App/Components/Layout/Header';
 
 type THeaderAccountActions = {
-    onClickDeposit: () => void;
+    // onClickDeposit: () => void; // TODO: Temporarily hidden deposit button, remove if no longer needed
     is_traders_hub_routes: boolean;
 };
 
-const HeaderAccountActions = observer(({ onClickDeposit, is_traders_hub_routes }: THeaderAccountActions) => {
+const HeaderAccountActions = observer(({ is_traders_hub_routes }: THeaderAccountActions) => {
     const { client, ui, notifications } = useStore();
-    const { account_type, balance, currency, is_eu, is_logged_in, is_virtual } = client;
+    const { account_type, balance, currency, is_eu, is_logged_in, is_virtual, logout } = client;
     const {
         account_switcher_disabled_message,
         disableApp,
@@ -21,6 +21,11 @@ const HeaderAccountActions = observer(({ onClickDeposit, is_traders_hub_routes }
     } = ui;
     const { is_notifications_visible, notifications: notifications_array, toggleNotificationsModal } = notifications;
     const filtered_notifications = notifications_array.filter(item => !item.only_toast_message);
+
+    const handleLogout = () => {
+        logout();
+    };
+
     return (
         <div id='dt_core_header_acc-info-container' className='acc-info__container'>
             <AccountActions
@@ -36,7 +41,8 @@ const HeaderAccountActions = observer(({ onClickDeposit, is_traders_hub_routes }
                 is_logged_in={is_logged_in}
                 is_traders_hub_routes={is_traders_hub_routes}
                 is_virtual={is_virtual}
-                onClickDeposit={onClickDeposit}
+                // onClickDeposit={onClickDeposit} // TODO: Temporarily hidden deposit button, remove if no longer needed
+                onClickLogout={handleLogout}
                 // notifications_count={filtered_notifications.length}
                 // toggleAccountsDialog={toggleAccountsDialog}
                 // toggleNotifications={toggleNotificationsModal}
