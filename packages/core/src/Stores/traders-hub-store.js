@@ -124,13 +124,8 @@ export default class TradersHubStore extends BaseStore {
     }
 
     async selectAccountType(account_type) {
-        const { account_list, switchAccount, prev_real_account_loginid, has_active_real_account, isSimplifiedAuth } =
+        const { account_list, switchAccount, prev_real_account_loginid, has_active_real_account } =
             this.root_store.client;
-
-        // Disable account type switching in simplified authentication mode
-        if (isSimplifiedAuth && typeof isSimplifiedAuth === 'function' && isSimplifiedAuth()) {
-            return;
-        }
 
         if (account_type === 'demo') {
             await switchAccount(account_list.find(acc => acc.is_virtual && !acc.is_disabled)?.loginid);
@@ -159,15 +154,6 @@ export default class TradersHubStore extends BaseStore {
     }
 
     selectRegion(region) {
-        // Disable region switching in simplified authentication mode
-        if (
-            this.root_store.client &&
-            this.root_store.client.isSimplifiedAuth &&
-            typeof this.root_store.client.isSimplifiedAuth === 'function' &&
-            this.root_store.client.isSimplifiedAuth()
-        ) {
-            return;
-        }
         this.selected_region = region;
     }
 

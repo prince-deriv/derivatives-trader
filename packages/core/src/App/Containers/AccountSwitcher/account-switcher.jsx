@@ -413,10 +413,10 @@ const AccountSwitcher = observer(({ history, is_mobile, is_visible }) => {
                         })}
                     />
                     <div className='acc-switcher__total'>
-                        <Text line_height='s' size='xs' weight='bold' color='prominent'>
+                        <Text line_height='s' size='xs' weight='bold' color='primary'>
                             <Localize i18n_default_text='Total assets' />
                         </Text>
-                        <Text size='xs' color='prominent' className='acc-switcher__balance'>
+                        <Text size='xs' color='primary' className='acc-switcher__balance'>
                             <Money
                                 currency={isRealAccountTab ? account_total_balance_currency : vrtc_currency}
                                 amount={formatMoney(

@@ -56,7 +56,7 @@ const NotificationsList = observer(() => {
             {filtered_notifications.length > 0 ? (
                 filtered_notifications.map(item => (
                     <div className='notifications-item' key={item.key}>
-                        <Text as='h2' className='notifications-item__title' weight='bold' size='xs' color='prominent'>
+                        <Text as='h2' className='notifications-item__title' weight='bold' size='xs' color='primary'>
                             {item.type && (
                                 <Icon
                                     icon={getNotificationItemIcon(item)}

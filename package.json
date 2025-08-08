@@ -70,6 +70,7 @@
         "build:travis": "npm run build:travis --workspace=@deriv/shared && npm run build:travis --workspace=@deriv/components && npm run build:travis --workspace=@deriv/translations && npm run build:travis --workspace=@deriv/reports",
         "build:prod": "export NODE_ENV=staging && npm run build:all && export NODE_ENV=",
         "build:gh-pages": "npm run build:components && npm run build:reports",
+        "generate:colors": "node ./scripts/generate-colors.js",
         "check-imports": "node ./scripts/check-imports.js",
         "test": "npm run test:stylelint && npm run test:eslint-all && npm run test:jest",
         "test:eslint-all": "npm run --workspaces --if-present test:eslint",

@@ -32,7 +32,6 @@ import {
     getContractSubtype,
     getCurrencyDisplayCode,
     getMinPayout,
-    getPlatformSettings,
     getPropertyValue,
     getTradeNotificationMessage,
     getTradeURLParams,
@@ -984,7 +983,11 @@ export default class TradeStore extends BaseStore {
     }
 
     async resetPreviousSymbol() {
-        this.setMarketStatus(isMarketClosed(this.active_symbols, this.previous_symbol));
+        if (this.previous_symbol && this.previous_symbol.trim() !== '') {
+            this.setMarketStatus(isMarketClosed(this.active_symbols, this.previous_symbol));
+        } else {
+            this.setMarketStatus(false);
+        }
 
         await Symbol.onChangeSymbolAsync(this.previous_symbol);
         this.updateSymbol(this.symbol);
@@ -1361,7 +1364,15 @@ export default class TradeStore extends BaseStore {
         if (Object.keys(obj_new_values).includes('symbol')) {
             this.setPreviousSymbol(this.symbol);
             await Symbol.onChangeSymbolAsync(obj_new_values.symbol ?? '');
-            this.setMarketStatus(isMarketClosed(this.active_symbols, obj_new_values.symbol ?? ''));
+
+            const symbol_to_check = obj_new_values.symbol ?? '';
+            if (symbol_to_check && symbol_to_check.trim() !== '') {
+                this.setMarketStatus(isMarketClosed(this.active_symbols, symbol_to_check));
+            } else {
+                // Reset market status to false when no symbol is available
+                this.setMarketStatus(false);
+            }
+
             has_only_forward_starting_contracts =
                 ContractType.getContractCategories().has_only_forward_starting_contracts;
         }
