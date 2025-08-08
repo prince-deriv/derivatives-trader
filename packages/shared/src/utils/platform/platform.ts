@@ -1,4 +1,4 @@
-import { getPlatformSettings } from '../brand';
+import { getPlatformName, getPlatformIcon } from '../brand';
 import { routes } from '../routes';
 
 type TRoutingHistory = {
@@ -14,7 +14,7 @@ type TRoutingHistory = {
  * */
 
 export const platform_name = Object.freeze({
-    DTrader: getPlatformSettings('trader').name,
+    DTrader: getPlatformName(),
 });
 
 export const CFD_PLATFORMS = Object.freeze({
@@ -35,7 +35,7 @@ export const getPathname = () => {
 };
 
 export const getPlatformInformation = () => {
-    return { header: platform_name.DTrader, icon: getPlatformSettings('trader').icon };
+    return { header: platform_name.DTrader, icon: getPlatformIcon() };
 };
 
 export const getActivePlatform = (routing_history: TRoutingHistory) => {

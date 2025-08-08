@@ -125,7 +125,7 @@ const ContractDetails = ({
             label: abbreviation === INDICATIVE_LOW ? low_spot_text : high_spot_text,
             icon: (
                 <div className='lookbacks-marker__wrapper'>
-                    <Text color='colored-background' size='xxxs' className='lookbacks-marker__asset'>
+                    <Text color='inverse' size='xxxs' className='lookbacks-marker__asset'>
                         {abbreviation}
                     </Text>
                 </div>

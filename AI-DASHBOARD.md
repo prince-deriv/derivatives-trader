@@ -11,11 +11,11 @@
 
 ## 📊 Quick Stats
 
-| Metric | Value | Metric | Value |
-|--------|-------|--------|-------|
-| **📁 Total Merged PRs** | 14 | **📈 Average AI Code** | 🟧🟧⬜⬜⬜⬜⬜⬜⬜⬜ 23% |
-| **🤖 PRs with AI Analysis** | 11 | **🎯 Overall AI Percentage** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 3% |
-| **📄 Files Analyzed** | 76 | **⚡ Total AI Characters** | 988 |
+| Metric                      | Value | Metric                       | Value                    |
+| --------------------------- | ----- | ---------------------------- | ------------------------ |
+| **📁 Total Merged PRs**     | 14    | **📈 Average AI Code**       | 🟧🟧⬜⬜⬜⬜⬜⬜⬜⬜ 23% |
+| **🤖 PRs with AI Analysis** | 11    | **🎯 Overall AI Percentage** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 3%  |
+| **📄 Files Analyzed**       | 76    | **⚡ Total AI Characters**   | 988                      |
 
 ---
 
@@ -23,18 +23,18 @@
 
 > 📊 Showing the 10 most recent merged PRs (stats above include all 14 PRs)
 
-| PR | Author | Date | Files | AI Content | Percentage |
-|----|--------|------|-------|------------|------------|
-| [#112](#) **Akmal / fix: enhance fallback logic for default open symbol retrieval** | [@akmal-deriv](https://github.com/akmal-deriv) | 8/8/2025 | 1 | 0 / 1,183 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-| [#95](#) **Farabi/new-authentication-flow** | [@farabi-deriv](https://github.com/farabi-deriv) | 8/8/2025 | 15 | 0 / 15,160 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-| [#108](#) **Akmal / fix: improve market status handling for symbols in TradeStore** | [@akmal-deriv](https://github.com/akmal-deriv) | 8/7/2025 | 2 | 0 / 971 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-| [#107](#) **feat: replace entry_tick/exit_tick with entry_spot/exit_spot with bac…** | [@jim-deriv](https://github.com/jim-deriv) | 8/7/2025 | 4 | 0 / 1,252 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-| [#103](#) **Prince/ remove testing file** | [@prince-deriv](https://github.com/prince-deriv) | 8/6/2025 | 0 | 0 / 0 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-| [#101](#) **Prince/ testing official workflows** | [@prince-deriv](https://github.com/prince-deriv) | 8/6/2025 | 1 | 695 / 707 chars | 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩  98% |
-| [#99](#) **Prince/update workflow to use official deriv-com reusable workflow** | [@prince-deriv](https://github.com/prince-deriv) | 8/6/2025 | 2 | 224 / 257 chars | 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜  87% |
-| [#97](#) **Matin/Clean-up Icons & Tradershub Store** | [@matin-deriv](https://github.com/matin-deriv) | 8/6/2025 | 25 | 0 / 1,529 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-| [#94](#) **fix: migrate API field usage for proposal_open_contract changes** | [@jim-deriv](https://github.com/jim-deriv) | 8/6/2025 | 24 | 0 / 13,107 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-| [#1](#) **build(deps-dev): bump webpack-dev-server from 5.2.0 to 5.2.1** | [@dependabot[bot]](https://github.com/dependabot[bot]) | 8/4/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
+| PR                                                                                   | Author                                                 | Date     | Files | AI Content       | Percentage                         |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------ | -------- | ----- | ---------------- | ---------------------------------- |
+| [#112](#) **Akmal / fix: enhance fallback logic for default open symbol retrieval**  | [@akmal-deriv](https://github.com/akmal-deriv)         | 8/8/2025 | 1     | 0 / 1,183 chars  | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%  |
+| [#95](#) **Farabi/new-authentication-flow**                                          | [@farabi-deriv](https://github.com/farabi-deriv)       | 8/8/2025 | 15    | 0 / 15,160 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%  |
+| [#108](#) **Akmal / fix: improve market status handling for symbols in TradeStore**  | [@akmal-deriv](https://github.com/akmal-deriv)         | 8/7/2025 | 2     | 0 / 971 chars    | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%  |
+| [#107](#) **feat: replace entry_tick/exit_tick with entry_spot/exit_spot with bac…** | [@jim-deriv](https://github.com/jim-deriv)             | 8/7/2025 | 4     | 0 / 1,252 chars  | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%  |
+| [#103](#) **Prince/ remove testing file**                                            | [@prince-deriv](https://github.com/prince-deriv)       | 8/6/2025 | 0     | 0 / 0 chars      | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%  |
+| [#101](#) **Prince/ testing official workflows**                                     | [@prince-deriv](https://github.com/prince-deriv)       | 8/6/2025 | 1     | 695 / 707 chars  | 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 98% |
+| [#99](#) **Prince/update workflow to use official deriv-com reusable workflow**      | [@prince-deriv](https://github.com/prince-deriv)       | 8/6/2025 | 2     | 224 / 257 chars  | 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜ 87% |
+| [#97](#) **Matin/Clean-up Icons & Tradershub Store**                                 | [@matin-deriv](https://github.com/matin-deriv)         | 8/6/2025 | 25    | 0 / 1,529 chars  | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%  |
+| [#94](#) **fix: migrate API field usage for proposal_open_contract changes**         | [@jim-deriv](https://github.com/jim-deriv)             | 8/6/2025 | 24    | 0 / 13,107 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%  |
+| [#1](#) **build(deps-dev): bump webpack-dev-server from 5.2.0 to 5.2.1**             | [@dependabot[bot]](https://github.com/dependabot[bot]) | 8/4/2025 | N/A   | No data          | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%  |
 
 ---
 

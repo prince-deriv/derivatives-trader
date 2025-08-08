@@ -21,7 +21,6 @@ type TAccountActionsProps = {
     is_acc_switcher_disabled: boolean;
     // is_notifications_visible: boolean;
     is_logged_in: boolean;
-    is_traders_hub_routes: boolean;
     is_virtual: boolean;
     // notifications_count: number;
     // onClickDeposit: () => void; // Commented out - deposit button hidden, remove if no longer needed
@@ -102,7 +101,6 @@ const AccountActionsComponent = ({
     is_acc_switcher_disabled,
     is_logged_in,
     // is_notifications_visible,
-    is_traders_hub_routes,
     is_virtual,
     // notifications_count,
     // onClickDeposit, // Commented out - deposit button hidden, remove if no longer needed
@@ -138,7 +136,7 @@ const AccountActionsComponent = ({
         <React.Fragment>
             {/* TODO: Deposit button temporarily hidden - uncomment when needed */}
             {/* {isDepositButtonVisible && <DepositButton onClickDeposit={onClickDeposit} />} */}
-            {!is_traders_hub_routes && renderAccountInfo()}
+            {renderAccountInfo()}
             {isLogoutButtonVisible && <LogoutButton onClickLogout={onClickLogout} />}
             {/* <NotificationsToggle
                 count={notifications_count}

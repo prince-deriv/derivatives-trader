@@ -32,11 +32,15 @@
     width: 100%;
     max-width: 40rem;
     padding: 1.6rem;
-    color: var(--text-prominent);
-    background-color: var(--general-main-2);
-    box-shadow: 0 4px 6px 0 var(--shadow-menu), 0 4px 6px 0 var(--shadow-menu);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-primary);
+    box-shadow:
+        0 4px 6px 0 var(--color-shadow-medium),
+        0 4px 6px 0 var(--color-shadow-medium);
     overflow: hidden;
-    transition: transform 0.25s ease, opacity 0.25s linear;
+    transition:
+        transform 0.25s ease,
+        opacity 0.25s linear;
     direction: ltr;
 
     &--enter-done {
@@ -96,7 +100,7 @@
             content: '\0000D7';
             font-size: 30px;
             font-weight: 400;
-            color: var(--text-prominent);
+            color: var(--color-text-primary);
             font-family: monospace;
         }
     }

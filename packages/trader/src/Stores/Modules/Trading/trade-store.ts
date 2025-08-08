@@ -32,7 +32,6 @@ import {
     getContractSubtype,
     getCurrencyDisplayCode,
     getMinPayout,
-    getPlatformSettings,
     getPropertyValue,
     getTradeNotificationMessage,
     getTradeURLParams,
