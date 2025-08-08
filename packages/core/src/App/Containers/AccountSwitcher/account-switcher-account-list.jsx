@@ -89,7 +89,7 @@ const AccountList = ({
                         has_balance && (
                             <Text
                                 size='xs'
-                                color='prominent'
+                                color='primary'
                                 styles={{ fontWeight: 'inherit' }}
                                 className='acc-switcher__balance'
                             >
@@ -177,7 +177,7 @@ const AccountDisplay = ({
                 market_type === 'synthetic' &&
                 shortcode === 'svg' && (
                     <Text
-                        color={is_dark_mode_on ? 'general' : 'colored-background'}
+                        color={is_dark_mode_on ? 'secondary' : 'inverse'}
                         size='xxs'
                         className={classNames('badge-server')}
                     >

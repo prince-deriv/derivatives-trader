@@ -11,7 +11,6 @@ import {
     getEndTime,
     getMarketName,
     getPathname,
-    getPlatformSettings,
     getStaticUrl,
     getTotalProfit,
     getTradeTypeName,
@@ -25,6 +24,7 @@ import {
     routes,
     shouldShowPhoneVerificationNotification,
     unique,
+    getPlatformName,
 } from '@deriv/shared';
 import { Localize, localize } from '@deriv/translations';
 import { Chat } from '@deriv/utils';
@@ -800,8 +800,9 @@ export default class NotificationStore extends BaseStore {
         } = this.root_store.client;
         const two_fa_status = has_enabled_two_fa ? localize('enabled') : localize('disabled');
 
-        const platform_name_trader = getPlatformSettings('trader').name;
-        const platform_name_go = getPlatformSettings('go').name;
+        const platform_name_trader = getPlatformName();
+        // TODO: Add mobile application name in brand config
+        const platform_name_go = 'Deriv GO';
 
         const next_prompt_date = account_settings?.tnc_update_notification_start_date;
 

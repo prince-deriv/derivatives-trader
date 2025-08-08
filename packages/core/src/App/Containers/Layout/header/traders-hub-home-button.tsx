@@ -35,7 +35,7 @@ const TradersHubHomeButton = observer(() => {
         <div
             data-testid='dt_traders_hub_home_button'
             className={classNames('traders-hub-header__tradershub', {
-                'traders-hub-header__tradershub--active': pathname === routes.trade || pathname === routes.trade_v2,
+                'traders-hub-header__tradershub--active': pathname === routes.trade,
             })}
             onClick={handleTradershubRedirect}
         >
