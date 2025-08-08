@@ -88,8 +88,9 @@ const getDefaultOpenSymbol = async (active_symbols: ActiveSymbols) => {
         (await findSymbol(active_symbols, '1HZ100V')) ||
         (await findFirstSymbol(active_symbols, /random_index/)) ||
         (await findFirstSymbol(active_symbols, /major_pairs/));
-    if (default_open_symbol) return default_open_symbol.symbol;
-    return active_symbols.find(symbol_info => symbol_info.submarket === 'major_pairs')?.symbol;
+    if (default_open_symbol) return (default_open_symbol as any).underlying_symbol || default_open_symbol.symbol;
+    const fallback_symbol = active_symbols.find(symbol_info => symbol_info.submarket === 'major_pairs');
+    return fallback_symbol ? (fallback_symbol as any).underlying_symbol || fallback_symbol.symbol : undefined;
 };
 
 const findSymbol = async (active_symbols: ActiveSymbols, symbol: string) => {
