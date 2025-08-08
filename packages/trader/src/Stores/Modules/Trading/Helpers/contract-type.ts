@@ -440,7 +440,7 @@ export const ContractType = (() => {
                                         trading_events[trading_times_response.echo_req.trading_times as string] = {};
                                     }
                                     trading_events[trading_times_response.echo_req.trading_times as string][
-                                        symbol.symbol
+                                        (symbol as any).underlying_symbol || symbol.symbol
                                     ] = symbol.events as TEvents;
                                 }
                             }
@@ -498,7 +498,7 @@ export const ContractType = (() => {
                                         trading_times[trading_times_response.echo_req.trading_times as string] = {};
                                     }
                                     trading_times[trading_times_response.echo_req.trading_times as string][
-                                        symbol.symbol
+                                        (symbol as any).underlying_symbol || symbol.symbol
                                     ] = {
                                         open: (symbol.times as TTimes).open,
                                         close: (symbol.times as TTimes).close,
