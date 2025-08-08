@@ -21,6 +21,13 @@ export const routes = {
     os_redirect: '/os-redirect',
 };
 
+// External URLs for brand navigation
+export const brand_url = {
+    base: 'https://staging-app.champion.trade/champion',
+    home: 'https://staging-app.champion.trade/champion/home',
+    login: 'https://staging-app.champion.trade/champion/login',
+};
+
 export const DISABLE_LANDSCAPE_BLOCKER_ROUTES = [
     routes.trade,
     routes.reports,

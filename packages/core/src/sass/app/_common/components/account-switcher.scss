@@ -1,7 +1,6 @@
 /** @define acc-info */
 .acc-info {
     align-items: center;
-    cursor: pointer;
     display: flex;
     flex-direction: row;
     height: 100%;
@@ -102,13 +101,14 @@
     }
 
     @include desktop-screen {
-        &:hover:not(.show):not(&--is-disabled) {
+        /* Removed hover effect for acc-info */
+        /* &:hover:not(.show):not(&--is-disabled) {
             background: var(--color-interactive-hover);
 
             .symbols {
                 background: transparent;
             }
-        }
+        } */
     }
     @include mobile-screen {
         &__balance {

@@ -14,6 +14,7 @@ import NewVersionNotification from 'App/Containers/new-version-notification.jsx'
 
 import BrandShortLogo from './brand-short-logo';
 import HeaderAccountActions from './header-account-actions';
+import HubButton from './hub-button';
 
 const HeaderLegacy = observer(() => {
     const { client, common, ui, notifications } = useStore();
@@ -86,6 +87,7 @@ const HeaderLegacy = observer(() => {
                             <BrandShortLogo />
                             <div className='header__divider' />
                             {/* <TradersHubHomeButton /> */}
+                            {is_logged_in && <HubButton />}
                         </React.Fragment>
                     ) : (
                         <React.Fragment>
