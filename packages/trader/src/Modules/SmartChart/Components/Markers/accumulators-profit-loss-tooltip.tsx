@@ -98,7 +98,8 @@ const AccumulatorsProfitLossTooltip = ({
         }
     };
 
-    if (typeof profit !== 'number') return null;
+    if (profit === undefined || isNaN(Number(profit))) return null;
+
     if (!is_sold && current_spot_time && high_barrier && should_show_profit_text)
         return (
             <AccumulatorsProfitLossText

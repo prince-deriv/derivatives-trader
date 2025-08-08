@@ -80,6 +80,8 @@ const ContractDetails = ({
         transaction_ids: { buy, sell } = {},
         reset_barrier,
         reset_time,
+        // @ts-expect-error underlying_symbol exists in runtime but not in type definition
+        underlying_symbol,
         underlying,
     } = contract_info;
     const { isMobile } = useDevice();
@@ -88,7 +90,7 @@ const ContractDetails = ({
     // Backward compatibility: fallback to old field names
     const actual_entry_spot = entry_spot ?? entry_spot_display_value;
     const actual_exit_spot = exit_spot_value ?? exit_tick;
-    const actual_exit_spot_display_value = exit_tick_display_value;
+    const actual_exit_spot_display_value = exit_spot_value ?? exit_tick_display_value;
     // [/AI]
 
     const is_profit = Number(profit) >= 0;
@@ -146,7 +148,7 @@ const ContractDetails = ({
         contract_type === CONTRACT_TYPES.LB_PUT ? INDICATIVE_HIGH : INDICATIVE_LOW
     );
 
-    const vanilla_payout_text = isVanillaFxContract(contract_type, underlying)
+    const vanilla_payout_text = isVanillaFxContract(contract_type, underlying_symbol ?? underlying)
         ? getLocalizedBasis().payout_per_pip
         : getLocalizedBasis().payout_per_point;
 
