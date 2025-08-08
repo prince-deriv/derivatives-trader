@@ -63,6 +63,8 @@ const ContractDetails = ({
         entry_spot_display_value,
         // @ts-expect-error contract_info is not typed correctly this will not be an issue after the types are fixed
         entry_spot_time,
+        // @ts-expect-error contract_info is not typed correctly this will not be an issue after the types are fixed
+        exit_spot: exit_spot_value,
         exit_tick,
         exit_tick_display_value,
         // @ts-expect-error contract_info is not typed correctly this will not be an issue after the types are fixed
@@ -78,9 +80,18 @@ const ContractDetails = ({
         transaction_ids: { buy, sell } = {},
         reset_barrier,
         reset_time,
+        // @ts-expect-error underlying_symbol exists in runtime but not in type definition
+        underlying_symbol,
         underlying,
     } = contract_info;
     const { isMobile } = useDevice();
+
+    // [AI]
+    // Backward compatibility: fallback to old field names
+    const actual_entry_spot = entry_spot ?? entry_spot_display_value;
+    const actual_exit_spot = exit_spot_value ?? exit_tick;
+    const actual_exit_spot_display_value = exit_spot_value ?? exit_tick_display_value;
+    // [/AI]
 
     const is_profit = Number(profit) >= 0;
     const cancellation_price = getCancellationPrice(contract_info);
@@ -137,7 +148,7 @@ const ContractDetails = ({
         contract_type === CONTRACT_TYPES.LB_PUT ? INDICATIVE_HIGH : INDICATIVE_LOW
     );
 
-    const vanilla_payout_text = isVanillaFxContract(contract_type, underlying)
+    const vanilla_payout_text = isVanillaFxContract(contract_type, underlying_symbol ?? underlying)
         ? getLocalizedBasis().payout_per_pip
         : getLocalizedBasis().payout_per_point;
 
@@ -330,13 +341,7 @@ const ContractDetails = ({
                         id='dt_entry_spot_label'
                         icon={<Icon icon='IcContractEntrySpot' size={24} />}
                         label={localize('Entry spot')}
-                        value={
-                            entry_spot_display_value
-                                ? addComma(entry_spot_display_value)
-                                : entry_spot
-                                  ? addComma(entry_spot.toString())
-                                  : ' - '
-                        }
+                        value={actual_entry_spot ? addComma(actual_entry_spot.toString()) : ' - '}
                         value2={entry_spot_time ? toGMTFormat(epochToMoment(entry_spot_time)) : ' - '}
                         additional_info={
                             isTicksContract(contract_type) &&
@@ -344,7 +349,7 @@ const ContractDetails = ({
                         }
                     />
                 )}
-                {(!isNaN(Number(exit_spot)) || exit_tick_display_value || exit_tick) && (
+                {(!isNaN(Number(exit_spot)) || actual_exit_spot_display_value || actual_exit_spot) && (
                     <ContractAuditItem
                         id='dt_exit_spot_label'
                         icon={<Icon icon='IcContractExitSpot' size={24} />}
@@ -352,10 +357,10 @@ const ContractDetails = ({
                         value={
                             exit_spot
                                 ? addComma(exit_spot)
-                                : exit_tick_display_value
-                                  ? addComma(exit_tick_display_value)
-                                  : exit_tick
-                                    ? addComma(exit_tick.toString())
+                                : actual_exit_spot_display_value
+                                  ? addComma(actual_exit_spot_display_value)
+                                  : actual_exit_spot
+                                    ? addComma(actual_exit_spot.toString())
                                     : ' - '
                         }
                         value2={toGMTFormat(epochToMoment(Number(exit_spot_time))) || ' - '}
